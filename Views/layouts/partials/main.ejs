@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER CRATE</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        /* Include all your common styles here */
+        .header {
+            background: #1a0340;
+            position: relative;
+            border-bottom: 1px solid #2d0668;
+        }
+
+        .header__content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            text-transform: uppercase;
+            padding: 8px 0;
+            display: block;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #ff0844;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #1a0340;
+            min-width: 200px;
+            border-radius: 4px;
+            padding: 8px 0;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .nav-item:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .dropdown-menu a:hover {
+            background: #2d0668;
+            color: #ff0844;
+        }
+
+        .mega-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1a0340;
+            padding: 40px 0;
+            display: none;
+            z-index: 1000;
+            border-top: 1px solid #2d0668;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item:hover .mega-menu {
+            display: block;
+        }
+
+        .mega-menu-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .mega-menu-section h3 {
+            color: #ff0844;
+            margin-bottom: 20px;
+            font-size: 18px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .mega-menu-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mega-menu-section a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .mega-menu-section a:hover {
+            color: #ff0844;
+        }
+
+        .header__icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icon-link {
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .icon-link:hover {
+            color: #ff0844;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff0844;
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .profile-btn:hover {
+            color: #ff0844;
+        }
+
+        .profile-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #1a0340;
+            min-width: 220px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 4px;
+        }
+
+        .profile-menu a {
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-menu a:hover {
+            background-color: #2d0668;
+            color: #ff0844;
+        }
+
+        .profile-menu i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #2d0668;
+            margin: 8px 0;
+        }
+
+        .show-menu {
+            display: block;
+        }
+
+        .mega-menu {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            width: 100%;
+            background-color: #1a0340;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-item:hover .mega-menu {
+            display: block;
+        }
+
+        .mega-menu-content {
+            display: flex;
+            flex-wrap: nowrap;
+            padding: 20px;
+            justify-content: space-between;
+        }
+
+        .mega-menu-section {
+            flex: 1;
+            padding: 10px;
+            color: #fff;
+            min-width: 200px;
+            box-sizing: border-box;
+        }
+
+        .mega-menu-section h3 {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #4a0d8c;
+            padding-bottom: 5px;
+            color: #ffd700;
+        }
+
+        .mega-menu-section ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mega-menu-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .mega-menu-section ul li a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .mega-menu-section ul li a:hover {
+            color: #ffd700;
+        }
+
+        .sale-banner {
+            position: relative;
+            overflow: hidden;
+            background-color: black;
+            white-space: nowrap;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sale-banner-content {
+            display: inline-block;
+            white-space: nowrap;
+            background-color: rgb(44, 18, 94);
+            animation: scroll-text 15s linear infinite;
+        }
+
+        @keyframes scroll-text {
+            from {
+                transform: translateX(500%);
+            }
+
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        .orange-text {
+            color: orange;
+        }
+
+        .sale-text {
+            color: white;
+        }
+
+        .green-text {
+            color: green;
+        }
+</style>
+</head>
+<body>
+    <%- include('../layouts/user/header.ejs') %>
+    <div class="page-content">
+        <%- body %>
+    </div>
+    <%- include('../layouts/user/footer.ejs') %>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

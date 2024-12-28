@@ -1,101 +1,85 @@
 <%- include('../layouts/user/header.ejs') %>
+<div class="breadcrumb-container">
+    <nav class="bg-dark text-white">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+        </ol>
+    </nav>
+</div>
 
 <div class="profile-container">
+    <div class="sidebar">
+        <ul>
+            <li><a href="/profile">Dashboard</a></li>
+            <li><a href="/profile/orders">Orders</a></li>
+            <li><a href="/cart">Cart</a></li>
+            <li><a href="/profile/wallet">Wallet</a></li>
+            <li><a href="/profile/addresses">Addresses</a></li>
+            <li><a href="/profile/referrals">Referrals</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
     <div class="profile-content">
         <div class="profile-header">
-            <h1>USER PROFILE</h1>
-            <button class="check-wallet-btn">CHECK WALLET</button>
+            <h1 class="font-weight-bold text-dark">Dashboard</h1>
+            <h2 class="font-weight-bold text-dark">Hello <%= user.name %></h2>
+            <div class="button-container">
+                <button onclick="window.location.href='/editProfile'" class="edit-profile-btn">Edit Profile</button>
+            </div>
         </div>
-        <p class="subtitle">You can change your profile</p>
+        <p class="subtitle">Your profile information:</p>
         <p class="security-note">Your information is safe with us</p>
 
-        <div class="profile-grid">
-            <div class="profile-left">
-                <div class="profile-image-container">
-                    <img src="/img/profile.jpg" alt="Profile Photo" id="profileImage">
-                    <button class="change-photo-btn">CHANGE PHOTO</button>
-                </div>
-            </div>
-
-            <div class="profile-right">
-                <form id="profileForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <div class="input-with-icon">
-                                <input type="text" name="fullName" >
-                                <i class="fas fa-pencil-alt"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Current Password</label>
-                            <div class="input-with-icon">
-                                <input type="password" name="currentPassword" >
-                                <i class="fas fa-pencil-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <div class="input-with-icon">
-                                <input type="email" name="email" >
-                                <i class="fas fa-pencil-alt"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <div class="input-with-icon">
-                                <input type="password" name="newPassword">
-                                <i class="fas fa-pencil-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Phone</label>
-                        <div class="input-with-icon">
-                            <input type="tel" name="phone" >
-                            <i class="fas fa-pencil-alt"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Country</label>
-                        <div class="input-with-icon">
-                            <input type="text" name="country">
-                            <i class="fas fa-pencil-alt"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>State</label>
-                        <div class="input-with-icon">
-                            <input type="text" name="state" >
-                            <i class="fas fa-pencil-alt"></i>
-                        </div>
-                    </div>
-
-                    <div class="button-container">
-                        <button type="submit" class="save-changes-btn">SAVE CHANGES</button>
-                    </div>
-                </form>
-            </div>
+        <div class="profile-details">
+            <div class="detail-item"><strong>Full Name:</strong> <%= user.name %></div>
+            <div class="detail-item"><strong>Email Address:</strong> <%= user.email %></div>
+            <div class="detail-item"><strong>Phone:</strong> <%= user.phone %></div>
         </div>
+
+        
     </div>
 </div>
 
 <style>
-.profile-container {
+    .profile-container {
+    display: flex;
     background: linear-gradient(135deg, #87CEEB, #ADD8E6);
     min-height: calc(100vh - 60px);
     padding: 40px 20px;
 }
 
+.sidebar {
+    width: 250px;
+    background: #1a237e;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sidebar ul li a:hover {
+    text-decoration: underline;
+}
+
 .profile-content {
-    max-width: 1200px;
-    margin: 0 auto;
+    flex: 1;
+    margin-left: 20px;
     background: rgba(255, 255, 255, 0.95);
     padding: 30px;
     border-radius: 15px;
@@ -127,78 +111,56 @@ h1 {
     font-size: 12px;
 }
 
-.profile-grid {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 40px;
+.profile-details {
     margin-top: 30px;
 }
 
-.profile-image-container {
-    text-align: center;
-}
-
-#profileImage {
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.change-photo-btn {
-    background: #1a237e;
-    color: white;
-    padding: 12px 0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 250px;
-    font-weight: 500;
-    text-transform: uppercase;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
+.detail-item {
+    margin-bottom: 15px;
+    font-size: 16px;
     color: #333;
-    font-size: 14px;
+}
+.breadcrumb-container {
+    padding: 10px 20px;
+    background: rgb(0, 0, 0);
 }
 
-.input-with-icon {
-    position: relative;
+.breadcrumb {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
-.input-with-icon input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+.breadcrumb-item {
     font-size: 14px;
+    color: #ffffff;
 }
 
-.input-with-icon i {
-    position: absolute;
-    right: 12px;
-    color: #666;
-    cursor: pointer;
-    font-size: 14px;
+.breadcrumb-item a {
+    color: #ffffff;
+    text-decoration: none;
 }
 
-.check-wallet-btn {
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    padding: 0 10px;
+    color: #ffffff;
+}
+
+.breadcrumb-item.active {
+    color: #ffffff;
+}
+.button-container {
+    margin-top: 20px;
+}
+
+.check-wallet-btn, .edit-profile-btn {
     background: #ffd700;
     color: #333;
     padding: 8px 20px;
@@ -210,28 +172,17 @@ h1 {
     font-size: 14px;
 }
 
-.save-changes-btn {
-    background: #1a237e;
-    color: white;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
-    text-transform: uppercase;
-    margin-top: 20px;
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+    }
+
+    .profile-content {
+        margin-left: 0;
+        margin-top: 20px;
+    }
 }
 
-@media (max-width: 768px) {
-    .profile-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-}
 </style>
 
 <%- include('../layouts/user/footer.ejs') %>

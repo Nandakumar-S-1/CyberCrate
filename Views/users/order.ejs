@@ -1,0 +1,128 @@
+<%- include('../layouts/user/header.ejs') %>
+
+<style>
+    .order-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .order-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .order-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .order-item {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .order-item img {
+        height: 100px;
+        width: auto;
+    }
+
+    .order-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .order-status {
+        font-weight: bold;
+        color: green;
+    }
+
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        margin: 0 5px;
+        text-decoration: none;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        color: #000;
+    }
+
+    .more-details {
+        display: none;
+        margin-top: 20px;
+    }
+
+    .toggle-icon {
+        cursor: pointer;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.5em;
+    }
+</style>
+</head>
+
+<body>
+    <div class="order-page">
+        <h1 class="order-header">MY ORDERS</h1>
+        <ul class="order-list">
+            <% orders.forEach(order => { %>
+                <li class="order-item">
+                    <div class="order-details">
+                        <img src="<%= order.orderedItems[0].product.productImage[0] %>" alt="<%= order.orderedItems[0].product.productName %>">
+                        <div>
+                            <h2><%= order.orderedItems[0].product.productName %></h2>
+                            <p>Quantity: <%= order.orderedItems[0].quantity %></p>
+                            <p>Price: INR <%= order.orderedItems[0].price %></p>
+                            <p>Order Date: <%= new Date(order.createdAt).toLocaleDateString() %></p>
+                            <p>Status: <span class="order-status"><%= order.status %></span></p>
+                        </div>
+                        <div class="order-actions">
+                            <button>VIEW</button>
+                            <button>CANCEL ORDER</button>
+                            <button>RETURN</button>
+                        </div>
+                        <div class="toggle-icon" onclick="toggleDetails(this)">&#9660;</div>
+                    </div>
+                    <div class="more-details">
+                        <p>Delivered Address: <%= order.address %></p>
+                        <p>Delivered Date: <%= order.invoiceDate ? new Date(order.invoiceDate).toLocaleDateString() : 'N/A' %></p>
+                        <p>Subtotal: ₹ <%= order.totalPrice %></p>
+                        <p>Shipping: Free</p>
+                        <p>Total: ₹ <%= order.finalAmount %></p>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+        <div class="pagination">
+            <a href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">Next</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleDetails(element) {
+            const moreDetails = element.closest('.order-item').querySelector('.more-details');
+            if (moreDetails.style.display === 'none' || moreDetails.style.display === '') {
+                moreDetails.style.display = 'block';
+                element.innerHTML = '&#9650;'; 
+            } else {
+                moreDetails.style.display = 'none';
+                element.innerHTML = '&#9660;'; 
+            }
+        }
+    </script>
+    <%- include('../layouts/user/footer.ejs') %>

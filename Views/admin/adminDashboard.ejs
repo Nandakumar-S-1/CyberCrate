@@ -1,584 +1,622 @@
 <%- include('../layouts/admin/header.ejs') %>
-<%- include('../layouts/admin/sidebar.ejs') %>
+    <%- include('../layouts/admin/sidebar.ejs') %>
 
-<div class="dashboard-container">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-        <div class="header-title">
-            <h2>Dashboard</h2>
-            <p>Home > Dashboard</p>
-        </div>
-        <div class="date-time">
-            <div class="logOut">
-                <a href="/admin/logout" class="btn btn-outline-warning">Log Out</a>
-            </div>
-            <div class="date-range">
-                <i class="far fa-calendar"></i>
-                <span>Oct 11,2023 - Nov 11,2022</span>
-            </div>
-            <div class="current-time">
-                <i class="far fa-clock"></i>
-                <span id="clock"></span>
-            </div>
-        </div>
-    </div>
+        <div class="dashboard-container">
 
-    <!-- Order Statistics -->
-    <div class="order-stats">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="stat-info">
-                <h3>Total Orders</h3>
-                <div class="stat-number"></div>
-                <div class="stat-change">
-                    <i class="fas fa-arrow-up"></i>
-                    <span></span>
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h2>Dashboard</h2>
+                    <p>Home > Dashboard</p>
+                </div>
+                <div class="date-time">
+                    <div class="logOut">
+                        <a href="/admin/logout" class="btn btn-outline-warning">Log Out</a>
+                    </div>
+                    <div class="date-range">
+                        <i class="far fa-calendar"></i>
+                        <span>Oct 11,2023 - Nov 11,2022</span>
+                    </div>
+                    <div class="current-time">
+                        <i class="far fa-clock"></i>
+                        <span id="clock"></span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-info">
-                <h3>Active Orders</h3>
-                <div class="stat-number"></div>
-                <div class="stat-change">
-                    <i class="fas fa-arrow-up"></i>
-                    <span></span>
-                </div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-info">
-                <h3>Completed Orders</h3>
-                <div class="stat-number"></div>
-                <div class="stat-change">
-                    <i class="fas fa-arrow-up"></i>
-                    <span></span>
-                </div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-undo"></i>
-            </div>
-            <div class="stat-info">
-                <h3>Return Orders</h3>
-                <div class="stat-number"></div>
-                <div class="stat-change">
-                    <i class="fas fa-arrow-up"></i>
-                    <span></span>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Sales Graph and Best Sellers -->
-    <div class="dashboard-content">
-        <div class="sales-graph">
-            <div class="graph-header">
-                <h3>Sale Graph</h3>
-                <div class="graph-filters">
-                    <button class="filter-btn">WEEKLY</button>
-                    <button class="filter-btn active">MONTHLY</button>
-                    <button class="filter-btn">YEARLY</button>
-                </div>
-            </div>
-            <div class="graph-container">
-                <canvas id="salesChart"></canvas>
-            </div>
-        </div>
-
-        <div class="best-sellers">
-            <div class="section-header">
-                <h3>Best Sellers</h3>
-                <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-            <div class="product-list">
-                <% bestSellingProducts.forEach((product) => { %>
-                    <div class="product-item">
-                        <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>">
-                        <div class="product-info">
-                            <h4><%= product.productName %></h4>
-                            <p class="sales">Stock left: <%= product.quantity %></p>
-                            <p class="brand">₹<%= product.salePrice %></p>
+            <div class="order-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Orders</h3>
+                        <div class="stat-number"><%= totalOrders%></div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span></span>
                         </div>
                     </div>
-                <% }); %>
-            </div>
-            <button class="report-btn">REPORT</button>
-        </div>
-        
-    </div>
+                </div>
 
-
-    <div class="new-customers">
-        <div class="section-header">
-            <h3>New Customers</h3>
-            <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Customer Name</th>
-                    <th>Email</th>
-                    <th>Registration Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% newCustomers.forEach((customer) => { %>
-                    <tr>
-                        <td><%= customer.name %></td>
-                        <td><%= customer.email %></td>
-                        <td><%= customer.createdOn ? customer.createdOn.toDateString() : 'N/A' %></td>
-                    </tr>
-                <% }); %>
-            </tbody>
-        </table>
-    </div>
-    
-    
-
-    <!-- Recent Orders -->
-    <div class="recent-orders">
-        <div class="section-header">
-            <h3>Recent Orders</h3>
-            <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th><input type="checkbox"></th>
-                    <th>Product</th>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Customer Name</th>
-                    <th>Status</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>Sony PS5</td>
-                    <td>#25426</td>
-                    <td>Nov 8th,2024</td>
-                    <td>
-                        <div class="customer">
-                            <img src="/images/avatars/user1.jpg" alt="Kavin">
-                            <span>Kavin</span>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Active Orders</h3>
+                        <div class="stat-number"><%= activeOrders%></div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span></span>
                         </div>
-                    </td>
-                    <td><span class="status delivered">Delivered</span></td>
-                    <td>₹76,818</td>
-                </tr>
-                <!-- Add more order rows -->
-            </tbody>
-        </table>
-    </div>
+                    </div>
+                </div>
+
+                <div class="stat-card"> 
+                    <div class="stat-icon"> 
+                        <i class="fas fa-times-circle"></i> 
+                    </div> 
+                    <div class="stat-info"> 
+                        <h3>Cancelled Orders</h3> 
+                        <div class="stat-number"><%= cancelledOrders %></div>
+                        <div class="stat-change"> 
+                            <i class="fas fa-arrow-down"></i> 
+                            <span></span>
+                        </div>
+                    </div> 
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Completed Orders</h3>
+                        <div class="stat-number"></div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Return Orders</h3>
+                        <div class="stat-number"></div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
-    
-</div>
+            <div class="dashboard-content">
+                <div class="sales-graph">
+                    <div class="graph-header">
+                        <h3>Sale Graph</h3>
+                        <div class="graph-filters">
+                            <button class="filter-btn">WEEKLY</button>
+                            <button class="filter-btn active">MONTHLY</button>
+                            <button class="filter-btn">YEARLY</button>
+                        </div>
+                    </div>
+                    <div class="graph-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="best-sellers">
+                    <div class="section-header">
+                        <h3>Best Sellers</h3>
+                        <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                    <div class="product-list">
+                        <% bestSellingProducts.forEach((product)=> { %>
+                            <div class="product-item">
+                                <img src="/img/products/<%= product.productImage[0] %>"
+                                    alt="<%= product.productName %>">
+                                <div class="product-info">
+                                    <h4>
+                                        <%= product.productName %>
+                                    </h4>
+                                    <p class="sales">Stock left: <%= product.quantity %>
+                                    </p>
+                                    <p class="brand">₹<%= product.salePrice %>
+                                    </p>
+                                </div>
+                            </div>
+                            <% }); %>
+                    </div>
+                    <button class="report-btn">REPORT</button>
+                </div>
+
+            </div>
 
 
-<!-- Add Chart.js for the sales graph -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    function updateClock() {
-        const now = new Date();
-        const time = now.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit',
-            hour12: true 
-        });
-        document.getElementById('clock').textContent = time;
-    }
+            <div class="new-customers">
+                <div class="section-header">
+                    <h3>New Customers</h3>
+                    <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Registration Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% newCustomers.forEach((customer)=> { %>
+                            <tr>
+                                <td>
+                                    <%= customer.name %>
+                                </td>
+                                <td>
+                                    <%= customer.email %>
+                                </td>
+                                <td>
+                                    <%= customer.createdOn ? customer.createdOn.toDateString() : 'N/A' %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
 
-    // Update clock immediately and then every second
-    updateClock();
-    setInterval(updateClock, 1000);
 
-    // Initialize sales chart
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-            datasets: [{
-                label: 'Sales',
-                data: [100, 120, 125, 130, 170, 250],
-                borderColor: '#4070f4',
-                tension: 0.4,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        display: true,
-                        color: '#f0f0f0'
-                    }
+
+            <!-- Recent Orders -->
+            <div class="recent-orders">
+                <div class="section-header">
+                    <h3>Recent Orders</h3>
+                    <button class="more-btn"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>Product</th>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer Name</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% recentOrders.forEach(order=> { %> 
+                            <tr>
+                                <td><input type="checkbox"></td> 
+                                <td> 
+                                    <%= order.orderedItems.map(item => item.product ? item.product.productName : 'Unknown').join(', ') %> 
+                                </td> 
+                                <td> <%= order._id %> 
+                                </td>
+                                <td>
+                                    <%= new Date(order.createdAt).toLocaleDateString() %>
+                                </td>
+                                <td> 
+                                    <div class="customer d-flex align-items-center"> 
+                                        <%= order.user ? order.user.name : 'Unknown' %> 
+                                    </div> 
+                                </td>
+                                <td>
+                                    <span class="status <%= order.status.toLowerCase() %>">
+                                        <%= order.status %>
+                                    </span>
+                                </td>
+                                <td>₹<%= order.finalAmount %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+        </div>
+
+
+        <!-- Add Chart.js for the sales graph -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            function updateClock() {
+                const now = new Date();
+                const time = now.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                });
+                document.getElementById('clock').textContent = time;
+            }
+
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                    datasets: [{
+                        label: 'Sales',
+                        data: [100, 120, 125, 130, 170, 250],
+                        borderColor: '#4070f4',
+                        tension: 0.4,
+                        fill: false
+                    }]
                 },
-                x: {
-                    grid: {
-                        display: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: '#f0f0f0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
                     }
+                }
+            });
+        </script>
+
+        <style>
+            .dashboard-container {
+                padding: 20px;
+                margin-left: 250px;
+                background: #f8f9fa;
+                height: 100vh;
+                overflow-y: auto;
+            }
+
+            .dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
+
+            .header-title h2 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            .header-title p {
+                margin: 5px 0;
+                color: #6c757d;
+            }
+
+            .date-time {
+                text-align: right;
+            }
+
+            .date-range,
+            .current-time {
+                background: white;
+                padding: 10px 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .current-time {
+                color: #4070f4;
+            }
+
+            .current-time i {
+                font-size: 16px;
+            }
+
+            .order-stats {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .stat-card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                display: flex;
+                align-items: center;
+            }
+
+            .stat-icon {
+                background: #e8f0fe;
+                padding: 15px;
+                border-radius: 8px;
+                margin-right: 15px;
+                color: #4070f4;
+            }
+
+            .stat-info h3 {
+                margin: 0;
+                font-size: 14px;
+                color: #6c757d;
+            }
+
+            .stat-number {
+                font-size: 24px;
+                font-weight: bold;
+                margin: 5px 0;
+            }
+
+            .stat-change {
+                font-size: 12px;
+                color: #28a745;
+            }
+
+            .dashboard-content {
+                display: grid;
+                grid-template-columns: 60% 38%;
+                gap: 2%;
+                margin-bottom: 20px;
+            }
+
+            .sales-graph {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                height: 300px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .best-sellers {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                height: 300px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .graph-container {
+                flex: 1;
+                position: relative;
+                height: 200px;
+            }
+
+            .product-list {
+                flex: 1;
+                overflow-y: auto;
+                margin: 10px 0;
+            }
+
+            .product-item {
+                display: flex;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+            }
+
+            .product-item:last-child {
+                border-bottom: none;
+            }
+
+            .product-item img {
+                width: 50px;
+                height: 50px;
+                border-radius: 8px;
+                margin-right: 15px;
+            }
+
+            .product-info h4 {
+                margin: 0;
+                font-size: 14px;
+            }
+
+            .product-info .sales {
+                color: #6c757d;
+                font-size: 12px;
+            }
+
+            .product-info .price {
+                color: #4070f4;
+                font-weight: bold;
+            }
+
+            .report-btn {
+                width: 100%;
+                padding: 10px;
+                background: #4070f4;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                margin-top: 20px;
+                cursor: pointer;
+            }
+
+            .recent-orders {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                margin-bottom: 20px;
+            }
+
+            .orders-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+
+            .customer {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .customer img {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+            }
+
+            .status {
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 12px;
+            }
+
+            .status.delivered {
+                background: #e8f5e9;
+                color: #28a745;
+            }
+
+            .more-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #6c757d;
+            }
+
+            @media (max-width: 1200px) {
+                .order-stats {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .dashboard-content {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .sales-graph,
+                .best-sellers {
+                    height: auto;
+                    min-height: 300px;
                 }
             }
-        }
-    });
-</script>
 
-<style>
-    .dashboard-container {
-        padding: 20px;
-        margin-left: 250px;
-        background: #f8f9fa;
-        height: 100vh;
-        overflow-y: auto;
-    }
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
+            @media (max-width: 768px) {
+                .order-stats {
+                    grid-template-columns: 1fr;
+                }
 
-    .header-title h2 {
-        margin: 0;
-        font-size: 24px;
-    }
+                .dashboard-container {
+                    margin-left: 0;
+                    padding: 10px;
+                }
+            }
 
-    .header-title p {
-        margin: 5px 0;
-        color: #6c757d;
-    }
+            /* Best Selling Products */
+            .best-sellers {
+                margin-top: 20px;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
 
-    .date-time {
-        text-align: right;
-    }
+            .best-sellers .section-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
 
-    .date-range, .current-time {
-        background: white;
-        padding: 10px 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        margin-bottom: 5px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+            .best-sellers .section-header h3 {
+                font-size: 18px;
+                margin: 0;
+            }
 
-    .current-time {
-        color: #4070f4;
-    }
+            .best-sellers .more-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
 
-    .current-time i {
-        font-size: 16px;
-    }
+            .best-sellers .product-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
 
-    .order-stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        margin-bottom: 30px;
-    }
+            .best-sellers .product-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                padding: 10px;
+                transition: transform 0.2s;
+            }
 
-    .stat-card {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
-    }
+            .best-sellers .product-item:hover {
+                transform: scale(1.05);
+            }
 
-    .stat-icon {
-        background: #e8f0fe;
-        padding: 15px;
-        border-radius: 8px;
-        margin-right: 15px;
-        color: #4070f4;
-    }
+            .best-sellers .product-item img {
+                width: 50px;
+                height: 50px;
+                border-radius: 5px;
+            }
 
-    .stat-info h3 {
-        margin: 0;
-        font-size: 14px;
-        color: #6c757d;
-    }
+            .best-sellers .product-info {
+                flex: 1;
+            }
 
-    .stat-number {
-        font-size: 24px;
-        font-weight: bold;
-        margin: 5px 0;
-    }
+            .best-sellers .product-info h4 {
+                font-size: 16px;
+                margin: 0;
+            }
 
-    .stat-change {
-        font-size: 12px;
-        color: #28a745;
-    }
+            .best-sellers .product-info p {
+                margin: 5px 0;
+                font-size: 14px;
+            }
 
-    .dashboard-content {
-        display: grid;
-        grid-template-columns: 60% 38%;
-        gap: 2%;
-        margin-bottom: 20px;
-    }
+            .best-sellers .report-btn {
+                display: block;
+                width: 100%;
+                padding: 10px;
+                background-color: #4070f4;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-top: 20px;
+            }
 
-    .sales-graph {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        height: 300px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .best-sellers {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        height: 300px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .graph-container {
-        flex: 1;
-        position: relative;
-        height: 200px;
-    }
-
-    .product-list {
-        flex: 1;
-        overflow-y: auto;
-        margin: 10px 0;
-    }
-
-    .product-item {
-        display: flex;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-    }
-
-    .product-item:last-child {
-        border-bottom: none;
-    }
-
-    .product-item img {
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
-        margin-right: 15px;
-    }
-
-    .product-info h4 {
-        margin: 0;
-        font-size: 14px;
-    }
-
-    .product-info .sales {
-        color: #6c757d;
-        font-size: 12px;
-    }
-
-    .product-info .price {
-        color: #4070f4;
-        font-weight: bold;
-    }
-
-    .report-btn {
-        width: 100%;
-        padding: 10px;
-        background: #4070f4;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        margin-top: 20px;
-        cursor: pointer;
-    }
-
-    .recent-orders {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
-    }
-
-    .orders-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    .orders-table th,
-    .orders-table td {
-        padding: 15px;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-    }
-
-    .customer {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .customer img {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-    }
-
-    .status {
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 12px;
-    }
-
-    .status.delivered {
-        background: #e8f5e9;
-        color: #28a745;
-    }
-
-    .more-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #6c757d;
-    }
-
-    @media (max-width: 1200px) {
-        .order-stats {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .dashboard-content {
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        .sales-graph, .best-sellers {
-            height: auto;
-            min-height: 300px;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .order-stats {
-            grid-template-columns: 1fr;
-        }
-        
-        .dashboard-container {
-            margin-left: 0;
-            padding: 10px;
-        }
-    }
-    /* Best Selling Products */
-.best-sellers {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.best-sellers .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.best-sellers .section-header h3 {
-    font-size: 18px;
-    margin: 0;
-}
-
-.best-sellers .more-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.best-sellers .product-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.best-sellers .product-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    padding: 10px;
-    transition: transform 0.2s;
-}
-
-.best-sellers .product-item:hover {
-    transform: scale(1.05);
-}
-
-.best-sellers .product-item img {
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
-}
-
-.best-sellers .product-info {
-    flex: 1;
-}
-
-.best-sellers .product-info h4 {
-    font-size: 16px;
-    margin: 0;
-}
-
-.best-sellers .product-info p {
-    margin: 5px 0;
-    font-size: 14px;
-}
-
-.best-sellers .report-btn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #4070f4;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-.best-sellers .report-btn:hover {
-    background-color: #3057c1;
-}
-
-</style>
+            .best-sellers .report-btn:hover {
+                background-color: #3057c1;
+            }
+        </style>
 
 
-<%- include('../layouts/admin/footer.ejs') %>
+        <%- include('../layouts/admin/footer.ejs') %>

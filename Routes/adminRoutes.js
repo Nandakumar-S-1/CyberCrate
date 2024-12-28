@@ -7,6 +7,8 @@ const categoryController=require('../Controllers/admin/categoryController')
 const brandController=require('../Controllers/admin/brandController')
 const productController=require('../Controllers/admin/productController')
 const bannerController=require('../Controllers/admin/bannerController')
+const adminOrderController=require('../Controllers/admin/adminOrderController')
+const couponController=require('../Controllers/admin/couponController')
 
 const upload = require('../Helpers/multer');
 
@@ -55,6 +57,17 @@ router.get('/deleteSingleImage',isAdminAuthenticated,productController.deleteSin
 //bannerManagement routes
 router.get('/banners', isAdminAuthenticated, bannerController.loadBanners);
 router.post('/banners', isAdminAuthenticated, upload.single('image'), bannerController.addNewBanner);
+
+
+//orderManagement routes
+router.get('/orderList', isAdminAuthenticated, adminOrderController.getAllOrders);
+router.post('/orderList/updateStatus', isAdminAuthenticated, adminOrderController.updateStatus);
+
+//couponManagement routes
+router.get('/coupons',isAdminAuthenticated, couponController.loadCoupons);
+router.post('/coupons',isAdminAuthenticated,couponController.createCoupon);
+router.post('/updateCoupon',isAdminAuthenticated,couponController.updateCoupon);
+router.get('/deleteCoupon',isAdminAuthenticated,couponController.deleteCoupon);
 
 
 module.exports = router;

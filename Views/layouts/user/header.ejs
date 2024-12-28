@@ -9,16 +9,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CyberCrate</title>
     <link rel="shortcut icon" type="image/png" href="/public/img/cyber.png">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Google Font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
-    <!-- Css Styles -->
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.7.0/nouislider.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
     <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
@@ -34,6 +32,7 @@
         background: #1a0340;
         position: relative;
         border-bottom: 1px solid #2d0668;
+
     }
 
     .header__content {
@@ -41,6 +40,13 @@
         align-items: center;
         justify-content: space-between;
         padding: 15px 0;
+    }
+
+    .search-form {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: end;
     }
 
     /* Logo Styles */
@@ -97,7 +103,7 @@
         border-radius: 4px;
         padding: 8px 0;
         display: none;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         z-index: 1000;
     }
 
@@ -129,7 +135,7 @@
         display: none;
         z-index: 1000;
         border-top: 1px solid #2d0668;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .nav-item:hover .mega-menu {
@@ -228,7 +234,7 @@
         right: 0;
         background-color: #1a0340;
         min-width: 220px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         z-index: 1000;
         border-radius: 4px;
     }
@@ -261,135 +267,145 @@
     .show-menu {
         display: block;
     }
-/* Mega Menu */
-.mega-menu {
-    position: absolute;
-    left: 0;
-    top: 100%;
-    width: 100%;
-    background-color: #1a0340; /* Purple background */
-    display: none; /* Hide by default */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add a shadow for depth */
-    z-index: 1000; /* Ensure it appears above other elements */
-}
 
-.nav-item:hover .mega-menu {
-    display: block; /* Show the mega menu on hover */
-}
-
-.mega-menu-content {
-    display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
-    padding: 20px;
-    justify-content: space-between;
-}
-
-.mega-menu-section {
-    flex: 1;
-    padding: 10px;
-    color: #fff; /* White text color */
-    min-width: 200px; /* Ensure a minimum width */
-    box-sizing: border-box; /* Ensure padding is included in width */
-}
-
-.mega-menu-section h3 {
-    margin-bottom: 10px;
-    border-bottom: 1px solid #4a0d8c; /* Border to separate the header */
-    padding-bottom: 5px;
-    color: #ffd700; /* Bright yellow color for section titles */
-}
-
-.mega-menu-section ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.mega-menu-section ul li {
-    margin-bottom: 10px;
-}
-
-.mega-menu-section ul li a {
-    color: #fff; /* White text color */
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.mega-menu-section ul li a:hover {
-    color: #ffd700; /* Bright yellow color on hover */
-}
-/* Sale banner container */
-.sale-banner {
-    position: relative;
-    overflow: hidden; /* Ensures only visible text shows */
-    background-color: black; /* Background color for contrast */
-    white-space: nowrap;
-    width: 100%;
-    height: 50px; /* Adjust height as needed */
-    display: flex;
-    align-items: center;
-}
-
-/* Text that scrolls */
-.sale-banner-content {
-    display: inline-block;
-    white-space: nowrap;
-    background-color: rgb(44, 18, 94);
-    animation: scroll-text 15s linear infinite; /* Smooth animation */
-}
-
-/* Animation for marquee effect */
-@keyframes scroll-text {
-    from {
-        transform: translateX(500%); /* Start outside right edge */
+    /* Mega Menu */
+    .mega-menu {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        width: 100%;
+        background-color: #1a0340;
+        /* Purple background */
+        display: none;
+        /* Hide by default */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        /* Add a shadow for depth */
+        z-index: 1000;
+        /* Ensure it appears above other elements */
     }
-    to {
-        transform: translateX(-100%); /* Move past left edge */
+
+    .nav-item:hover .mega-menu {
+        display: block;
+        /* Show the mega menu on hover */
     }
-}
 
-/* Individual text styling */
-.orange-text {
-    color: orange;
-}
+    .mega-menu-content {
+        display: flex;
+        flex-wrap: nowrap;
+        /* Prevent wrapping */
+        padding: 20px;
+        justify-content: space-between;
+    }
 
-.sale-text {
-    color: white;
-}
+    .mega-menu-section {
+        flex: 1;
+        padding: 10px;
+        color: #fff;
+        /* White text color */
+        min-width: 200px;
+        /* Ensure a minimum width */
+        box-sizing: border-box;
+        /* Ensure padding is included in width */
+    }
 
-.green-text {
-    color: green;
-}
+    .mega-menu-section h3 {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #4a0d8c;
+        /* Border to separate the header */
+        padding-bottom: 5px;
+        color: #ffd700;
+        /* Bright yellow color for section titles */
+    }
 
+    .mega-menu-section ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
 
+    .mega-menu-section ul li {
+        margin-bottom: 10px;
+    }
 
+    .mega-menu-section ul li a {
+        color: #fff;
+        /* White text color */
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
 
+    .mega-menu-section ul li a:hover {
+        color: #ffd700;
+        /* Bright yellow color on hover */
+    }
 
+    /* Sale banner container */
+    .sale-banner {
+        position: relative;
+        overflow: hidden;
+        /* Ensures only visible text shows */
+        background-color: black;
+        /* Background color for contrast */
+        white-space: nowrap;
+        width: 100%;
+        height: 50px;
+        /* Adjust height as needed */
+        display: flex;
+        align-items: center;
+    }
 
+    /* Text that scrolls */
+    .sale-banner-content {
+        display: inline-block;
+        white-space: nowrap;
+        background-color: rgb(44, 18, 94);
+        animation: scroll-text 15s linear infinite;
+        /* Smooth animation */
+    }
 
+    /* Animation for marquee effect */
+    @keyframes scroll-text {
+        from {
+            transform: translateX(500%);
+            /* Start outside right edge */
+        }
 
+        to {
+            transform: translateX(-100%);
+            /* Move past left edge */
+        }
+    }
 
+    /* Individual text styling */
+    .orange-text {
+        color: orange;
+    }
 
+    .sale-text {
+        color: white;
+    }
+
+    .green-text {
+        color: green;
+    }
 </style>
 
 <body>
-    <!-- Top Info Bar -->
     <div class="top-info">
         <a href="tel:+919048835352"><i class="fas fa-phone"></i> +91 9048835352</a>
         <a href="mailto:cybercrate@gmail.com"><i class="fas fa-envelope"></i> cybercrate@gmail.com</a>
     </div>
 
-    <!-- Main Header -->
+
     <header class="header">
         <div class="container">
             <div class="header__content">
-                <!-- Logo -->
+
                 <a href="/" class="logo">
                     <img src="/img/cyber.png" alt="CyberCrate">
                     <span>CYBER CRATE</span>
                 </a>
 
-                <!-- Navigation -->
                 <nav class="nav-menu">
                     <div class="nav-item">
                         <a href="#" class="nav-link">HOME</a>
@@ -401,7 +417,7 @@
                             <a href="/best-sellers">Best Sellers</a>
                         </div>
                     </div>
-                    
+
                     <div class="nav-item">
                         <a href="/users/shop" class="nav-link">SHOP</a>
                     </div>
@@ -410,12 +426,10 @@
                         <a href="#" class="nav-link">PC</a>
                         <div class="dropdown-menu">
                             <a href="/pc/desktop">Desktop PC</a>
-                            <a href="/pc/workstation">Workstation</a>
                             <a href="/pc/gaming">Gaming PC</a>
                             <a href="/pc/custom">Custom Build</a>
                         </div>
                     </div>
-
 
                     <div class="nav-item">
                         <a href="#" class="nav-link">PC COMPONENTS</a>
@@ -431,39 +445,9 @@
                                         <li><a href="/components/storage">Storage</a></li>
                                     </ul>
                                 </div>
-                                <div class="mega-menu-section">
-                                    <h3>Cooling & Power</h3>
-                                    <ul>
-                                        <li><a href="/components/power-supply">Power Supply</a></li>
-                                        <li><a href="/components/cpu-coolers">CPU Coolers</a></li>
-                                        <li><a href="/components/case-fans">Case Fans</a></li>
-                                        <li><a href="/components/thermal-paste">Thermal Paste</a></li>
-                                    </ul>
-                                </div>
-                                <div class="mega-menu-section">
-                                    <h3>Cases & Accessories</h3>
-                                    <ul>
-                                        <li><a href="/components/cases">PC Cases</a></li>
-                                        <li><a href="/components/rgb-lighting">RGB Lighting</a></li>
-                                        <li><a href="/components/cables">Cables & Adapters</a></li>
-                                        <li><a href="/components/tools">Tools</a></li>
-                                    </ul>
-                                </div>
-                                <div class="mega-menu-section">
-                                    <h3>Featured Brands</h3>
-                                    <ul>
-                                        <li><a href="/brand/intel">Intel</a></li>
-                                        <li><a href="/brand/amd">AMD</a></li>
-                                        <li><a href="/brand/nvidia">NVIDIA</a></li>
-                                        <li><a href="/brand/corsair">Corsair</a></li>
-                                        <li><a href="/brand/asus">ASUS</a></li>
-                                    </ul>
-                                </div>
                             </div>
                         </div>
                     </div>
-                                
-                    
 
                     <div class="nav-item">
                         <a href="#" class="nav-link">GAMING PERIPHERALS</a>
@@ -477,68 +461,71 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="/consoles" class="nav-link">CONSOLES</a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a href="/about" class="nav-link">ABOUT US</a>
+                        <a href="/about" class="nav-link">ABOUT</a>
                     </div>
                 </nav>
 
-                <!-- Right Icons -->
-<!-- Right Icons -->
-<div class="header__icons">
-    <a href="/search" class="icon-link">
-        <i class="fas fa-search"></i>
-    </a>
-    <% if(locals.user) { %>
-        <div class="profile-dropdown">
-            <button type="button" onclick="toggleProfileMenu(event)" class="profile-btn">
-                <%= locals.user.name %> <!-- Display the user's name here -->
-            </button>
-            <div id="profileDropdown" class="profile-menu">
-                <a href="/profile"><i class="fas fa-user-circle"></i> My Profile</a>
-                <a href="/orders"><i class="fas fa-box"></i> My Orders</a>
-                <a href="/wishlist"><i class="fas fa-heart"></i> My Wishlist</a>
-                <a href="/wallet"><i class="fas fa-wallet"></i> My Wallet</a>
-                <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
-                <div class="dropdown-divider"></div>
-                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </div>
-        </div>
-    <% } else { %>
-        <a href="/auth" class="icon-link">
-            <i class="fas fa-user"></i>
-        </a>
-    <% } %>
-    <a href="/wishlist" class="icon-link">
-        <i class="fas fa-heart"></i>
-    </a>
-    <a href="/cart" class="icon-link">
-        <i class="fas fa-shopping-cart"></i>
-        <span class="cart-count">0</span>
-    </a>
-</div>
+                <div class="header__icons">
+                    <!-- <form action="/search" method="get" class="search-form"> 
+                        <input type="text" name="searchWord" placeholder="Search...">
+                        <button type="submit" class="search-btn"> 
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form> -->
+                    <% if(locals.user) { %>
+                        <div class="profile-dropdown">
+                            <button type="button" onclick="toggleProfileMenu(event)" class="profile-btn">
+                                <%= locals.user.name %> <i class="fas fa-caret-down"></i>
+                            </button>
+                            <div id="profileDropdown" class="profile-menu">
+                                <a href="/profile"><i class="fas fa-user-circle"></i> My Profile</a>
+                                <a href="/profile/orders"><i class="fas fa-box"></i> My Orders</a>
+                                <a href="/wishlist"><i class="fas fa-heart"></i> My Wishlist</a>
+                                <a href="/wallet"><i class="fas fa-wallet"></i> My Wallet</a>
+                                <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <a href="/auth" class="icon-link">
+                                <i class="fas fa-user"></i>
+                            </a>
+                            <% } %>
+                                <a href="/wishlist" class="icon-link">
+                                    <i class="fas fa-heart"></i>
+                                </a>
+                                <a href="/cart" class="icon-link">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span class="cart-count">0</span>
+                                </a>
+                </div>
 
             </div>
         </div>
 
-        
+
         <div class="sale-banner">
             <div class="sale-banner-content">
                 <span class="orange-text">Republic Day</span>
                 <span class="sale-text"> Sale </span>
                 <span class="green-text">Starts Tomorrow</span>
-                &nbsp;&nbsp;&nbsp;&nbsp; 
-                
+                &nbsp;&nbsp;&nbsp;&nbsp;
+
             </div>
         </div>
-        
-        
-        
-        
-        
+
+        <form action="/users/shop" method="get" class="search-form">
+            <input type="text" name="searchWord" placeholder="Search...">
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+
+
+
     </header>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function toggleProfileMenu(event) {
@@ -547,8 +534,7 @@
             menu.classList.toggle('show-menu');
         }
 
-        // Close menu when clicking outside
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (!event.target.matches('.profile-btn') && !event.target.matches('.fa-user')) {
                 const menu = document.getElementById('profileDropdown');
                 if (menu.classList.contains('show-menu')) {

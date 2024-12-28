@@ -1,0 +1,88 @@
+<%- include('../layouts/user/header.ejs') %>
+
+    <style>
+        .address-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .address-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .address-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .address-item {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .address-actions {
+            text-align: right;
+        }
+
+        .button-select {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button-select:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <div class="address-page">
+        <h1 class="address-header">Select Address</h1>
+        <ul class="address-list">
+            <% addresses.forEach(address=> { %>
+                <li class="address-item">
+                    <p><strong>Type:</strong>
+                        <%= address.addressType %>
+                    </p>
+                    <p><strong>Name:</strong>
+                        <%= address.name %>
+                    </p>
+                    <p><strong>City:</strong>
+                        <%= address.city %>
+                    </p>
+                    <p><strong>Landmark:</strong>
+                        <%= address.landMark %>
+                    </p>
+                    <p><strong>District:</strong>
+                        <%= address.district %>
+                    </p>
+                    <p><strong>State:</strong>
+                        <%= address.state %>
+                    </p>
+                    <p><strong>Pincode:</strong>
+                        <%= address.pincode %>
+                    </p>
+                    <p><strong>Phone:</strong>
+                        <%= address.phone %>
+                    </p>
+                    <p><strong>Alternate Phone:</strong>
+                        <%= address.alterPhone %>
+                    </p>
+                    <div class="address-actions">
+                        <form action="/profile/addresses/setDefaultAddress/<%= address._id %>" method="post">
+                            <button type="submit" class="button-select">Select</button>
+                        </form>
+                    </div>
+                </li>
+                <% }) %>
+        </ul>
+    </div>
+
+    <%- include('../layouts/user/footer.ejs') %>

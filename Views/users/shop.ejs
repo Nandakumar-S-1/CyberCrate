@@ -1,0 +1,386 @@
+<%- include('../layouts/user/header.ejs') %>
+
+    <style>
+        .shop-container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .price-range {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .product-list {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .product-card {
+            width: 100%;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .product-card h2 {
+            font-size: 1em;
+        }
+
+        .product-card p {
+            font-size: 0.9em;
+        }
+
+        .product-buttons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: end;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .icon-btn i {
+            color: #1a237e;
+        }
+
+        .icon-btn:last-child i {
+            color: #e53935;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            color: #1a237e;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .pagination a.active {
+            background-color: #1a237e;
+            color: #fff;
+        }
+    </style>
+
+    <div class="shop-container">
+        <aside class="sidebar">
+            <h2>Filters</h2>
+            <form id="filter-form" action="/users/shop" method="GET">
+                <div class="filter-group">
+                    <h3>Categories</h3>
+                    <input type="text" placeholder="Search Categories" id="category-search">
+                    <div id="category-list">
+                        <% categories.slice(0, 18).forEach(category=> { %>
+                            <label>
+                                <input type="checkbox" name="categories" value="<%= category._id %>"
+                                    <%=selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
+                                <%= category.name %>
+                            </label>
+                            <% }); %>
+                                <button type="button" class="btn btn-primary" id="more-categories">more</button>
+                    </div>
+                    <div id="all-categories" style="display:none;">
+                        <% categories.slice(3).forEach(category=> { %>
+                            <label>
+                                <input type="checkbox" name="categories" value="<%= category._id %>"
+                                    <%=selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
+                                <%= category.name %>
+                            </label>
+                            <% }); %>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Brands</h3>
+                    <input type="text" placeholder="Search Brands" id="brand-search">
+                    <div id="brand-list">
+                        <% brands.slice(0, 10).forEach(brand=> { %>
+                            <label>
+                                <input type="checkbox" name="brands" value="<%= brand._id %>"
+                                    <%=selectedBrands.includes(brand._id.toString()) ? 'checked' : '' %>>
+                                <%= brand.brandName %>
+                            </label>
+                            <% }); %>
+                                <button type="button" class="btn btn-primary" id="more-brands">more</button>
+                    </div>
+                    <div id="all-brands" style="display:none;">
+                        <% brands.slice(10).forEach(brand=> { %>
+                            <label>
+                                <input type="checkbox" name="brands" value="<%= brand._id %>"
+                                    <%=selectedBrands.includes(brand._id.toString()) ? 'checked' : '' %>>
+                                <%= brand.brandName %>
+                            </label>
+                            <% }); %>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Price</h3>
+                    <div id="price-slider" style="margin: 20px 0;"></div>
+                    <div class="price-range">
+                        <span id="min-price">₹<%= minPrice %></span> - <span id="max-price">₹<%= maxPrice %></span>
+                    </div>
+                    <input type="hidden" name="minPrice" id="min-price-input" value="<%= minPrice %>">
+                    <input type="hidden" name="maxPrice" id="max-price-input" value="<%= maxPrice %>">
+                </div>
+                <div class="filter-group">
+                    <h3>Sort By</h3>
+                    <select name="sortBy" id="sort-by">
+                        <option value="popularity" <%=sortWays==='popularity' ? 'selected' : '' %>>Popularity</option>
+                        <option value="priceLowHigh" <%=sortWays==='priceLowHigh' ? 'selected' : '' %>>Price: Low to
+                            High</option>
+                        <option value="priceHighLow" <%=sortWays==='priceHighLow' ? 'selected' : '' %>>Price: High to
+                            Low</option>
+                        <option value="averageRatings" <%=sortWays==='averageRatings' ? 'selected' : '' %>>Average
+                            Ratings</option>
+                            <option value="featured" <%= sortWays === 'featured' ? 'selected' : '' %>>Featured</option>
+                        <option value="newArrivals" <%=sortWays==='newArrivals' ? 'selected' : '' %>>New Arrivals
+                        </option>
+                        <option value="aToZ" <%=sortWays==='aToZ' ? 'selected' : '' %>>Name: Ascending</option>
+                        <option value="zToA" <%=sortWays==='zToA' ? 'selected' : '' %>>Name: Descending</option>
+                    </select>
+                </div>
+                <button type="submit">Apply Filters</button>    
+            </form>
+        </aside>
+
+        <main class="product-list">
+            <h1>Shop Products</h1>
+            <div class="products">
+                <% products.forEach(product=> { %>
+                    <div class="product-card">
+                        <a href="/productDetails/<%= product._id %>">
+                            <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>">
+                            <h2>
+                                <%= product.productName %>
+                            </h2>
+                        </a>
+                        <p>Offer Price: ₹<%= product.salePrice %>
+                        </p>
+                        <p>Original Price: ₹<%= product.realPrice %>
+                        </p>
+                        <p>
+                            <%= product.discount %>
+                        </p>
+                        <p>Stocks left: <%= product.quantity %>
+                        </p>
+                        <div class="product-buttons">
+                            <button class="icon-btn" onclick="addToCart('<%= product._id %>')">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            <button class="icon-btn" onclick="addToFavorites('<%= product._id %>')">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+            <div class="pagination">
+                <% for (let i=1; i <=totalPages; i++) { %>
+                    <a href="?page=<%= i %>&limit=<%= limit %>" class="<%= currentPage === i ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                    <% } %>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        document.getElementById('more-categories').addEventListener('click', function () {
+            document.getElementById('all-categories').style.display = 'block';
+        });
+
+        document.getElementById('more-brands').addEventListener('click', function () {
+            document.getElementById('all-brands').style.display = 'block';
+        });
+
+        document.getElementById('filter-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const form = document.getElementById('filter-form');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/shop/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+
+                    const productsContainer = document.querySelector('.products');
+                    productsContainer.innerHTML = '';
+                    data.products.forEach(product => {
+                        const productCard = `
+            <div class="product-card">
+              <a href="/productDetails/${product._id}">
+                <img src="/img/products/${product.productImage[0]}" alt="${product.productName}">
+                <h2>${product.productName}</h2>
+              </a>
+              <p>₹${product.salePrice}</p>
+              <div class="product-buttons">
+                <button class="icon-btn" onclick="addToCart('${product._id}')">
+                  <i class="fas fa-shopping-cart"></i>
+                </button>
+                <button class="icon-btn" onclick="addToFavorites('${product._id}')">
+                  <i class="fas fa-heart"></i>
+                </button>
+              </div>
+            </div>
+          `;
+                        productsContainer.insertAdjacentHTML('beforeend', productCard);
+                    });
+
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceSlider = document.getElementById('price-slider');
+            noUiSlider.create(priceSlider, {
+                start: [5000, 500000],
+                connect: true,
+                step: 1000,
+                range: {
+                    'min': 5000,
+                    'max': 500000
+                },
+                format: wNumb({
+                    decimals: 0,
+                    prefix: '₹'
+                })
+            });
+
+            // Update the hidden input values when the slider changes
+            priceSlider.noUiSlider.on('update', function (values, handle) {
+                document.getElementById('min-price').innerHTML = values[0];
+                document.getElementById('max-price').innerHTML = values[1];
+                document.getElementById('min-price-input').value = values[0].replace('₹', '');
+                document.getElementById('max-price-input').value = values[1].replace('₹', '');
+            });
+
+            // Submit the form when the slider values are changed
+            priceSlider.noUiSlider.on('change', function () {
+                document.getElementById('filter-form').submit();
+            });
+
+            document.getElementById('category-search').addEventListener('input', function (e) {
+                const query = e.target.value.toLowerCase();
+                document.querySelectorAll('#category-list label').forEach(label => {
+                    const text = label.innerText.toLowerCase();
+                    label.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            document.getElementById('brand-search').addEventListener('input', function (e) {
+                const query = e.target.value.toLowerCase();
+                document.querySelectorAll('#brand-list label').forEach(label => {
+                    const text = label.innerText.toLowerCase();
+                    label.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            document.getElementById('more-categories').addEventListener('click', function () {
+                document.getElementById('all-categories').style.display = 'block';
+                this.style.display = 'none';
+            });
+
+            document.getElementById('more-brands').addEventListener('click', function () {
+                document.getElementById('all-brands').style.display = 'block';
+                this.style.display = 'none';
+            });
+
+            document.getElementById('filter-form').addEventListener('change', function () {
+                this.submit();
+            });
+        });
+
+
+    </script>
+
+    <script>
+        function addToCart(productId) {
+            fetch('/cart/addItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId, quantity: 1 })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Added!', 'The item has been added to your cart.', 'success');
+                    } else {
+                        Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
+                });
+        }
+
+        function addToFavorites(productId) {
+            fetch('/favorites/addItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Added!', 'The item has been added to your favorites.', 'success');
+                    } else {
+                        Swal.fire('Error!', 'Failed to add the item to your favorites.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while adding the item to your favorites.', 'error');
+                });
+        }
+    </script>
+
+    <%- include('../layouts/user/footer.ejs') %>

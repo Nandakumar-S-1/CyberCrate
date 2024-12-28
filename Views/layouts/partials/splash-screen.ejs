@@ -1,0 +1,41 @@
+<div id="splash" class="splash-screen">
+    <img src="/path/to/logo.png" alt="Logo" class="splash-logo">
+    <div class="splash-text">Loading, please wait...</div>
+</div>
+
+<style>
+    .splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #1a237e; /* Background color */
+        color: white; /* Text color */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .splash-logo {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+    }
+    .splash-text {
+        animation: fadeIn 1.5s ease-in-out infinite;
+    }
+    @keyframes fadeIn {
+        0%, 100% { opacity: 0; }
+        50% { opacity: 1; }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const splash = document.getElementById('splash');
+        splash.style.opacity = 0;
+        splash.style.visibility = 'hidden';
+    });
+</script>

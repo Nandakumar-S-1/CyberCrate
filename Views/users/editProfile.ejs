@@ -1,0 +1,263 @@
+<%- include('../layouts/user/header.ejs') %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div class="breadcrumb-container">
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/profile">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="profile-container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="/profile">Dashboard</a></li>
+                <li><a href="/profile/orders">Orders</a></li>
+                <li><a href="/cart">Cart</a></li>
+                <li><a href="/profile/wallet">Wallet</a></li>
+                <li><a href="/profile/addresses">Addresses</a></li>
+                <li><a href="/profile/referrals">Referrals</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+        <div class="profile-content">
+            <div class="profile-header">
+                <h1 class="font-weight-bold text-dark">Edit Profile</h1>
+                <h2 class="font-weight-bold text-dark">Hello <%= user.name %>
+                </h2> <a href="/profile/changePassword" class="change-password-btn">Change Password</a>
+            </div>
+            <p class="subtitle">You can change your profile</p>
+            <p class="security-note">Your information is safe with us</p>
+            <div class="profile-form-container">
+                <form id="profileForm" method="post" action="/editProfile">
+                    <div class="form-group"> <label>Full Name</label>
+                        <div class="input-with-icon"> <input type="text" name="fullName" value="<%= user.name %>"
+                                id="fullName" required> </div>
+                    </div>
+                    <div class="form-group"> <label>Phone</label>
+                        <div class="input-with-icon"> <input type="tel" name="phone" value="<%= user.phone %>"
+                                id="phone" pattern="^\d{10}$" required> </div>
+                    </div>
+                    <div class="button-container"> <button type="submit" class="save-changes-btn">SAVE CHANGES</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script> function validateForm() { const fullNameInput = document.getElementById('fullName'); const phoneInput = document.getElementById('phone'); const fullNameValue = fullNameInput.value.trim(); const phoneValue = phoneInput.value.trim(); if (fullNameValue === '') { Swal.fire('Error!', 'Full Name is required.', 'error'); return false; } const phonePattern = /^\d{10}$/; if (!phonePattern.test(phoneValue)) { Swal.fire('Error!', 'Please enter a valid 10-digit phone number.', 'error'); return false; } return true; } document.getElementById('profileForm').addEventListener('submit', function (event) { event.preventDefault(); if (validateForm()) { const formData = new FormData(this); fetch('/editProfile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fullName: formData.get('fullName'), phone: formData.get('phone') }) }).then(response => response.json()).then(data => { if (data.success) { Swal.fire('Success!', data.message, 'success').then(() => { location.reload(); }); } else { Swal.fire('Error!', data.message, 'error'); } }).catch(error => { console.error('Error:', error); Swal.fire('Error!', 'An error occurred while updating your profile.', 'error'); }); } }); </script>
+    <%- include('../layouts/user/footer.ejs') %>
+
+        <style>
+            .profile-container {
+                display: flex;
+                background: linear-gradient(135deg, #87CEEB, #ADD8E6);
+                min-height: calc(100vh - 60px);
+                padding: 40px 20px;
+            }
+
+            .change-password-btn {
+                background: #f4c536;
+                color: rgb(0, 0, 0);
+                padding: 14px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                text-transform: uppercase;
+                font-size: 14px;
+                text-decoration: none;
+                margin-left: 10px;
+                /* Adjust as needed */
+            }
+
+            .change-password-btn:hover {
+                background: #d8ac73;
+                color: rgb(0, 0, 0);
+            }
+
+            .breadcrumb-container {
+                padding: 10px 20px;
+                background: rgb(0, 0, 0);
+            }
+
+            .breadcrumb {
+                display: flex;
+                flex-wrap: wrap;
+                padding: 0;
+                margin: 0;
+                list-style: none;
+            }
+
+            .breadcrumb-item {
+                font-size: 14px;
+                color: #ffffff;
+            }
+
+            .breadcrumb-item a {
+                color: #000000;
+                text-decoration: none;
+            }
+
+            .breadcrumb-item a:hover {
+                text-decoration: underline;
+            }
+
+            .breadcrumb-item+.breadcrumb-item::before {
+                content: ">";
+                padding: 0 10px;
+                color: #ffffff;
+            }
+
+            .breadcrumb-item.active {
+                color: #ffffff;
+            }
+
+            .sidebar {
+                width: 250px;
+                background: #1a237e;
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+            }
+
+            .sidebar ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .sidebar ul li {
+                margin-bottom: 15px;
+            }
+
+            .sidebar ul li a {
+                color: white;
+                text-decoration: none;
+                font-size: 16px;
+                font-weight: 500;
+            }
+
+            .sidebar ul li a:hover {
+                text-decoration: underline;
+            }
+
+            .profile-content {
+                flex: 1;
+                margin-left: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .profile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+                color: #333;
+                margin: 0;
+            }
+
+            .subtitle,
+            .security-note {
+                text-align: left;
+                color: #666;
+                margin: 5px 0;
+                font-size: 14px;
+            }
+
+            .security-note {
+                color: #888;
+                font-size: 12px;
+            }
+
+            .profile-form-container {
+                margin-top: 30px;
+            }
+
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+                max-width: 400px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #333;
+                font-size: 14px;
+            }
+
+            .input-with-icon {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .input-with-icon input {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .input-with-icon i {
+                position: absolute;
+                right: 12px;
+                color: #666;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            .check-wallet-btn {
+                background: #ffd700;
+                color: #333;
+                padding: 8px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+                text-transform: uppercase;
+                font-size: 14px;
+            }
+
+            .save-changes-btn {
+                background: #1a237e;
+                color: white;
+                padding: 12px 30px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+                text-transform: uppercase;
+                margin-top: 20px;
+            }
+
+            @media (max-width: 768px) {
+                .profile-container {
+                    flex-direction: column;
+                }
+
+                .profile-content {
+                    margin-left: 0;
+                    margin-top: 20px;
+                }
+
+                .form-row {
+                    grid-template-columns: 1fr;
+                    gap: 0;
+                }
+            }
+        </style>

@@ -1,0 +1,29 @@
+<%- include('../layouts/user/header.ejs') %>
+
+    <div class="container">
+        <div class="search-results">
+            <h1>Search Results for "<%= searchWord %>"</h1>
+            <% if (result.length> 0) { %>
+                <div class="product-list">
+                    <% result.forEach(product=> { %>
+                        <div class="product-card">
+                            <img src="<%= product.imageUrl %>" alt="<%= product.name %>">
+                            <h2>
+                                <%= product.name %>
+                            </h2>
+                            <p class="price">Offer Price: ₹<%= product.offerPrice %>
+                            </p>
+                            <p class="original-price">Original Price: ₹<%= product.originalPrice %>
+                            </p>
+                            <p class="stocks">Stocks left: <%= product.stocks %>
+                            </p>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } else { %>
+                    <p>No products found.</p>
+                    <% } %>
+        </div>
+    </div>
+
+    <%- include('../layouts/user/footer.ejs') %>

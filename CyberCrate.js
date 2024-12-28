@@ -11,7 +11,7 @@ const passport=require('./Config/passport')
 dotenv.config();
 const app = express();
 
-const port = process.env.PORT || 5005
+const port = process.env.PORT || 5005 ;
 db()
 
 
@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'cyberSecret',
-    resave: true,  
+    resave: false,  
     saveUninitialized: true,  
     cookie: {
         maxAge: 72*60*60*1000,
@@ -40,14 +40,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req,res,next)=>{
     res.set('cache-control','no-store');
     next()
-})
+})    
 
 
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-        // Routes
+
 
 app.use('/admin', adminRoutes);
 app.use('/', userRoutes);

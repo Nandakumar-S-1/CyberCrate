@@ -1,175 +1,249 @@
 <%- include('../layouts/admin/header.ejs') %>
-<%- include('../layouts/admin/sidebar.ejs') %>
+    <%- include('../layouts/admin/sidebar.ejs', { currentPage: 'orderList' }) %>
 
-<div class="order-container">
-    <div class="order-header">
-        <h2>Order List</h2>
-        <div class="filter-section">
-            <button class="filter-btn">
-                <i class="fas fa-filter"></i>
-                Filter By
-            </button>
-            <select class="date-select">
-                <option>14 Feb 2019</option>
-            </select>
-            <select class="order-type">
-                <option>Order Type</option>
-            </select>
-            <select class="order-status">
-                <option>Order Status</option>
-            </select>
+
+        <div class="content">
+            <div class="container-fluid p-3">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h3>Order List</h3>
+                                <div class="form-inline"> <input class="form-control mr-sm-2" type="search"
+                                        placeholder="Search" aria-label="Search"> <button
+                                        class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                                </div>
+                                <div class="dropdown"> <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false"> Filter by Status </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"> <a
+                                            class="dropdown-item" href="/admin/orderList?status=">All</a> <a
+                                            class="dropdown-item" href="/admin/orderList?status=Pending">Pending</a> <a
+                                            class="dropdown-item"
+                                            href="/admin/orderList?status=Processing">Processing</a> <a
+                                            class="dropdown-item" href="/admin/orderList?status=Shipped">Shipped</a> <a
+                                            class="dropdown-item" href="/admin/orderList?status=Delivered">Delivered</a>
+                                        <a class="dropdown-item" href="/admin/orderList?status=Cancelled">Cancelled</a>
+                                        <a class="dropdown-item" href="/admin/orderList?status=Return%20Request">Return
+                                            Request</a> <a class="dropdown-item"
+                                            href="/admin/orderList?status=Returned">Returned</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer Name</th>
+                                            <th>Order Date</th>
+                                            <th>Product Name</th>
+                                            <th>Status</th>
+                                            <th>Edit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (orders && orders.length> 0) { %> <% orders.forEach(order=> { %> <tr>
+                                                    <td>
+                                                        <%= order._id %>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.user.name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= new Date(order.createdAt).toLocaleDateString() %>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.orderedItems.map(item=>
+                                                            item.product.productName).join(', ') %>
+                                                    </td>
+                                                    <td
+                                                        class="status-<%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                                                        <%= order.status %>
+                                                            <form action="/admin/orderList/updateStatus" method="POST"
+                                                                style="display:inline;"> <input type="hidden"
+                                                                    name="orderId" value="<%= order._id %>"> <select
+                                                                    name="updatedStatus" onchange="this.form.submit()">
+                                                                    <option value="Pending" <%=order.status==='Pending'
+                                                                        ? 'selected' : '' %>>Pending</option>
+                                                                    <option value="Processing"
+                                                                        <%=order.status==='Processing' ? 'selected' : ''
+                                                                        %>>Processing</option>
+                                                                    <option value="Shipped" <%=order.status==='Shipped'
+                                                                        ? 'selected' : '' %>>Shipped</option>
+                                                                    <option value="Delivered"
+                                                                        <%=order.status==='Delivered' ? 'selected' : ''
+                                                                        %>>Delivered</option>
+                                                                    <option value="Cancelled"
+                                                                        <%=order.status==='Cancelled' ? 'selected' : ''
+                                                                        %>>Cancelled</option>
+                                                                    <option value="Return Request"
+                                                                        <%=order.status==='Return Request' ? 'selected'
+                                                                        : '' %>>Return Request</option>
+                                                                    <option value="Returned"
+                                                                        <%=order.status==='Returned' ? 'selected' : ''
+                                                                        %>>Returned</option>
+                                                                </select> </form>
+                                                    </td>
+                                                    <td><a href="/admin/orders/edit/<%= order._id %>"><i
+                                                                class="fas fa-edit"></i></a></td>
+                                                </tr>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <tr>
+                                                            <td colspan="7">No orders found</td>
+                                                        </tr>
+                                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="pagination-container mt-3">
+                                <ul class="pagination justify-content-center">
+                                    <% for (let i=1; i <=totalPages; i++) { %>
+                                        <li class="page-item <%= (currentPage === i) ? 'active' : '' %>">
+                                            <a class="page-link" href="?page=<%= i %>">
+                                                <%= i %>
+                                            </a>
+                                        </li>
+                                        <% } %>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="order-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>NAME</th>
-                    <th>ADDRESS</th>
-                    <th>DATE</th>
-                    <th>TYPE</th>
-                    <th>STATUS</th>
-                    <th>ACTION</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% orders.forEach(order => { %>
-                    <tr>
-                        <td><%= order.orderId %></td>
-                        <td><%= order.customerName %></td>
-                        <td><%= order.address %></td>
-                        <td><%= new Date(order.date).toLocaleDateString() %></td>
-                        <td><%= order.productType %></td>
-                        <td>
-                            <span class="status-badge <%= order.status.toLowerCase() %>">
-                                <%= order.status %>
-                            </span>
-                        </td>
-                        <td>
-                            <button class="action-btn">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                        </td>
-                    </tr>
-                <% }); %>
-            </tbody>
-        </table>
-    </div>
-</div>
+        <%- include('../layouts/admin/footer.ejs') %>
+
+        <script>
+            $(document).ready(function () {
+                $('select[name="updatedStatus"]').on('change', function () {
+                    const form = $(this).closest('form'); // Find the closest form
+                    const orderId = form.find('input[name="orderId"]').val();
+                    const updatedStatus = $(this).val();
+        
+                    $.ajax({
+                        url: '/admin/orderList/updateStatus',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            orderId: orderId,
+                            updatedStatus: updatedStatus
+                        }),
+                        success: function (response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message
+                            });
+        
+                            const statusCell = form.closest('td');
+                            statusCell.removeClass().addClass('status-' + updatedStatus.toLowerCase().replace(/\s+/g, '-'));
+                        },
+                        error: function (xhr) {
+                            const errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: errorMessage
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+        
+
+            <!-- <script>
+                document.querySelectorAll('.status-form select').forEach(select=>{
+                    select.addEventListener('change',function(){
+                        const form=this.closest('.status-form');
+                        const orderId=form.dataSet.orderId;
+                        const updatedStatus=this.value;
+
+                        fetch('/admin/orderList/updateStatus',{
+                            method:'post',
+                            headers:{
+                                'Content-Type':'application/json'
+                            },
+                            body:JSON.stringify({
+                                orderId,
+                                updatedStatus
+                            })
+                            .then(response=>response.json())
+                            .then(data=>{
+                                Swal.fire({
+                                    icon:data.status===200?'success':'error',
+                                    title:data.status===200?'Success':'Error',
+                                    text:data.message
+                                })
+                                if(data.status===200){
+                                    form.closest('td').className='status-'+updatedStatus.toLowerCase().replace(/\s+/g, '-');
+                                }
+                            })
+                            .catch(error=>{
+                                Swal.fire({
+                                    icon:'error',
+                                    title:'Error',
+                                    text:error.message
+                                })
+                            })
+                        })
+                    })
+                })
+            </script> -->
 
 <style>
-    .order-container {
+    .order-list-page {
         padding: 20px;
         margin-left: 250px;
-        background: #f8f9fa;
-        min-height: 100vh;
     }
 
-    .order-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
+    .content {
+        margin-left: 250px;
+        padding: 20px;
     }
 
-    .filter-section {
-        display: flex;
-        gap: 10px;
-        align-items: center;
+    .card-header {
+        background-color: #f8f9fa;
     }
 
-    .filter-btn, select {
-        padding: 8px 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background: white;
-        cursor: pointer;
+    .table th,
+    .table td {
+        vertical-align: middle;
     }
 
-    .order-table {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        overflow: hidden;
+    .table thead th {
+        background-color: #e9ecef;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    .table td a i {
+        color: #007bff;
     }
 
-    th, td {
-        padding: 15px;
-        text-align: left;
-        border-bottom: 1px solid #eee;
+    .status-delivered {
+        color: green;
     }
 
-    th {
-        background: #f8f9fa;
-        font-weight: 600;
-        color: #333;
+    .status-processing {
+        color: purple;
     }
 
-    .status-badge {
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 0.9em;
+    .status-cancelled {
+        color: red;
     }
 
-    .delivered {
-        background: #e8f5e9;
-        color: #2e7d32;
+    .status-pending {
+        color: orange;
     }
 
-    .processing {
-        background: #e3f2fd;
-        color: #1565c0;
+    .status-return-request {
+        color: blue;
     }
 
-    .cancelled {
-        background: #ffebee;
-        color: #c62828;
-    }
-
-    .action-btn {
-        background: none;
-        border: none;
-        color: #666;
-        cursor: pointer;
-        padding: 5px;
-    }
-
-    .action-btn:hover {
-        color: #333;
-    }
-
-    @media (max-width: 768px) {
-        .order-container {
-            margin-left: 0;
-            padding: 10px;
-        }
-
-        .order-header {
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .filter-section {
-            flex-wrap: wrap;
-            width: 100%;
-        }
-
-        .filter-btn, select {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .order-table {
-            overflow-x: auto;
-        }
+    .status-returned {
+        color: brown;
     }
 </style>
-
-<%- include('../layouts/admin/footer.ejs') %>

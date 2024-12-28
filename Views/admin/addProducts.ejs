@@ -308,7 +308,7 @@
         saveButton.addEventListener('click', async function () {
             let croppedCanvas = cropper.getCroppedCanvas({
                 width: 300,  
-                height: 300  
+                height: 500  
             });
             let croppedImage = document.getElementById("croppedImg" + index);
             croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);

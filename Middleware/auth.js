@@ -12,6 +12,7 @@ const isLogAuth = async (req, res, next) => {
                 });
                 return res.redirect("/auth");
             }
+            req.user = user;
             next();
         } else {
             next();
@@ -27,7 +28,7 @@ const checkBlockedStatus = async (req, res, next) => {
         if (req.session.user) {
             const user = await User.findById(req.session.user);
             if (user && user.isBlocked) {
-                // If user is blocked, destroy his session
+
                 req.session.destroy((err) => {
                     if (err) {
                         console.error('Error destroying session:', err);
@@ -35,6 +36,7 @@ const checkBlockedStatus = async (req, res, next) => {
                 });
                 return res.redirect('/auth?message=Your account has been blocked. Please contact support.');
             }
+            req.user = user;
         }
         next();
     } catch (error) {
@@ -57,6 +59,7 @@ const checkUserStatus = async (req, res, next) => {
                 activeForm: 'signin'
             });
         }
+        req.user = user;
         next();
     } catch (error) {
         console.error('Error in checkUserStatus middleware:', error);

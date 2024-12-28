@@ -1,0 +1,236 @@
+<%- include('../layouts/user/header.ejs') %>
+
+<div class="profile-container">
+    <div class="sidebar">
+        <ul>
+            <li><a href="/profile">Dashboard</a></li>
+            <li><a href="/profile/orders">Orders</a></li>
+            <li><a href="/cart">Cart</a></li>
+            <li><a href="/profile/wallet">Wallet</a></li>
+            <li><a href="/profile/addresses">Addresses</a></li>
+            <li><a href="/profile/referrals">Referrals</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
+    <div class="profile-content">
+        <div class="profile-header">
+            <h1 class="font-weight-bold text-dark">Edit Address</h1>
+        </div>
+        <p class="subtitle">Please edit your address details</p>
+        <p class="security-note">Your information is safe with us</p>
+
+        <div class="profile-form-container">
+            <form id="addressForm" method="post" action="/profile/addresses/editAddress">
+                <input type="hidden" name="id" value="<%= address._id %>">
+                <div class="form-group">
+                    <label>Address Type</label>
+                    <div class="input-with-icon">
+                        <input type="text" name="addressType" value="<%= address.addressType %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <div class="input-with-icon">
+                        <input type="text" name="name" value="<%= address.name %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <div class="input-with-icon">
+                        <input type="text" name="city" value="<%= address.city %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Landmark</label>
+                    <div class="input-with-icon">
+                        <input type="text" name="landMark" value="<%= address.landMark %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>District</label>
+                    <div class="input-with-icon">
+                        <input type="text" name="district" value="<%= address.district %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <div class="input-with-icon">
+                        <input type="text" name="state" value="<%= address.state %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <div class="input-with-icon">
+                        <input type="number" name="pincode" value="<%= address.pincode %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <div class="input-with-icon">
+                        <input type="tel" name="phone" value="<%= address.phone %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Alternate Phone</label>
+                    <div class="input-with-icon">
+                        <input type="tel" name="alterPhone" value="<%= address.alterPhone %>" required>
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button type="submit" class="save-changes-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+    display: flex;
+    background: linear-gradient(135deg, #87CEEB, #ADD8E6);
+    min-height: calc(100vh - 60px);
+    padding: 40px 20px;
+}
+
+.sidebar {
+    width: 250px;
+    background: #1a237e;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sidebar ul li a:hover {
+    text-decoration: underline;
+}
+
+.profile-content {
+    flex: 1;
+    margin-left: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+}
+
+.subtitle, .security-note {
+    text-align: left;
+    color: #666;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.security-note {
+    color: #888;
+    font-size: 12px;
+}
+
+.profile-form-container {
+    margin-top: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 14px;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.input-with-icon i {
+    position: absolute;
+    right: 12px;
+    color: #666;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.button-container {
+    margin-top: 20px;
+}
+
+.save-changes-btn {
+    background: #1a237e;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+    }
+
+    .profile-content {
+        margin-left: 0;
+        margin-top: 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+</style>
+
+<%- include('../layouts/user/footer.ejs') %>

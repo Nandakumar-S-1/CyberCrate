@@ -4,34 +4,7 @@ const nodeMailer=require('nodemailer')
 const bcrypt = require('bcrypt')
 const Category = require('../../Models/categoryModel');
 const Product  = require('../../Models/productModel');
-
-
-// const loadHome = async (req, res) => {
-//     try {
-//         const userId = req.session.user;
-//         const categories = await Category.find({ isListed: true });
-//         let productData = await Product.find({
-//             isBlocked: false,
-//             category: { $in: categories.map(category => category._id) },
-//             quantity: { $gt: 0 }
-//         });
-
-//         productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-//         productData = productData.slice(0, 8);
-
-//         if (userId) {
-//             const userData = await User.findById(userId);
-//             if (userData) {
-//                 return res.render('users/homePage', { user: userData, products: productData });
-//             }
-//         }
-//         return res.render('users/homePage', { user: null, products: productData });
-//     } catch (error) {
-//         console.error('An error occurred while loading the home page:', error);
-//         return res.render('users/homePage', { user: null });
-//     }
-// };
+const Brand = require('../../Models/brandModel');
 
 const loadHome = async (req, res) => {
     try {
@@ -54,7 +27,7 @@ const loadHome = async (req, res) => {
             isBlocked: false,
             quantity: { $gt: 0 }
         }).sort({ quantity: 1 }).limit(3);
-
+        const brands = await Brand.find().limit(30);
         if (userId) {
             const userData = await User.findById(userId);
             if (userData) {
@@ -62,15 +35,18 @@ const loadHome = async (req, res) => {
                     user: userData, 
                     products: recentProducts, 
                     topSellingProducts,
-                    product
+                    product,
+                    brands
                 });
             }
         }
+    
         return res.render('users/homePage', { 
             user: null, 
             products: recentProducts, 
             topSellingProducts,
-            product
+            product,
+            brands
         });
     } catch (error) {
         console.error('An error occurred while loading the home page:', error);
@@ -80,11 +56,11 @@ const loadHome = async (req, res) => {
 
 const loadAuth = async (req, res) => {
     try {
-        // Check if user is already logged in
+
         if (req.session.user) {
             return res.redirect('/');
         }
-        // Render the auth page with both forms
+
         return res.render('users/authPage', { message: req.query.message || '' });
     } catch (error) {
         console.error('Error loading auth page:', error);
@@ -115,7 +91,7 @@ async function sendVerificationEmail(email, otp) {
             },
         });
 
-        // Verify transporter
+
         await transporter.verify();
         console.log('Transporter verified successfully');
 
@@ -196,10 +172,10 @@ const signup = async (req, res) => {
             otpExpiry: req.session.otpExpiry
         });
 
-        // Store in session with 5 minutes expiry
+        // Store in session 
         req.session.userOtp = otp;
         req.session.userData = { name, email, phone, password };
-        req.session.otpExpiry = Date.now() + (5 * 60 * 1000); // 5 minutes
+        req.session.otpExpiry = Date.now() + (5 * 60 * 1000); 
 
         res.render('users/verifyOtp');
         console.log('Session Data after OTP generation:', {
@@ -233,7 +209,7 @@ const signin = async (req, res) => {
             });
         }
 
-        // Check blocked status before password verification
+
         if (findUser.isBlocked) {
             return res.render('users/authPage', {
                 message: 'Your account has been blocked by the admin. Please contact support.',
@@ -249,7 +225,7 @@ const signin = async (req, res) => {
             });
         }
 
-        // Set the user session and save it
+
         req.session.user = findUser._id;
         await req.session.save();
 
@@ -284,7 +260,7 @@ const verifyOtp = async (req, res) => {
         console.log('Received OTP:', otp, 'Type:', typeof otp);
         console.log('Stored OTP:', req.session.userOtp, 'Type:', typeof req.session.userOtp);
 
-        // Check if session exists
+        // Check  session exists or mot
         if (!req.session.userOtp || !req.session.userData || !req.session.otpExpiry) {
             console.log('Session missing required data:', {
                 hasOtp: !!req.session.userOtp,
@@ -297,7 +273,7 @@ const verifyOtp = async (req, res) => {
             });
         }
 
-        // Check if OTP has expired
+        // Check OTP has expired
         const now = Date.now();
         const expiryTime = req.session.otpExpiry;
         console.log('Time check:', {
@@ -319,7 +295,6 @@ const verifyOtp = async (req, res) => {
             });
         }
 
-        // Clean and compare OTPs
         const receivedOtp = String(otp).trim();
         const storedOtp = String(req.session.userOtp).trim();
 
@@ -336,7 +311,6 @@ const verifyOtp = async (req, res) => {
             });
         }
 
-        // OTP is valid, proceed with user creation
         const user = req.session.userData;
         const passwordHash = await securePassword(user.password);
 
@@ -350,14 +324,13 @@ const verifyOtp = async (req, res) => {
         await saveUserData.save();
         console.log('User saved successfully:', saveUserData._id);
 
-        // Clear OTP session data but keep user session
         delete req.session.userOtp;
         delete req.session.userData;
         delete req.session.otpExpiry;
 
-        // Set user session
+
         req.session.user = saveUserData._id;
-        await req.session.save();  // Explicitly save session
+        await req.session.save();  
 
         return res.json({
             success: true,
@@ -402,30 +375,6 @@ const resendOtp = async(req,res)=>{
     }
 }
 
-const loadProfile = async (req, res) => {
-    try {
-        // Check if user is in session
-        if (!req.session.user) {
-            return res.redirect('/auth');
-        }
-
-        // If user object is already complete in session, use that
-        if (req.session.user.email) {
-            return res.render('users/userProfile', { user: req.session.user });
-        }
-
-        // Otherwise fetch from database
-        const userData = await User.findById(req.session.user);
-        if (!userData) {
-            return res.redirect('/auth');
-        }
-        
-        res.render('users/userProfile', { user: userData });
-    } catch (error) {
-        console.error('Error loading profile:', error);
-        res.redirect('/');
-    }
-};
 
 const logout = async (req, res) => {
     try {
@@ -463,7 +412,6 @@ module.exports = {
     verifyOtp,
     resendOtp,
     signin,
-    loadProfile,
     PageNotFound,
     logout,
 

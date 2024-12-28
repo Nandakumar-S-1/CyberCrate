@@ -4,18 +4,18 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        required: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true
     },
     phone: {
         type: String,
         required: false,
         sparse: true,
-        default: null,
+        default: null
     },
     googleId: {
         type: String,
@@ -23,7 +23,7 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: false,
+        required: false
     },
     isBlocked: {
         type: Boolean,
@@ -33,12 +33,18 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    
+    addresses: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Address'
+    }],
     cart: [{
         type: Schema.Types.ObjectId,
         ref: 'Cart'
     }],
     wallet: {
         type: Schema.Types.ObjectId,
+        ref: 'Wallet'  
     },
     wishList: [{
         type: Schema.Types.ObjectId,
@@ -48,16 +54,10 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Order'
     }],
-    createdOn: {
-        type: Date,
-        default: Date.now
-    },
     isVerified: {
         type: Boolean,
         default: false
     }
-},
-    { timestamps: true }
-);
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

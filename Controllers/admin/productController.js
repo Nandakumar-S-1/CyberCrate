@@ -2,73 +2,79 @@ const Product = require("../../Models/productModel");
 const Category = require("../../Models/categoryModel");
 const Brand = require("../../Models/brandModel");
 const User = require("../../Models/userModel");
+const Cart = require("../../Models/cartModel");
 
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 
+
 const loadProducts = async (req, res) => {
   try {
-      const search = req.query.search || "";
-      const page = parseInt(req.query.page) || 1;
-      const limit = 6;
-      const skip = (page - 1) * limit;
+    const search = req.query.search || "";
+    const selectedDate = req.query.date || "";
+    const selectedCategory = req.query.category || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6;
+    const skip = (page - 1) * limit;
 
-      const categories = await Category.find({ name: { $regex: new RegExp(".*" + search + ".*", "i") } });
-      const brands = await Brand.find({ name: { $regex: new RegExp(".*" + search + ".*", "i") } });
+    const categories = await Category.find({ name: { $regex: new RegExp(".*" + search + ".*", "i") } });
+    const brands = await Brand.find({ brandName: { $regex: new RegExp(".*" + search + ".*", "i") } });
 
-      const categoryIds = categories.map(category => category._id);
-      const brandIds = brands.map(brand => brand._id);
+    const categoryIds = categories.map(category => category._id);
+    const brandIds = brands.map(brand => brand._id);
 
-      const productData = await Product.find({
-          $or: [
-              { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
-              { brand: { $in: brandIds } },
-              { category: { $in: categoryIds } },
-              { description: { $regex: new RegExp(".*" + search + ".*", "i") } }
-          ]
-      })
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit)
-          .populate("category")
-          .populate("brand")
-          .exec();
+    let filter = {
+      $or: [
+        { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
+        { brand: { $in: brandIds } },
+        { category: { $in: categoryIds } },
+      ]
+    };
 
-      const count = await Product.countDocuments({
-          $or: [
-              { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
-              { brand: { $in: brandIds } },
-              { category: { $in: categoryIds } },
-              { description: { $regex: new RegExp(".*" + search + ".*", "i") } }
-          ]
+    if (selectedDate) {
+      filter.$or.push({ createdAt: new Date(selectedDate) });
+    }
+    if (selectedCategory) {
+      filter.$or.push({ category: selectedCategory });
+    }
+
+    const productData = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("category", "name")
+      .populate("brand", "brandName")
+      .exec();
+
+    const count = await Product.countDocuments(filter);
+
+    const dates = await Product.distinct('createdAt');
+    const category = await Category.find({ isListed: true });
+    const brand = await Brand.find({ isBlocked: false });
+
+    if (category.length > 0 && brand.length > 0) {
+      res.render("admin/products", {
+        products: productData,
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+        totalProducts: count,
+        dates: dates.map(date => date.toISOString().split('T')[0]),
+        category: category,
+        brand: brand,
+        search: search,
+        selectedDate: selectedDate,
+        selectedCategory: selectedCategory
       });
-
-      const category = await Category.find({ isListed: true });
-      const brand = await Brand.find({ isBlocked: false });
-
-      if (category.length > 0 && brand.length > 0) {
-          res.render("admin/products", {
-              products: productData, 
-              currentPage: page,
-              totalPages: Math.ceil(count / limit),
-              totalProducts: count,
-              category: category,
-              brand: brand,
-              search: search
-          });
-      } else {
-          res.render('404-error');
-      }
+    } else {
+      res.render('404-error');
+    }
 
   } catch (error) {
-      console.error("Error loading products:", error);
-      res.redirect("/pageError");
+    console.error("Error loading products:", error);
+    res.redirect("/pageError");
   }
 };
-
-
-
 
 const loadAddProduct = async (req, res) => {
   try {
@@ -87,58 +93,70 @@ const addNewProduct = async (req, res) => {
     const {
       productName,
       description,
-      brand,
-      category,
+      brand: brandName,  // Expecting brandName from the request body
+      category: categoryName,  // Expecting categoryName from the request body
       quantity,
       regularPrice,
       salePrice,
       productOffer,
       status,
     } = req.body;
+
+    // Check if the product already exists
     const productExist = await Product.findOne({ productName });
-    if (!productExist) {
-      const images = [];
-      if (req.files && req.files.length > 0) {
-        for (let i = 0; i < req.files.length; i++) {
-          const originalImagePath = req.files[i].path;
-          const resizedImagePath = path.join(
-            "public",
-            "img",
-            "products",
-            req.files[i].filename
-          );
-          await sharp(originalImagePath)
-            .resize({ width: 450, height: 450, fit: "contain" })
-            .toFile(resizedImagePath);
-          images.push(req.files[i].filename);
-        }
+    if (productExist) {
+      return res.status(400).json({ error: "Product already exists, try another one" });
+    }
+
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        const originalImagePath = req.files[i].path;
+        const resizedImagePath = path.join(
+          "public",
+          "img",
+          "products",
+          req.files[i].filename
+        );
+        await sharp(originalImagePath)
+          .resize({ width: 450, height: 450, fit: "contain" })  // Resize images to 450x450
+          .toFile(resizedImagePath);
+        images.push(req.files[i].filename);
       }
-      const categoryId = await Category.findOne({ name: category });
-      if (!categoryId) {
-        return res.status(404).json({ error: "Category not found" });
-      }
-      const newProduct = new Product({
-        productName,
-        description,
-        brand,
-        category: categoryId._id,
-        realPrice: regularPrice,
-        salePrice,
-        productOffer,
-        quantity,
-        productImage: images,
-        status,
-      });
-      const savedProduct = await newProduct.save();
-      if (savedProduct) {
-        res.redirect("/admin/products");
-      } else {
-        res.status(500).json({ error: "Failed to save product" });
-      }
+    }
+
+    // Find the category by name
+    const category = await Category.findOne({ name: categoryName });
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    // Find the brand by brand name
+    const brand = await Brand.findOne({ brandName });
+    if (!brand) {
+      return res.status(404).json({ error: "Brand not found" });
+    }
+
+    // Create a new product with references to brand and category IDs
+    const newProduct = new Product({
+      productName,
+      description,
+      brand: brand._id,  // Use brand._id to reference the brand ObjectId
+      category: category._id,  // Use category._id to reference the category ObjectId
+      realPrice: regularPrice,
+      salePrice,
+      productOffer,
+      quantity,
+      productImage: images,
+      status,
+    });
+
+    // Save the new product to the database
+    const savedProduct = await newProduct.save();
+    if (savedProduct) {
+      res.redirect("/admin/products");
     } else {
-      res
-        .status(400)
-        .json({ error: "Product already exists, try another one" });
+      res.status(500).json({ error: "Failed to save product" });
     }
   } catch (error) {
     console.log("Error adding new product:", error);
@@ -146,11 +164,91 @@ const addNewProduct = async (req, res) => {
   }
 };
 
+
+// const addNewProduct = async (req, res) => {
+//   try {
+//     const {
+//       productName,
+//       description,
+//       brand: brandName,  
+//       category: categoryName,  
+//       quantity,
+//       regularPrice,
+//       salePrice,
+//       productOffer,
+//       status,
+//     } = req.body;
+    
+
+//     const productExist = await Product.findOne({ productName });
+//     if (productExist) {
+//       return res.status(400).json({ error: "Product already exists, try another one" });
+//     }
+
+//     const images = [];
+//     if (req.files && req.files.length > 0) {
+//       for (let i = 0; i < req.files.length; i++) {
+//         const originalImagePath = req.files[i].path;
+//         const resizedImagePath = path.join(
+//           "public",
+//           "img",
+//           "products",
+//           req.files[i].filename
+//         );
+//         await sharp(originalImagePath)
+//           .resize({ width: 450, height: 450, fit: "contain" })
+//           .toFile(resizedImagePath);
+//         images.push(req.files[i].filename);
+//       }
+//     }
+
+
+//     const category = await Category.findOne({ name: categoryName });
+//     if (!category) {
+//       return res.status(404).json({ error: "Category not found" });
+//     }
+
+//     const brand = await Brand.findOne({ brandName : brandName});
+//     if (!brand) {
+//       return res.status(404).json({ error: "Brand not found" });
+//     }
+
+
+//     const newProduct = new Product({
+//       productName,
+//       description,
+//       brand: brand._id,  
+//       category: category._id,  
+//       realPrice: regularPrice,
+//       salePrice,
+//       productOffer,
+//       quantity,
+//       productImage: images,
+//       status,
+//     });
+
+//     const savedProduct = await newProduct.save();
+//     if (savedProduct) {
+//       res.redirect("/admin/products");
+//     } else {
+//       res.status(500).json({ error: "Failed to save product" });
+//     }
+//   } catch (error) {
+//     console.log("Error adding new product:", error);
+//     res.redirect("/pageError");
+//   }
+// };
+
+
 const blockProduct = async(req,res)=>{
   try {
     
     const productId = req.params.id;
-    await Product.updateOne({_id:productId},{$set:{isBlocked:true}})
+
+    // await Product.updateOne({_id:productId},{$set:{isBlocked:true}})
+    await Product.findByIdAndUpdate(productId, { isBlocked: true });
+    // await Cart.updateMany({}, { $pull: { items: { productId: productId } } });
+
     res.status(200).send({ message: 'Product blocked successfully' });
   } catch (error) {
     
@@ -216,16 +314,26 @@ const editProduct = async(req,res)=>{
       return res.status(400).json({error:'Product already exists'})
     }
 
+    const brand = await Brand.findOne({ brandName: productData.brand });
+    if (!brand) { 
+      return res.status(404).json({ error: 'Brand not found' });
+    }
+
     const images = [];
     if (req.files && req.files.length > 0) {
-      for(let i=0;i<req.files;i++){
+      for(let i=0;i<req.files.length;i++){
+        const originalImagePath = req.files[i].path; 
+        const resizedImagePath = path.join("public", "img", "products", req.files[i].filename); 
+        await sharp(originalImagePath) 
+        .resize({ width: 450, height: 450, fit: "contain" }) 
+        .toFile(resizedImagePath);
         images.push(req.files[i].filename);
       }
     }
     const updateFields = {
       productName:productData.productName,
       description:productData.description,
-      brand:productData.brand,
+      brand:brand._id,
       category:productData.category,
       realPrice:productData.regularPrice,
       salePrice:productData.salePrice,
@@ -234,11 +342,17 @@ const editProduct = async(req,res)=>{
       status:productData.status
     
     }
-    if(req.files&&req.files.length>0){
-      updateFields.$push={
-        productImage:{$each:images}
-      }
+
+    if (images.length > 0) { 
+      updateFields.productImage = images; 
     }
+
+    // if(req.files&&req.files.length>0){
+    //   updateFields.$push={
+    //     productImage:{$each:images}
+    //   }
+    // }
+
     await Product.findByIdAndUpdate(productId,{ $set : updateFields },{ new:true })
     res.redirect('/admin/products');
 
@@ -330,5 +444,6 @@ module.exports = {
   unBlockProduct,
   loadEditProduct,
   editProduct,
-  deleteSingleImage
+  deleteSingleImage,
+  updateProduct
 }

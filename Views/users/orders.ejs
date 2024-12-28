@@ -1,0 +1,235 @@
+<%- include('../layouts/user/header.ejs') %>
+
+    <style>
+        .orders-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .orders-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .order-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-header {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .order-item {
+            margin-bottom: 10px;
+        }
+
+        .order-summary {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .order-status {
+            font-weight: bold;
+        }
+
+        .order-status.pending {
+            color: #007bff;
+        }
+
+        .order-status.processing {
+            color: #ff9800;
+        }
+
+        .order-status.shipped {
+            color: #3f51b5;
+        }
+
+        .order-status.delivered {
+            color: #4caf50;
+        }
+
+        .order-status.cancelled {
+            color: #f44336;
+        }
+
+        .order-status.return-request {
+            color: #ff5722;
+        }
+
+        .order-status.returned {
+            color: #9c27b0;
+        }
+
+
+        .more-details {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .payment-details {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .actions {
+            margin-top: 10px;
+        }
+
+        .actions button {
+            margin-right: 10px;
+        }
+    </style>
+
+    <div class="orders-page">
+        <h1 class="orders-header">Your Orders</h1>
+        <% if (orders.length> 0) { %> <% orders.forEach(order=> { %> <div class="order-card">
+                    <div class="order-header">Order ID: <%= order.orderId %>
+                    </div>
+                    <div class="order-item">
+                        <p>Status:
+                            <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                                <%= order.status %>
+                            </span>
+                        </p>
+                        <p>Order Date: <%= order.createdAt.toDateString() %>
+                        </p>
+                        <% order.orderedItems.forEach(item=> { %>
+                            <div>
+                                <h3>
+                                    <%= item.product.productName %>
+                                </h3>
+                                <p>Quantity: <%= item.quantity %>
+                                </p>
+                                <p>Price: ₹<%= item.price %>
+                                </p>
+                            </div>
+                            <% }) %>
+                                <div class="order-summary">
+                                    <p>Total Price: ₹<%= order.totalPrice %>
+                                    </p>
+                                    <p>Discount: ₹<%= order.discount %>
+                                    </p>
+                                    <p>Final Amount: ₹<%= order.finalAmount %>
+                                    </p>
+                                </div>
+                    </div>
+
+                    <div class="more-details"> <button
+                            onclick="togglePaymentDetails('<%= order.orderId %>')">More</button>
+                        <div id="payment-<%= order.orderId %>" class="payment-details" style="display:none;">
+                            <p>Payment Method: <%= order.paymentMethod %>
+                            </p>
+                            <p>Transaction ID: <%= order.transactionId %>
+                            </p>
+                            <p>Payment Status: <%= order.paymentStatus %>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="actions"> <button onclick="viewOrder('<%= order.orderId %>')">View</button>
+                        <% if (order.status !=='Delivered' && order.status !=='Refund Completed' ) { %> <button
+                                onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
+                            <% } %>
+                                <% if (order.status==='Delivered' ) { %> <button
+                                        onclick="returnOrder('<%= order.orderId %>')">Return</button>
+                                    <% } %>
+                    </div>
+                </div>
+                <% }) %>
+                    <% } else { %>
+                        <p>No orders found.</p>
+                        <% } %>
+    </div>
+
+    <script> function updateStatus(orderId) { 
+        const form = document.getElementById(`status-form-${orderId}`); 
+        const formData = new FormData(form); 
+        fetch('/admin/orderList/updateStatus', { 
+            method: 'POST', 
+            body: JSON.stringify(Object.fromEntries(formData)), 
+            headers: { 'Content-Type': 'application/json' } })
+            .then(response => response.json())
+            .then(data => { 
+                if (data.success) { 
+                    Swal.fire({ 
+                        title: 'Success', 
+                        text: data.message, 
+                        icon: 'success', 
+                        confirmButtonText: 'OK' 
+                    }); 
+                    } else { 
+                        Swal.fire({ 
+                            title: 'Error', 
+                            text: data.message, 
+                            icon: 'error', 
+                            confirmButtonText: 'OK' 
+                            }); 
+                        } 
+                    })
+                    .catch(error => { 
+                        console.error('Error:', error); 
+                        Swal.fire({ 
+                            title: 'Error', 
+                            text: 'Something went wrong!', 
+                            icon: 'error', 
+                            confirmButtonText: 'OK' }); }); } </script>
+
+    <script> function togglePaymentDetails(orderId) {
+            const details = document.getElementById(`payment-${orderId}`);
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+            } else {
+                details.style.display = 'none';
+            }
+        } function viewOrder(orderId) {
+
+        }
+        function cancelOrder(orderId) {
+            fetch('/cancelOrder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'error',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                        }
+                        );
+                    } else {
+                        Swal.fire({
+                            title: 'Success',
+                            text: ' The order has been cancelled successfully',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while cancelling the order',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+        }
+        function returnOrder(orderId) {
+
+        } </script>
+    <%- include('../layouts/user/footer.ejs') %>

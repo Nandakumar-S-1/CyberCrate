@@ -1,0 +1,393 @@
+<%- include('../layouts/user/header.ejs') %>
+    <div class="cart-container">
+        <h1>Your Shopping Cart</h1>
+        <% if (items.length===0) { %>
+            <p class="font-weight-bold">Your cart is currently empty.</p>
+            <% } else { %>
+                <table class="cart-items">
+                    <thead>
+                        <tr>
+                            <th>Product Image</th>
+                            <th>Product Name</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% items.forEach(item=> { %>
+                            <tr class="cart-item <%= item.productId.isBlocked ? 'blocked-item' : '' %>">
+                                <td class="item-image">
+                                    <% if (item.productId.productImage && item.productId.productImage.length> 0) { %>
+                                        <a href="/productDetails/<%= item.productId._id %>">
+                                            <img src="/img/products/<%= item.productId.productImage[0] %>"
+                                                alt="<%= item.productId.productName %>">
+                                        </a>
+                                        <% } else { %>
+                                            <a href="/productDetails/<%= item.productId._id %>">
+                                                <img src="/img/products/default.png" alt="No Image Available">
+                                            </a>
+                                            <% } %>
+                                </td>
+                                <td class="item-name">
+                                    <div class="item-details">
+                                        <h2>
+                                            <a href="/productDetails/<%= item.productId._id %>"
+                                                class="text-decoration-none text-dark">
+                                                <%= item.productId.productName %>
+                                            </a>
+                                        </h2>
+                                        <% if (item.productId.isBlocked) { %>
+                                            <p class="blocked-message text-danger">This item is no longer available.</p>
+                                            <% } %>
+                                    </div>
+                                </td>
+                                <td>₹<%= item.price %>
+                                </td>
+                                <td class="quantity-control">
+                                    <% if (item.productId.isBlocked) { %>
+                                        <span class="text-muted">N/A</span>
+                                        <% } else { %>
+                                            <button class="quantity-btn"
+                                                onclick="updateQuantity('<%= item.productId._id %>', <%= item.quantity - 1 %>)">-</button>
+                                            <span>
+                                                <%= item.quantity %>
+                                            </span>
+                                            <button class="quantity-btn"
+                                                onclick="updateQuantity('<%= item.productId._id %>', <%= item.quantity + 1 %>)">+</button>
+                                            <% } %>
+                                </td>
+                                <td>₹<%= item.totalPrice %>
+                                </td>
+                                <td>
+                                    <button class="remove-btn"
+                                        onclick="confirmRemoveItem('<%= item.productId._id %>')">Remove</button>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+
+
+                    <!-- <tbody>
+                <% items.forEach(item => { %>
+                    <tr class="cart-item">
+                        <td class="item-image">
+                            <% if (item.productId.productImage && item.productId.productImage.length > 0) { %>
+                                <a href="/productDetails/<%= item.productId._id %>">
+                                    <img src="/img/products/<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>">
+                                </a>
+                            <% } else { %>
+                                <a href="/productDetails/<%= item.productId._id %>">
+                                    <img src="/img/products/default.png" alt="No Image Available">
+                                </a>
+                            <% } %>
+                        </td>
+                        <td class="item-name">
+                            <div class="item-details">
+                                <h2>
+                                    <a href="/productDetails/<%= item.productId._id %>" class="text-decoration-none text-dark">
+                                        <%= item.productId.productName %>
+                                    </a>
+                                </h2>
+                            </div>
+                        </td>
+                        <td>₹<%= item.price %></td>
+                        <td class="quantity-control">
+                            <button class="quantity-btn" onclick="updateQuantity('<%= item.productId._id %>', <%= item.quantity - 1 %>)">-</button>
+                            <span><%= item.quantity %></span>
+                            <button class="quantity-btn" onclick="updateQuantity('<%= item.productId._id %>', <%= item.quantity + 1 %>)">+</button>
+                        </td>
+                        <td>₹<%= item.totalPrice %></td>
+                        <td>
+                            <button class="remove-btn" onclick="confirmRemoveItem('<%= item.productId._id %>')">Remove</button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody> -->
+                </table>
+                <div class="cart-summary">
+                    <form class="coupon-form" action="/applyCoupon" method="post">
+                        <label for="couponCode">Have a coupon?</label>
+                        <input type="text" id="couponCode" name="couponCode" placeholder="Enter coupon code">
+                        <button type="submit" class="apply-coupon-btn">Apply</button>
+                    </form>
+                    <p>Subtotal: ₹<%= cartTotal %>
+                    </p>
+                    <p>Discount: ₹<%= discount %>
+                    </p>
+                    <p>Total: ₹<%= cartTotal - discount %>
+                    </p>
+                    <form action="/checkout" method="get">
+                        <button type="submit" class="checkout-btn">Checkout</button>
+                    </form>
+                </div>
+                <% } %>
+    </div>
+
+
+
+
+
+    <style>
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-container h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .cart-items {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-items th,
+        .cart-items td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .cart-items th {
+            background-color: #f0f0f0;
+        }
+
+        .cart-item .item-image {
+            display: flex;
+            align-items: center;
+        }
+
+        .item-image img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+
+        .item-name h2 {
+            font-size: 1.2em;
+            margin: 0;
+            text-align: left;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            background-color: #1a237e;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .remove-btn {
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .cart-summary {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .cart-summary p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .coupon-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 10rem;
+        }
+
+        .coupon-form input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .apply-coupon-btn {
+            background-color: #1a237e;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .checkout-btn {
+            display: inline-block;
+            background-color: #1a237e;
+            color: #fff;
+            text-align: center;
+            padding: 15px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+    </style>
+
+    <script>
+        function confirmRemoveItem(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to remove this item from the cart?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    removeItem(productId);
+                }
+            });
+        }
+
+        function removeItem(productId) {
+            fetch('/cart/removeItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Removed!', 'The item has been removed from your cart.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                    } else {
+                        Swal.fire('Error!', 'Failed to remove the item from your cart.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while removing the item from your cart.', 'error');
+                });
+        }
+    </script>
+
+    <script>
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) return;
+
+            fetch('/cart/updateQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId, quantity: newQuantity })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        Swal.fire('Error!', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while updating the item quantity', 'error');
+                });
+        }
+    </script>
+
+    <script>
+    function confirmRemoveItem(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to remove this item from the cart?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    removeItem(productId);
+                }
+            });
+        }
+        function removeItem(productId) {
+            fetch('/cart/removeItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Removed!', 'The item has been removed from your cart.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                    } else {
+                        Swal.fire('Error!', 'Failed to remove the item from your cart.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while removing the item from your cart.', 'error');
+                });
+        }
+
+function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) return;
+
+            fetch('/cart/updateQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId, quantity: newQuantity })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        Swal.fire('Error!', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while updating the item quantity', 'error');
+                });
+        }
+    </script>
+
+
+
+    <%- include('../layouts/user/footer.ejs') %>

@@ -7,18 +7,30 @@
                     <p>Home > All Products</p>
                 </div>
                 <div class="header-right">
-                    <div class="filter-section">
-                        <button class="filter-btn">
-                            <i class="fas fa-filter"></i>
-                            Filter By
-                        </button>
-                        <select class="date-select">
-                            <option>14 Feb 2019</option>
-                        </select>
-                        <select class="category-select">
-                            <option>Category</option>
-                        </select>
-                    </div>
+                    <form id="filter-form" method="GET" action="/admin/products">
+                        <input type="text" name="search" value="<%= search %>" placeholder="Search products...">
+                        <div class="filter-section">
+                            <button class="filter-btn">
+                                <i class="fas fa-filter"></i>
+                                Filter By
+                            </button>
+                            <select name="date" class="date-select">
+                                <option value="">Select Date</option>
+                                <% dates.forEach(date=> { %>
+                                    <option value="<%= date %>" <%=date===selectedDate ? 'selected' : '' %>><%= date %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                            <select name="category" class="category-select">
+                                <option value="">Select Category</option>
+                                <% category.forEach(cat=> { %>
+                                    <option value="<%= cat._id %>" <%=cat._id.toString()===selectedCategory ? 'selected'
+                                        : '' %>><%= cat.name %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                        </div>
+                    </form>
                     <button class="add-product-btn" onclick="window.location.href='/admin/addProducts'">
                         <i class="fas fa-plus"></i>
                         ADD NEW PRODUCT
@@ -32,14 +44,15 @@
                         <div class="product-image">
                             <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>">
                             <button class="more-options"><i class="fas fa-ellipsis-v"></i></button>
-                            <button class="edit-button"><a href="/admin/editProduct/<%= product._id %>"><i class="fas fa-edit"></i></a></button>
+                            <button class="edit-button"><a href="/admin/editProduct/<%= product._id %>"><i
+                                        class="fas fa-edit"></i></a></button>
                         </div>
                         <div class="product-info">
                             <h3 class="fw-bold">
                                 <%= product.productName %>
                             </h3>
                             <p class="category">
-                                <%= product.category %>
+                                <%= product.category ? product.category.name : 'No Category' %>
                             </p>
                             <p class="price fw-bold fw-dark fs-3 text-dark">₹ <%= product.salePrice %>
                             </p>
@@ -48,21 +61,21 @@
                                         product.realPrice %>
                                 </p>
                                 <div class="buttons">
-                                    <% if(product.isBlocked) { %> <button class="btn btn-danger"
-                                            onclick="unblockProduct('<%= product._id %>')"> <i
-                                                class="fas fa-unlock"></i> Unblock </button>
-                                    <% } else { %> <button class="btn btn-warning"
-                                            onclick="blockProduct('<%= product._id %>')"> <i
-                                            class="fas fa-lock"></i> Block </button>
-                                    <% } %>
+                                    <% if(product.isBlocked) { %>
+                                        <button class="btn btn-danger" onclick="unblockProduct('<%= product._id %>')"><i
+                                                class="fas fa-unlock"></i> Unblock</button>
+                                        <% } else { %>
+                                            <button class="btn btn-warning"
+                                                onclick="blockProduct('<%= product._id %>')"><i class="fas fa-lock"></i>
+                                                Block</button>
+                                            <% } %>
                                 </div>
                             </div>
-
                             <div class="product-stats">
                                 <div class="stat">
                                     <div class="stat-value text-danger fw-bold">
                                         <span>
-                                            <%= product.brand %>
+                                            <%= product.brand ? product.brand.brandName : 'No Brand' %>
                                         </span>
                                     </div>
                                 </div>
@@ -73,7 +86,6 @@
                                         <span class="fw-bold">120</span>
                                     </div>
                                 </div>
-
                                 <div class="stat">
                                     <p class="fw-bold">Remaining Products</p>
                                     <div class="stat-value text-warning fw-bold">
@@ -84,16 +96,16 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                    <% }) %>
+                    <% }); %>
             </div>
 
             <div class="pagination-container mt-3">
                 <ul class="pagination justify-content-center">
                     <% for (let i=1; i <=totalPages; i++) { %>
                         <li class="page-item <%= (currentPage === i) ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %>">
+                            <a class="page-link"
+                                href="?page=<%= i %>&search=<%= search %>&date=<%= selectedDate %>&category=<%= selectedCategory %>">
                                 <%= i %>
                             </a>
                         </li>
@@ -101,6 +113,7 @@
                 </ul>
             </div>
         </div>
+
 
         <style>
             .products-container {
@@ -282,65 +295,65 @@
             }
         </style>
 
-<script>
-    function blockProduct(productId) {
-    fetch(`/admin/blockProduct/${productId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        return response.json();
-    }).then(data => {
-        if (data.message) {
-            alert(data.message);
-            updateProductStatus(productId, true);
-        } else {
-            alert('Failed to block product');
-        }
-    }).catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred');
-    });
-}
+        <script>
+            function blockProduct(productId) {
+                fetch(`/admin/blockProduct/${productId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    return response.json();
+                }).then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        updateProductStatus(productId, true);
+                    } else {
+                        alert('Failed to block product');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
 
-function unblockProduct(productId) {
-    fetch(`/admin/unBlockProduct/${productId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        return response.json();
-    }).then(data => {
-        if (data.message) {
-            alert(data.message);
-            updateProductStatus(productId, false);
-        } else {
-            alert('Failed to unblock product');
-        }
-    }).catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred');
-    });
-}
+            function unblockProduct(productId) {
+                fetch(`/admin/unBlockProduct/${productId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    return response.json();
+                }).then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        updateProductStatus(productId, false);
+                    } else {
+                        alert('Failed to unblock product');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
 
-function updateProductStatus(productId, isBlocked) {
-    const button = document.querySelector(`button[onclick="blockProduct('${productId}')"], button[onclick="unblockProduct('${productId}')"]`);
-    if (isBlocked) {
-        button.classList.replace('btn-warning', 'btn-danger');
-        button.setAttribute('onclick', `unblockProduct('${productId}')`);
-        button.innerHTML = '<i class="fas fa-unlock"></i> Unblock';
-    } else {
-        button.classList.replace('btn-danger', 'btn-warning');
-        button.setAttribute('onclick', `blockProduct('${productId}')`);
-        button.innerHTML = '<i class="fas fa-lock"></i> Block';
-    }
-}
+            function updateProductStatus(productId, isBlocked) {
+                const button = document.querySelector(`button[onclick="blockProduct('${productId}')"], button[onclick="unblockProduct('${productId}')"]`);
+                if (isBlocked) {
+                    button.classList.replace('btn-warning', 'btn-danger');
+                    button.setAttribute('onclick', `unblockProduct('${productId}')`);
+                    button.innerHTML = '<i class="fas fa-unlock"></i> Unblock';
+                } else {
+                    button.classList.replace('btn-danger', 'btn-warning');
+                    button.setAttribute('onclick', `blockProduct('${productId}')`);
+                    button.innerHTML = '<i class="fas fa-lock"></i> Block';
+                }
+            }
 
-</script>
+        </script>
 
-    <!-- <script>
+        <!-- <script>
         function blockProduct(productId) {
     fetch(`/admin/blockProduct/${productId}`, {
         method: 'PATCH',
