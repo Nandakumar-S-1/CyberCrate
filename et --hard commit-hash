@@ -1,0 +1,61 @@
+[33mcommit 878df4be383dd6efe45a523e7bf56cd8b92c847d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnew-feature[m[33m, [m[1;31morigin/new-feature[m[33m)[m
+Merge: d513132 7649e06
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Sun Dec 29 21:14:54 2024 +0530
+
+    Merge branch 'new-feature' of https://github.com/Nandakumar-S-1/CyberCrate-fst into new-feature
+
+[33mcommit d513132cadd23c7003049fca460ccf325ff760de[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Sun Dec 29 21:11:09 2024 +0530
+
+    product offer and the coupon have been applied
+
+[33mcommit 58cf7be987200df81e5a89625f5c7905fbbd0bdd[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Sat Dec 28 20:04:48 2024 +0530
+
+    after coupon started
+
+[33mcommit 7649e067b9049b5a8288eccc1139f6156dfb5eb6[m
+Merge: 92cb461 1423a8e
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Sat Dec 28 13:30:01 2024 +0530
+
+    Resolve merge conflicts
+
+[33mcommit 92cb461b26903cf05355d81d1222001f097654bc[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Sat Dec 28 13:14:39 2024 +0530
+
+    Beggining of Coupon Management
+
+[33mcommit 1423a8e5889b35db4e0a0b01cc99ec7ba5272e81[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Fri Dec 20 02:55:32 2024 +0530
+
+    Till the Checkout page and compleated cart and address
+
+[33mcommit 79bd0ad5fc071ff982f1dbf4e357e01243dc9c3e[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Fri Dec 13 10:36:09 2024 +0530
+
+    till the product details page
+
+[33mcommit f05116193b0a657ee0acd6bff1e23cc19be90c9b[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Wed Dec 11 01:19:54 2024 +0530
+
+    Products added into admin
+
+[33mcommit 5bf492480fc715d236d332b9212a30e745a52139[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Tue Dec 10 14:19:06 2024 +0530
+
+    Till the Products add page
+
+[33mcommit 77f7629b8dc538c64c0fef86248e9a89138c0ecc[m
+Author: Nandu <nandakumar9895776488@gmail.com>
+Date:   Thu Dec 5 19:41:21 2024 +0530
+
+    project initialize
