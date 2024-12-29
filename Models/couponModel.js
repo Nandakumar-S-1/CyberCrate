@@ -42,6 +42,10 @@ const couponSchema = new Schema({
         type: Boolean,
         default: true,
     },
+    isListed: {
+        type: Boolean,
+        default: true
+    },
     userId: [{
         type: Schema.Types.ObjectId,
         ref: 'User'

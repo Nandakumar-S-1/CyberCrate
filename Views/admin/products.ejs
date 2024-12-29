@@ -43,9 +43,7 @@
                     <div class="product-card">
                         <div class="product-image">
                             <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>">
-                            <button class="more-options"><i class="fas fa-ellipsis-v"></i></button>
-                            <button class="edit-button"><a href="/admin/editProduct/<%= product._id %>"><i
-                                        class="fas fa-edit"></i></a></button>
+                            <button class="edit-button"><a href="/admin/editProduct/<%= product._id %>"><i class="fas fa-edit"></i></a></button>
                         </div>
                         <div class="product-info">
                             <h3 class="fw-bold">
@@ -60,6 +58,20 @@
                                 <p class="price fw-bold fw-dark fs-5 text-muted text-decoration-line-through">₹ <%=
                                         product.realPrice %>
                                 </p>
+                                <div class="buttons ">
+                                    <%if(product.productOffer){%>
+                                        <button class="btn btn-success">
+                                            <i class="fas fa-gift"></i>
+                                            <%=product.productOffer%>
+                                        </button>
+                                        <%}else{%>
+                                            <button class="btn btn-success">
+                                                <i class="fas fa-gift"></i>
+                                                0%
+                                            </button>
+                                        <%}%>
+                                </div>
+                                
                                 <div class="buttons">
                                     <% if(product.isBlocked) { %>
                                         <button class="btn btn-danger" onclick="unblockProduct('<%= product._id %>')"><i
@@ -85,6 +97,10 @@
                                         <i class="fas fa-arrow-up"></i>
                                         <span class="fw-bold">120</span>
                                     </div>
+                                </div>
+                                <div class="stat">
+                                    <p class="fw-bold">Offers</p>
+                                    <div class="stat-value text-success fw-bold">
                                 </div>
                                 <div class="stat">
                                     <p class="fw-bold">Remaining Products</p>

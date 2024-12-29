@@ -88,6 +88,20 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="mb-4"> <label class="form-label">Add Offer</label> <input
+                                            placeholder="%" name="productOffer" type="number"
+                                            class="form-control border" min="0" max="100"> </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="mb-4"> <label class="form-label">Delete Offer</label> <button
+                                            type="button" class="btn btn-secondary form-control"
+                                            onclick="deleteOffer('<%= product._id %>')">Delete Offer</button> </div>
+                                </div>
+                            </div>
+
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <div class="row gx-2">
@@ -468,10 +482,10 @@
                 displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
                 isValid = false;
             }
-            if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-                isValid = false;
-            }
+            // if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+            //     // displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+            //     isValid = false;
+            // }
 
             if (!imageDatas && images.files.length === 0) {
                 displayErrorMessage("images-error", 'Please select an image.');
@@ -556,29 +570,59 @@
 
     </script>
 
-<script>
-    function deleteSingleImage(imageName, productId) {
-        console.log('Deleting image:', imageName, 'for product:', productId);
-        $.ajax({
-            url: `/admin/deleteImage`,
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ imageName, productId }),
-            success: (response) => {
-                if (response.status === true) {
-                    window.location.reload();
-                } else {
-                    alert(response.message);
+    <script>
+        function deleteSingleImage(imageName, productId) {
+            console.log('Deleting image:', imageName, 'for product:', productId);
+            $.ajax({
+                url: `/admin/deleteImage`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ imageName, productId }),
+                success: (response) => {
+                    if (response.status === true) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error while deleting image:', error);
+                    alert('An error occurred while deleting the image.');
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error while deleting image:', error);
-                alert('An error occurred while deleting the image.');
-            }
-        });
-    }
-</script>
+            });
+        }
+    </script>
 
+
+
+    <script> 
+    function deleteOffer(productId) { 
+        Swal.fire({ 
+            title: 'Are you sure?', 
+            text: "This will remove the offer from the product.", 
+            icon: 'warning', 
+            showCancelButton: true, 
+            confirmButtonColor: '#3085d6', 
+            cancelButtonColor: '#d33', 
+            confirmButtonText: 'Yes, delete it!' 
+            }).then((result) => { 
+                if (result.isConfirmed) { 
+                    const form = document.createElement('form'); 
+                    form.method = 'POST'; 
+                    form.action = '/admin/products/deleteOffer/' + productId; 
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); 
+                    const tokenInput = document.createElement('input'); 
+                    tokenInput.type = 'hidden'; 
+                    tokenInput.name = '_csrf'; 
+                    tokenInput.value = csrfToken; 
+                    form.appendChild(tokenInput); 
+                    document.body.appendChild(form); 
+                    form.submit(); 
+                    } 
+                }); 
+            } 
+            
+        </script>
 
     <!-- <script>
         function validateAndSubmit() {

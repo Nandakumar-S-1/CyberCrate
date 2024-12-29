@@ -93,16 +93,17 @@ const addNewProduct = async (req, res) => {
     const {
       productName,
       description,
-      brand: brandName,  // Expecting brandName from the request body
-      category: categoryName,  // Expecting categoryName from the request body
+      brand: brandName,  
+      category: categoryName,  
       quantity,
       regularPrice,
-      salePrice,
+      // salePrice,
       productOffer,
+      categoryOffer,
       status,
     } = req.body;
 
-    // Check if the product already exists
+    
     const productExist = await Product.findOne({ productName });
     if (productExist) {
       return res.status(400).json({ error: "Product already exists, try another one" });
@@ -119,39 +120,43 @@ const addNewProduct = async (req, res) => {
           req.files[i].filename
         );
         await sharp(originalImagePath)
-          .resize({ width: 450, height: 450, fit: "contain" })  // Resize images to 450x450
+          .resize({ width: 450, height: 450, fit: "contain" })  
           .toFile(resizedImagePath);
         images.push(req.files[i].filename);
       }
     }
 
-    // Find the category by name
     const category = await Category.findOne({ name: categoryName });
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
 
-    // Find the brand by brand name
     const brand = await Brand.findOne({ brandName });
     if (!brand) {
       return res.status(404).json({ error: "Brand not found" });
     }
 
-    // Create a new product with references to brand and category IDs
+    let finalSalePrice = productOffer > 0 ? regularPrice - (regularPrice * (productOffer / 100)) : regularPrice;
+    if(productOffer>0){
+      finalSalePrice = regularPrice - (regularPrice * (productOffer / 100));
+    }
+
     const newProduct = new Product({
       productName,
       description,
-      brand: brand._id,  // Use brand._id to reference the brand ObjectId
-      category: category._id,  // Use category._id to reference the category ObjectId
+      brand: brand._id, 
+      category: category._id,
       realPrice: regularPrice,
-      salePrice,
+      salePrice: finalSalePrice,
       productOffer,
       quantity,
       productImage: images,
       status,
+      isOfferActive: productOffer > 0?true:false,
+      offerStartDate: productOffer > 0 ? new Date() : null,
+      offerEndDate:null
     });
 
-    // Save the new product to the database
     const savedProduct = await newProduct.save();
     if (savedProduct) {
       res.redirect("/admin/products");
@@ -164,81 +169,79 @@ const addNewProduct = async (req, res) => {
   }
 };
 
-
-// const addNewProduct = async (req, res) => {
-//   try {
-//     const {
-//       productName,
-//       description,
-//       brand: brandName,  
-//       category: categoryName,  
-//       quantity,
-//       regularPrice,
-//       salePrice,
-//       productOffer,
-//       status,
-//     } = req.body;
+const editProduct = async(req,res)=>{
+  try {
     
+    const productId = req.params.id;
+    const productData = req.body;
+    const product = await Product.findOne({_id:productId})
 
-//     const productExist = await Product.findOne({ productName });
-//     if (productExist) {
-//       return res.status(400).json({ error: "Product already exists, try another one" });
-//     }
+    if(!product){
+      return res.status(404).json({error:'Product not found'})
+    }
 
-//     const images = [];
-//     if (req.files && req.files.length > 0) {
-//       for (let i = 0; i < req.files.length; i++) {
-//         const originalImagePath = req.files[i].path;
-//         const resizedImagePath = path.join(
-//           "public",
-//           "img",
-//           "products",
-//           req.files[i].filename
-//         );
-//         await sharp(originalImagePath)
-//           .resize({ width: 450, height: 450, fit: "contain" })
-//           .toFile(resizedImagePath);
-//         images.push(req.files[i].filename);
-//       }
-//     }
+    const existingProduct = await Product.findOne({ 
+      productName: productData.productName,
+      _id:{$ne:productId}
+    });
 
+    if(existingProduct){
+      return res.status(400).json({error:'Product already exists'})
+    }
 
-//     const category = await Category.findOne({ name: categoryName });
-//     if (!category) {
-//       return res.status(404).json({ error: "Category not found" });
-//     }
+    const brand = await Brand.findOne({ brandName: productData.brand });
+    if (!brand) { 
+      return res.status(404).json({ error: 'Brand not found' });
+    }
 
-//     const brand = await Brand.findOne({ brandName : brandName});
-//     if (!brand) {
-//       return res.status(404).json({ error: "Brand not found" });
-//     }
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      for(let i=0;i<req.files.length;i++){
+        const originalImagePath = req.files[i].path; 
+        const resizedImagePath = path.join("public", "img", "products", req.files[i].filename); 
+        await sharp(originalImagePath) 
+        .resize({ width: 450, height: 450, fit: "contain" }) 
+        .toFile(resizedImagePath);
+        images.push(req.files[i].filename);
+      }
+    }
+    
+    const salePrice=productData.productOffer > 0 ?productData.regularPrice -(productData.regularPrice*(productData.productOffer/100)):productData.regularPrice;
 
+    const updateFields = {
+      productName:productData.productName,
+      description:productData.description,
+      brand:brand._id,
+      category:productData.category,
+      realPrice:productData.regularPrice,
+      salePrice,
+      productOffer:productData.productOffer,
+      quantity:productData.quantity,
+      status:productData.status,
+      isOfferActive:productData.productOffer>0?true:false,
+      offerStartDate:productData.productOffer>0?new Date():null,
+      offerEndDate:null
+    }
 
-//     const newProduct = new Product({
-//       productName,
-//       description,
-//       brand: brand._id,  
-//       category: category._id,  
-//       realPrice: regularPrice,
-//       salePrice,
-//       productOffer,
-//       quantity,
-//       productImage: images,
-//       status,
-//     });
+    if (images.length > 0) { 
+      updateFields.productImage = images; 
+    }
 
-//     const savedProduct = await newProduct.save();
-//     if (savedProduct) {
-//       res.redirect("/admin/products");
-//     } else {
-//       res.status(500).json({ error: "Failed to save product" });
-//     }
-//   } catch (error) {
-//     console.log("Error adding new product:", error);
-//     res.redirect("/pageError");
-//   }
-// };
+    // if(req.files&&req.files.length>0){
+    //   updateFields.$push={
+    //     productImage:{$each:images}
+    //   }
+    // }
 
+    await Product.findByIdAndUpdate(productId,{ $set : updateFields },{ new:true })
+    res.redirect('/admin/products');
+
+  } catch (error) {
+    console.log('error while editing product',error);
+    res.redirect('/pageError')
+    
+  }
+}
 
 const blockProduct = async(req,res)=>{
   try {
@@ -299,69 +302,7 @@ const loadEditProduct = async (req,res)=>{
   }
 }
 
-const editProduct = async(req,res)=>{
-  try {
-    
-    const productId = req.params.id;
-    const productData = req.body;
-    const product = await Product.findOne({_id:productId})
-    const existingProduct = await Product.findOne({ 
-      productName: productData.productName,
-      _id:{$ne:productId}
-    });
 
-    if(existingProduct){
-      return res.status(400).json({error:'Product already exists'})
-    }
-
-    const brand = await Brand.findOne({ brandName: productData.brand });
-    if (!brand) { 
-      return res.status(404).json({ error: 'Brand not found' });
-    }
-
-    const images = [];
-    if (req.files && req.files.length > 0) {
-      for(let i=0;i<req.files.length;i++){
-        const originalImagePath = req.files[i].path; 
-        const resizedImagePath = path.join("public", "img", "products", req.files[i].filename); 
-        await sharp(originalImagePath) 
-        .resize({ width: 450, height: 450, fit: "contain" }) 
-        .toFile(resizedImagePath);
-        images.push(req.files[i].filename);
-      }
-    }
-    const updateFields = {
-      productName:productData.productName,
-      description:productData.description,
-      brand:brand._id,
-      category:productData.category,
-      realPrice:productData.regularPrice,
-      salePrice:productData.salePrice,
-      productOffer:productData.productOffer,
-      quantity:productData.quantity,
-      status:productData.status
-    
-    }
-
-    if (images.length > 0) { 
-      updateFields.productImage = images; 
-    }
-
-    // if(req.files&&req.files.length>0){
-    //   updateFields.$push={
-    //     productImage:{$each:images}
-    //   }
-    // }
-
-    await Product.findByIdAndUpdate(productId,{ $set : updateFields },{ new:true })
-    res.redirect('/admin/products');
-
-  } catch (error) {
-    console.log('error while editing product',error);
-    res.redirect('/pageError')
-    
-  }
-}
 
 
 const deleteSingleImage = async(req,res)=>{
@@ -392,7 +333,7 @@ const deleteSingleImage = async(req,res)=>{
 }
 
 const updateProduct = async(req,res)=>{
- try {
+  try {
   const productId = req.query.id;
   const product = await Product.findById(productId);
   const productData = req.body;
@@ -436,6 +377,30 @@ const updateProduct = async(req,res)=>{
  } 
 }
 
+const deleteOffer=async(req,res)=>{
+  try {
+    
+    const {productId}=req.params;
+    const product = await Product.findById(productId);
+
+    if(product){
+      product.isOfferActive = false;
+      product.productOffer = 0;
+      product.salePrice = product.realPrice;
+      product.offerStartDate = null;
+      product.offerEndDate = null;
+      await product.save();
+      res.redirect(`/admin/editProduct/'${productId}`);
+    }else{
+      res.status(404).send('Product not found');
+    }
+
+  } catch (error) {
+    console.log('error while deleting offer',error);
+    res.status(500).send('Error while deleting offer');
+  }
+}
+
 module.exports = {
   loadAddProduct,
   loadProducts,
@@ -445,5 +410,6 @@ module.exports = {
   loadEditProduct,
   editProduct,
   deleteSingleImage,
-  updateProduct
+  updateProduct,
+  deleteOffer
 }

@@ -52,7 +52,7 @@ router.patch('/unBlockProduct/:id',isAdminAuthenticated,productController.unBloc
 router.get('/editProduct/:id',isAdminAuthenticated,productController.loadEditProduct)
 router.post('/editProduct/:id',isAdminAuthenticated,upload.array('images',3),productController.editProduct);
 router.get('/deleteSingleImage',isAdminAuthenticated,productController.deleteSingleImage);
-
+router.post('/deleteOffer/:productId',isAdminAuthenticated,productController.deleteOffer);
 
 //bannerManagement routes
 router.get('/banners', isAdminAuthenticated, bannerController.loadBanners);
@@ -65,8 +65,10 @@ router.post('/orderList/updateStatus', isAdminAuthenticated, adminOrderControlle
 
 //couponManagement routes
 router.get('/coupons',isAdminAuthenticated, couponController.loadCoupons);
+router.get('/coupons/add',isAdminAuthenticated,couponController.loadAddCoupon);
 router.post('/coupons',isAdminAuthenticated,couponController.createCoupon);
-router.post('/updateCoupon',isAdminAuthenticated,couponController.updateCoupon);
+router.get('/coupons/edit/:id',isAdminAuthenticated,couponController.loadUpdateCoupon);
+router.post('/coupons/edit/:id',isAdminAuthenticated,couponController.updateCoupon);
 router.get('/deleteCoupon',isAdminAuthenticated,couponController.deleteCoupon);
 
 

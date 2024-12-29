@@ -1,7 +1,80 @@
 <%- include('../layouts/admin/header.ejs') %>
-<%- include('../layouts/admin/sidebar.ejs', {currentPage: 'coupons'}) %>
+<%- include('../layouts/admin/sidebar.ejs', { currentPage: 'coupons' }) %>
 
+<div class="content">
+    <div class="container-fluid p-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3>Coupon Management</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='/admin/coupons/add'">Add Coupon</button>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Min Purchase</th>
+                                    <th>Offer Price</th>
+                                    <th>Expiry Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (coupons && coupons.length > 0) { %>
+                                    <% coupons.forEach(c => { %>
+                                        <tr>
+                                            <td><%= c.code %></td>
+                                            <td><%= c.minimumPrice %></td>
+                                            <td><%= c.offerPrice %></td>
+                                            <td><%= new Date(c.expireOn).toLocaleDateString() %></td>
+                                            <td><%= c.isActive ? 'Active' : 'Inactive' %></td>
+                                            <td>
+                                                <button class="btn btn-warning btn-sm" onclick="window.location.href='/admin/coupons/edit/<%= c._id %>'">Edit</button>
+                                                <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= c._id %>')">Delete</button>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">No coupons found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<style>
+    .content{
 
+        margin-left: 250px;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmDelete(couponId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to undo this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/admin/deleteCoupon?couponId=' + couponId;
+        }
+    });
+}
+</script>
 
 <%- include('../layouts/admin/footer.ejs') %>

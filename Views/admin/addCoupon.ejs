@@ -1,0 +1,145 @@
+<%- include('../layouts/admin/header.ejs') %>
+    <%- include('../layouts/admin/sidebar.ejs', { currentPage: 'coupons' }) %>
+
+        <div class="content">
+            <div class="container-fluid p-3">
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Add New Coupon</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="addCouponForm" action="/admin/coupons" method="POST"
+                                    onsubmit="return validateForm()">
+                                    <div class="form-group">
+                                        <label for="code">Coupon Code</label>
+                                        <input type="text" class="form-control" id="code" name="code" required>
+                                        <small id="codeError" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="offerPrice">Offer Price</label>
+                                        <input type="number" class="form-control" id="offerPrice" name="offerPrice"
+                                            required>
+                                        <small id="offerPriceError" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="minimumPrice">Minimum Price</label>
+                                        <input type="number" class="form-control" id="minimumPrice" name="minimumPrice"
+                                            required>
+                                        <small id="minimumPriceError" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="maximumPrice">Maximum Price</label>
+                                        <input type="number" class="form-control" id="maximumPrice" name="maximumPrice"
+                                            required>
+                                        <small id="maximumPriceError" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="expireOn">Expiration Date</label>
+                                        <input type="date" class="form-control" id="expireOn" name="expireOn" required>
+                                        <small id="expireOnError" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="usageLimit">Usage Limit</label>
+                                        <input type="number" class="form-control" id="usageLimit" name="usageLimit">
+                                        <small id="usageLimitError" class="form-text text-danger"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="isActive">Active</label>
+                                        <select class="form-control" id="isActive" name="isActive">
+                                            <option value="true">Yes</option>
+                                            <option value="false">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="isList">Listed</label>
+                                        <select class="form-control" id="isList" name="isList">
+                                            <option value="true">Yes</option>
+                                            <option value="false">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group text-center">
+                                        <button type="submit" class="btn btn-primary">Add Coupon</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            onclick="window.location.href='/admin/coupons'">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function validateForm() {
+                let isValid = true;
+
+
+                const code = document.getElementById('code').value;
+                if (!code) {
+                    document.getElementById('codeError').innerText = 'Coupon Code is required.';
+                    isValid = false;
+                }else if (!codeRegex.test(code)) { 
+                    document.getElementById('codeError').innerText = 'Coupon Code must be 6 alphanumeric characters.';
+                    isValid = false;
+                }else {
+                    document.getElementById('codeError').innerText = '';
+                }
+
+                const offerPrice = document.getElementById('offerPrice').value;
+                if (!offerPrice || offerPrice <= 0) {
+                    document.getElementById('offerPriceError').innerText = 'Offer price have to be a positive number.';
+                    isValid = false;
+                } else {
+                    document.getElementById('offerPriceError').innerText = '';
+                }
+
+
+                const minimumPrice = document.getElementById('minimumPrice').value;
+                if (!minimumPrice || minimumPrice <= 0) {
+                    document.getElementById('minimumPriceError').innerText = 'Minimum price must be a positive number.';
+                    isValid = false;
+                } else {
+                    document.getElementById('minimumPriceError').innerText = '';
+                }
+
+                const maximumPrice = document.getElementById('maximumPrice').value;
+                if (!maximumPrice || maximumPrice <= 0) {
+                    document.getElementById('maximumPriceError').innerText = 'Maximum price must be a positive number.';
+                    isValid = false;
+                } else {
+                    document.getElementById('maximumPriceError').innerText = '';
+                }
+
+                const expireOn = document.getElementById('expireOn').value;
+                if (!expireOn) {
+                    document.getElementById('expireOnError').innerText = 'Expiration date is required.';
+                    isValid = false;
+                } else {
+                    document.getElementById('expireOnError').innerText = '';
+                }
+
+                const usageLimit = document.getElementById('usageLimit').value;
+                if (usageLimit && usageLimit <= 0) {
+                    document.getElementById('usageLimitError').innerText = 'Usage limit have to be a positive number.';
+                    isValid = false;
+                } else {
+                    document.getElementById('usageLimitError').innerText = '';
+                }
+
+                if (!isValid) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Please correct the errors in the form.',
+                    });
+                }
+
+                return isValid;
+            }
+        </script>
+
+        <%- include('../layouts/admin/footer.ejs') %>
