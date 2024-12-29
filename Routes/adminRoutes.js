@@ -40,6 +40,7 @@ router.post('/brands',isAdminAuthenticated,upload.single('image'),brandControlle
 router.get('/blockBrand',isAdminAuthenticated,brandController.blockBrand);
 router.get('/unBlockBrand',isAdminAuthenticated,brandController.unBlockBrand);
 router.get('/deleteBrand',isAdminAuthenticated,brandController.deleteBrand);
+router.get('/deleteBrand',isAdminAuthenticated,brandController.deleteBrand);
 router.get('/restoreBrand', isAdminAuthenticated, brandController.restoreBrand); 
 
 
