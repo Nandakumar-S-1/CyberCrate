@@ -13,6 +13,7 @@
                     <th>S.No</th>
                     <th>Category Name</th>
                     <th>Description</th>
+                    <th>Offer</th>
                     <th>Listed/Unlisted</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -25,6 +26,7 @@
                             <td><%= (page - 1) * limit + index + 1 %></td>
                             <td><%= category.name %></td>
                             <td><%= category.description %></td>
+                            <td><%= category.categoryOffer %>%</td>
                             <td>
                                 <span class="<%= category.isListed ? 'text-success' : 'text-danger' %> fw-bold">
                                     <%= category.isListed ? 'Listed' : 'Unlisted' %>
@@ -55,7 +57,6 @@
         </table>
     </div>
 
-    <!-- Pagination outside the table -->
     <div class="pagination-container">
         <% if (totalPages > 1) { %>
             <div class="pagination">
@@ -66,7 +67,6 @@
         <% } %>
     </div>
 
-    <!-- Add Category Form -->
     <div class="card mt-4">
         <div class="card-body">
             <h5 class="card-title">Add New Category</h5>
@@ -80,6 +80,11 @@
                     <label for="descriptionId" class="form-label">Description</label>
                     <input type="text" class="form-control" id="descriptionId" name="description">
                     <div id="description-error" class="error-message text-danger" style="display: none;"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="categoryOffer" class="form-label">Category Offer</label>
+                    <input type="text" class="form-control" id="categoryOffer" name="categoryOffer" min="0" max="100">
+                    <div id="categoryOffer-error" class="error-message text-danger" style="display: none;"></div>
                 </div>
                 <div class="mb-3">
                     <div class="form-check form-switch">
@@ -267,17 +272,18 @@
     function handleFormSubmit(event) {
         event.preventDefault();
         if(!validateForm()){
-
+            return
         }
         const name=document.getElementsByName('name')[0].value;
         const description=document.getElementsByName('description')[0].value;
+        const categoryOffer=document.getElementsByName('categoryOffer')[0].value;
 
         fetch('/admin/categories', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, description }),
+            body: JSON.stringify({ name, description,categoryOffer }),
         })
             .then(response =>{
                 if(!response.ok){
@@ -295,7 +301,7 @@
                     Swal.fire({
                         icon:'error',
                         title:'OOPS...',
-                        text:'Category already exists',
+                        text:error.message  ,
                         
                     })
                 }
@@ -308,10 +314,11 @@
                 }
             })
         }
+        document.getElementById('addCategoryForm').addEventListener('submit',handleFormSubmit);
 </script>
 
-<script>
+<!-- <script>
     document.getElementById('addCategoryForm').addEventListener('submit', handleFormSubmit);
-</script>
+</script> -->
 
 <%- include('../layouts/admin/footer.ejs') %>

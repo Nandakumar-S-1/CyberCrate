@@ -34,6 +34,17 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="categoryOffer" class="form-label">Category Offer</label>
+                    <input type="text" 
+                            class="form-control" 
+                            id="categoryOffer" 
+                            name="categoryOffer" 
+                            value="<%= category.categoryOffer %>"
+                            min="0" max="100">
+                    <div id="categoryOffer-error" class="error-message text-danger" style="display: none;"></div>
+                </div>
+
+                <div class="mb-3">
                     <div class="form-check form-switch">
                         <input class="form-check-input" 
                                 type="checkbox" 
@@ -53,6 +64,9 @@
         </div>
     </div>
 </div>
+
+<%- include('../layouts/admin/footer.ejs') %>
+
 
 <style>
     .edit-category-container {
@@ -129,12 +143,184 @@
         });
     }
 
+    function displayErrorMessage(elementId, message) {
+        const errElement = document.getElementById(elementId);
+        errElement.textContent = message;
+        errElement.style.display = 'block';
+    }
+
+    function validateForm() {
+        clearErrorMessages();
+        const name = document.getElementById('categoryName').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const categoryOffer = document.getElementById('categoryOffer').value.trim();
+        let isValid = true;
+
+        if (name === '') {
+            displayErrorMessage('name-error', 'Category name is required');
+            isValid = false;
+        }
+
+        if (description === '') {
+            displayErrorMessage('description-error', 'Description is required');
+            isValid = false;
+        }
+
+        if (categoryOffer === '') {
+            displayErrorMessage('categoryOffer-error', 'Category offer is required');
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
+        const name = document.getElementById('categoryName').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const categoryOffer = document.getElementById('categoryOffer').value.trim();
+        const categoryId = document.querySelector('input[name="categoryId"]').value;
+
+        fetch(`/admin/editCategory`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ categoryId, name, description, categoryOffer }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    throw new Error(error.message);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message,
+            }).then(() => {
+                window.location.href = '/admin/categories';
+            });
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'OOPS...',
+                text: error.message || 'An error occurred while updating category',
+            });
+        });
+    }
+
+    document.getElementById('editCategoryForm').addEventListener('submit', handleFormSubmit);
+</script>
+
+
+<!-- <script>
+    function clearErrorMessages() {
+        const errElements = document.getElementsByClassName('error-message');
+        Array.from(errElements).forEach(element => {
+            element.style.display = 'none';
+        });
+    }
+
+    function displayErrorMessage(elementId, message) {
+        const errElement = document.getElementById(elementId);
+        errElement.textContent = message;
+        errElement.style.display = 'block';
+    }
+
+    function validateForm() {
+        clearErrorMessages();
+        const name = document.getElementById('categoryName').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const categoryOffer = document.getElementById('categoryOffer').value.trim();
+        let isValid = true;
+
+        if (name === '') {
+            displayErrorMessage('name-error', 'Category name is required');
+            isValid = false;
+        }
+
+        if (description === '') {
+            displayErrorMessage('description-error', 'Description is required');
+            isValid = false;
+        }
+
+        if (categoryOffer === '') {
+            displayErrorMessage('categoryOffer-error', 'Category offer is required');
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
+        const name = document.getElementById('categoryName').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const categoryOffer = document.getElementById('categoryOffer').value.trim();
+
+        fetch(`/admin/categories/update/${event.target.dataset.categoryId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, description, categoryOffer }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    throw new Error(error.message);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Category updated successfully!',
+            }).then(() => {
+                window.location.href = '/admin/categories';
+            });
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'OOPS...',
+                text: error.message || 'An error occurred while updating category',
+            });
+        });
+    }
+
+    document.getElementById('editCategoryForm').addEventListener('submit', handleFormSubmit);
+</script> -->
+
+
+<!-- <script>
+    function clearErrorMessages() {
+        const errElements = document.getElementsByClassName('error-message');
+        Array.from(errElements).forEach(element => {
+            element.style.display = 'none';
+        });
+    }
+
     function handleFormSubmit(event) {
         event.preventDefault();
         clearErrorMessages();
 
         const name = document.getElementById('categoryName').value.trim();
         const description = document.getElementById('description').value.trim();
+        const categoryOffer = document.getElementById('categoryOffer').value.trim();
         let isValid = true;
 
         if (name === '') {
@@ -149,12 +335,17 @@
             isValid = false;
         }
 
+        if (categoryOffer === '') {
+            document.getElementById('categoryOffer-error').textContent = 'Category offer is required';
+            document.getElementById('categoryOffer-error').style.display = 'block';
+            isValid = false;
+        }
+
         if (isValid) {
             event.target.submit();
         }
     }
 
     document.getElementById('editCategoryForm').addEventListener('submit', handleFormSubmit);
-</script>
+</script> -->
 
-<%- include('../layouts/admin/footer.ejs') %>
