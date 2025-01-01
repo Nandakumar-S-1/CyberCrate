@@ -68,43 +68,6 @@
                             <% }); %>
                     </tbody>
 
-
-                    <!-- <tbody>
-                <% items.forEach(item => { %>
-                    <tr class="cart-item">
-                        <td class="item-image">
-                            <% if (item.productId.productImage && item.productId.productImage.length > 0) { %>
-                                <a href="/productDetails/<%= item.productId._id %>">
-                                    <img src="/img/products/<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>">
-                                </a>
-                            <% } else { %>
-                                <a href="/productDetails/<%= item.productId._id %>">
-                                    <img src="/img/products/default.png" alt="No Image Available">
-                                </a>
-                            <% } %>
-                        </td>
-                        <td class="item-name">
-                            <div class="item-details">
-                                <h2>
-                                    <a href="/productDetails/<%= item.productId._id %>" class="text-decoration-none text-dark">
-                                        <%= item.productId.productName %>
-                                    </a>
-                                </h2>
-                            </div>
-                        </td>
-                        <td>₹<%= item.price %></td>
-                        <td class="quantity-control">
-                            <button class="quantity-btn" onclick="updateQuantity('<%= item.productId._id %>', <%= item.quantity - 1 %>)">-</button>
-                            <span><%= item.quantity %></span>
-                            <button class="quantity-btn" onclick="updateQuantity('<%= item.productId._id %>', <%= item.quantity + 1 %>)">+</button>
-                        </td>
-                        <td>₹<%= item.totalPrice %></td>
-                        <td>
-                            <button class="remove-btn" onclick="confirmRemoveItem('<%= item.productId._id %>')">Remove</button>
-                        </td>
-                    </tr>
-                <% }); %>
-            </tbody> -->
                 </table>
                 <div class="cart-summary">
                     <form class="coupon-form" action="/applyCoupon" method="post">
@@ -126,7 +89,7 @@
     </div>
 
 
-
+    <%- include('../layouts/user/footer.ejs') %>
 
 
     <style>
@@ -390,4 +353,4 @@ function updateQuantity(productId, newQuantity) {
 
 
 
-    <%- include('../layouts/user/footer.ejs') %>
+ 

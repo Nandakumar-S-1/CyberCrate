@@ -1,187 +1,190 @@
 <%- include('../layouts/user/header.ejs') %>
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f8f8f8;
-        color: #333;
-    }
-    .container {
-        width: 80%;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-    }
-    .wishlist {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .wishlist th, .wishlist td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-    .wishlist th {
-        background-color: #f2f2f2;
-    }
-    .product-image {
-        width: 100px;
-    }
-    .actions button {
-        margin: 5px;
-        padding: 10px;
-        border: none;
-        cursor: pointer;
-    }
-    .add-to-cart {
-        background-color: #4CAF50;
-        color: white;
-    }
-    .view {
-        background-color: #2196F3;
-        color: white;
-    }
-    .remove {
-        background-color: #f44336;
-        color: white;
-    }
-    .pagination {
-        text-align: center;
-        margin-top: 20px;
-    }
-    .pagination a {
-        margin: 0 5px;
-        padding: 10px 15px;
-        text-decoration: none;
-        color: #333;
-        background-color: #fff;
-        border: 1px solid #ddd;
-    }
-    .pagination a.active {
-        background-color: #2196F3;
-        color: white;
-    }
-</style>
-
-<div class="container">
-    <h1>Wishlist</h1>
-    <table class="wishlist">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% if (wishlist.products.length > 0) { %>
-                <% wishlist.products.forEach(product => { %>
+        <div class="container">
+            <h1>Wishlist</h1>
+            <table class="wishlist">
+                <thead>
                     <tr>
-                        <td>
-                            <img src="<%= product.productId.productImage %>" alt="<%= product.productId.productName %>" class="product-image">
-                            <div>
-                                <strong><%= product.productId.productName %></strong>
-                                <p>₹<%= product.productId.price %></p>
-                                <p>⭐<%= product.productId.rating %></p>
-                            </div>
-                        </td>
-                        <td>₹<%= product.productId.price %></td>
-                        <td class="actions">
-                            <button class="add-to-cart" onclick="addToCart('<%= product.productId._id %>')">Add to Cart</button>
-                            <button class="view" onclick="viewProduct('<%= product.productId._id %>')">View</button>
-                            <button class="remove" onclick="removeFromWishlist('<%= product.productId._id %>')">Remove</button>
-                        </td>
+                        <th>Product</th>
+                        <th>Details</th>
+                        <th>Price</th>
+                        <th>Actions</th>
                     </tr>
-                <% }); %>
-            <% } else { %>
-                <tr>
-                    <td colspan="3">Your wishlist is empty.</td>
-                </tr>
-            <% } %>
-        </tbody>
-    </table>
-    <div class="pagination">
-        <% for (let i = 1; i <= totalPages; i++) { %>
-            <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-        <% } %>
-    </div>
-</div>
+                </thead>
+                <tbody>
+                    <% if (wishlist.products.length> 0) { %> 
+                        <% wishlist.products.forEach(product=> { %> 
+                            <tr>
+                                <td> 
+                                    <%if(product.productId.productImage && product.productId.productImage.length> 0){%>
+                                        <img src="/img/products/<%= product.productId.productImage[0] %>" alt="<%= product.productId.productName %>" class="product-image">
+                                        <%}else{%> 
+                                            <img src="/img/products/default.png" alt="No Image Available" class="product-image"> 
+                                        <%}%>
+                                </td>
+                                <td>
+                                    <div> <strong>
+                                            <%= product.productId.productName %>
+                                        </strong>
+                                        <p>₹<%= product.productId.realPrice %>
+                                        </p>
+                                    </div>
+                                </td>
+                                <td>₹<%= product.productId.salePrice %>
+                                </td>
+                                <td class="actions"> <button class="add-to-cart"
+                                        onclick="addToCart('<%= product.productId._id %>')">Add to Cart</button> <button
+                                        class="view" onclick="viewProduct('<%= product.productId._id %>')">View</button>
+                                    <button class="remove"
+                                        onclick="removeFromWishlist('<%= product.productId._id %>')">Remove</button>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="3">Your wishlist is empty.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <% for (let i=1; i <=totalPages; i++) { %> <a href="?page=<%= i %>"
+                        class="<%= currentPage === i ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                    <% } %>
+            </div>
+        </div>
 
-<script>
-    function addToCart(productId) {
-        fetch('/cart/addItem', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body:JSON.stringify({productId})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire(
-                    'Added!',
-                    'The item has been added to your cart',
-                    'success'
-                );
-            } else {
-                Swal.fire(
-                    'Error!',
-                    'Failed to add the item to your cart.',
-                    'error'
-                );
+        <script>
+            function addToCart(productId) {
+                fetch('/cart/addItem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId, quantity: 1 })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Added!', 'The item has been added to your cart.', 'success');
+                        } else {
+                            Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
+                    });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire(
-                'Error!',
-                'An error occurred while adding the item to your cart.',
-                'error'
-            );
-        });
-    }
-    function viewProduct(productId) {
-        window.location.href=`/product/view/${productId}`;
-    }
 
-    function removeFromWishlist(productId) {
-        fetch('/wishlist/removeItem', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire(
-                    'Removed!',
-                    'The item has been removed from your wishlist.',
-                    'success'
-                ).then(() => {
-                    location.reload();
-                });
-            } else {
-                Swal.fire(
-                    'Error!',
-                    'Failed to remove the item from your wishlist.',
-                    'error'
-                );
+            // function viewProduct(productId) {
+            //     window.location.href = `/product/view/${productId}`;
+            // }
+
+            function removeFromWishlist(productId) {
+                fetch('/wishlist/removeItem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Removed!', 'The item has been removed from your wishlist.', 'success')
+                                .then(() => {
+                                    location.reload();
+                                });
+                        } else {
+                            Swal.fire('Error!', 'Failed to remove the item from your wishlist.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error!', 'An error occurred while removing the item from your wishlist.', 'error');
+                    });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire(
-                'Error!',
-                'An error occurred while removing the item from your wishlist.',
-                'error'
-            );
-        });
-    }
-</script>
+        </script>
 
-<%- include('../layouts/user/footer.ejs') %>
+        <%- include('../layouts/user/footer.ejs') %>
+
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f8f8f8;
+                    color: #333;
+                }
+
+                .container {
+                    width: 80%;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+
+                h1 {
+                    text-align: center;
+                }
+
+                .wishlist {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                .wishlist th,
+                .wishlist td {
+                    padding: 10px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                }
+
+                .wishlist th {
+                    background-color: #f2f2f2;
+                }
+
+                .product-image {
+                    width: 100px;
+                }
+
+                .actions button {
+                    margin: 5px;
+                    padding: 10px;
+                    border: none;
+                    cursor: pointer;
+                }
+
+                .add-to-cart {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+
+                .view {
+                    background-color: #2196F3;
+                    color: white;
+                }
+
+                .remove {
+                    background-color: #f44336;
+                    color: white;
+                }
+
+                .pagination {
+                    text-align: center;
+                    margin-top: 20px;
+                }
+
+                .pagination a {
+                    margin: 0 5px;
+                    padding: 10px 15px;
+                    text-decoration: none;
+                    color: #333;
+                    background-color: #fff;
+                    border: 1px solid #ddd;
+                }
+
+                .pagination a.active {
+                    background-color: #2196F3;
+                    color: white;
+                }
+            </style>

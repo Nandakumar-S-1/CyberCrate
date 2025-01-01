@@ -3,48 +3,80 @@ const Product = require('../../Models/productModel');
 const Category = require('../../Models/categoryModel');
 const Brand = require('../../Models/brandModel');
 
-
 const loadWishlist = async (req, res) => {
-
     try {
+        const userId = req.session.user._id;
+        const wishlist = await Wishlist.findOne({ userId }).populate({
+            path: 'products.productId',
+            select: 'productName productImage realPrice salePrice brand category',
+        }).populate('products.productId.category').populate('products.productId.brand');
 
-        const userId = req.session.user;
-        const wishList = await Wishlist.findOne({ userId }).populate({
-            path:'products.productId',
-            populate:{path: 'category brand'},
-            options:{sort:{createdAt:-1}},
-        })
-
-        if (!wishList || wishList.products.length === 0) {
-
+        if (!wishlist || wishlist.products.length === 0) {
             return res.render('users/wishlist', {
-                wishlist: {
-                products: []
-                },
+                wishlist: { products: [] },
                 totalPages: 0,
                 currentPage: 1
-            })
+            });
         }
+
+        wishlist.products.sort((a, b) => b.addedOn - a.addedOn);
+
         const itemsPerPage = 6;
         const page = parseInt(req.query.page) || 1;
-        const totalPages = Math.ceil(wishList.products.length / itemsPerPage);
-        const pageProducts = wishList.products.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+        const totalPages = Math.ceil(wishlist.products.length / itemsPerPage);
+        const pageProducts = wishlist.products.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-        res.render('users/wishlist', { wishlist: { products: pageProducts }, totalPages: totalPages, currentPage: page });
-
+        res.render('users/wishlist', { wishlist: { products: pageProducts }, totalPages, currentPage: page });
     } catch (error) {
-
         console.error('Error loading wishlist:', error);
         res.status(500).send({ message: 'Error loading wishlist' });
-
     }
+};
 
-}
+// const loadWishlist = async (req, res) => {
+//     try {
+//         const userId = req.session.user._id;
+//         const wishlist = await Wishlist.findOne({ userId }).populate({
+//             path: 'products.productId',populate: {
+//                 path: 'category',
+//      }
+//             })
+//         if (!wishlist || wishlist.products.length === 0) {
+//             return res.render('users/wishlist', {
+//                 wishlist: { products: [] },
+//                 totalPages: 0,
+//                 currentPage: 1
+//             });
+//         }
+
+//         wishlist.products.sort((a, b) => b.addedOn - a.addedOn);
+
+//         const itemsPerPage = 6;
+//         const page = parseInt(req.query.page) || 1;
+//         const totalPages = Math.ceil(wishlist.products.length / itemsPerPage);
+//         const pageProducts = wishlist.products.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+//         res.render('users/wishlist', { wishlist: { products: pageProducts }, totalPages, currentPage: page });
+//     } catch (error) {
+//         console.error('Error loading wishlist:', error);
+//         res.status(500).send({ message: 'Error loading wishlist' });
+//     }
+// };
 
 const addToWishlist = async (req, res) => {
     try {
-        const userId = req.session.user;
+        console.log('Session Data:', req.session);
+
+        if (!req.session.user || !req.session.user._id) {
+            console.error('User is not logged in or session data is missing');
+            return res.status(400).json({ success: false, message: 'User not logged in' });
+        }
+
+        const userId = req.session.user._id;
         const { productId } = req.body;
+
+        console.log('User ID:', userId);
+        console.log('Product ID:', productId);
 
         let wishlist = await Wishlist.findOne({ userId });
         if (!wishlist) {
@@ -57,6 +89,8 @@ const addToWishlist = async (req, res) => {
             await wishlist.save();
         }
 
+        console.log('Wishlist after adding product:', wishlist);
+
         res.status(200).json({ success: true, wishlist });
     } catch (error) {
         console.error('Error adding to wishlist:', error);
@@ -64,13 +98,11 @@ const addToWishlist = async (req, res) => {
     }
 };
 
-
-
 const removeFromWishlist = async (req, res) => {
 
     try {
 
-        const userId = req.session.user;
+        const userId = req.session.user._id;
         const { productId } = req.body;
 
         let wishlist = await Wishlist.findOne({ userId });

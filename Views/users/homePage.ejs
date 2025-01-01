@@ -458,7 +458,7 @@
         </div>
     </section>
 
-    <!-- Services  -->
+
     <section class="services" style="background-color: #11012b; padding: 40px 0">
         <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 20px">
             <div class="services-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px">
@@ -574,7 +574,7 @@
         </div>
     </section>
 
-    <script>
+    <!-- <script>
         function addToCart(productId) {
             fetch('/cart/addItem', {
                 method: 'POST',
@@ -648,8 +648,71 @@
                 });
             });
         });
-    </script>
+    </script> -->
+   
+    <script>
+        function addToCart(productId) {
+            fetch('/cart/addItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId, quantity: 1 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Added!', 'The item has been added to your cart.', 'success');
+                } else {
+                    Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
+            });
+        }
     
+        function addToFavorites(productId) {
+            fetch('/wishlist/addItem', {  // Corrected endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Added!', 'The item has been added to your wishlist.', 'success');
+                } else {
+                    Swal.fire('Error!', 'Failed to add the item to your wishlist.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error!', 'An error occurred while adding the item to your wishlist.', 'error');
+            });
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".product-card").forEach((card) => {
+                const productId = card.querySelector("a").getAttribute("href").split("/").pop();
+                card.querySelector(".add-to-cart").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    addToCart(productId);
+                });
+                card.querySelector(".add-to-favorites").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    addToFavorites(productId);
+                });
+                card.querySelector(".product-title").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
+
     <script>
         const brandTrack = document.querySelector('.brand-track');
 

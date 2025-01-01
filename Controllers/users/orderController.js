@@ -4,13 +4,138 @@ const Cart = require("../../Models/cartModel");
 const Address = require("../../Models/addressModel");
 const Product = require("../../Models/productModel");
 
+// const placeOrders = async (req, res) => {
+//   try {
+//     const userId = req.session.user;
+//     const { paymentMethod, selectedAddressId } = req.body;
+
+//     const cart = await Cart.findOne({ userId }).populate("items.productId");
+//     const user = await User.findById(userId).populate("addresses");
+//     const addressData=await Address.findOne({userId,"address._id":selectedAddressId});
+
+//     if(!addressData|| addressData.address.length===0 ||!addressData.address){
+//       return res.status(400).send({ message: "No address has found" });
+//     }
+//     const selectedAddress = addressData.address[0];
+
+//     const availableItems = cart.items.filter(
+//       (item) => !item.productId.isBlocked
+//     );
+//     cart.items = availableItems;
+
+//     if (availableItems.length === 0) {
+//       return res
+//         .status(400)
+//         .send({
+//           message: "Your Cart is currently empty due to blocked products",
+//         });
+//     }
+
+//     const totalAmount = cart.items.reduce(
+//       (total, item) => total + item.totalPrice,0
+//     );
+//     const discount = 0;
+//     const finalAmount = totalAmount - discount;
+
+//     // let defaultAddress = user.addresses.find(
+//     //   (addr) => addr._id.toString() === user.defaultAddressId
+//     // );
+
+//     // if (!defaultAddress && user.addresses.length > 0) {
+//     //   defaultAddress = user.addresses[0];
+//     // }
+
+//     // if (!defaultAddress) {
+//     //   return res.status(400).send({ message: "No address found" });
+//     // }
+
+//     for (let item of availableItems) {
+//       if (item.productId.quantity < item.quantity) {
+//         return res.status(400).send({
+//           message: `Product ${item.productId.productName} is out of stock`,
+//         });
+//       }
+//     }
+
+//     const newOrder = new Order({
+//       user: userId,
+//       orderedItems: availableItems.map((item) => ({
+//         product: item.productId._id,
+//         quantity: item.quantity,
+//         price: item.totalPrice,
+//       })),
+//       totalPrice: totalAmount,
+//       finalAmount: finalAmount,
+//       discount: discount,
+//       status: "Pending",
+//       paymentMethod,
+//       address: {
+//         addressType: selectedAddress.addressType,
+//         name: selectedAddress.name,
+//         city: selectedAddress.city,
+//         landMark: selectedAddress.landMark,
+//         state: selectedAddress.state,
+//         pincode: selectedAddress.pincode,
+//         phone: selectedAddress.phone,
+//         alterPhone: selectedAddress.alterPhone
+//       }
+//     });
+
+//     let savedOrder = await newOrder.save();
+
+//     // for (let item of cart.items) {
+//     //   item.productId.quantity -= item.quantity;
+//     //   if (item.productId.quantity === 0) {
+//     //     item.productId.status = "Out of Stock";
+//     //   }
+//     //   await item.productId.save();
+//     // }
+
+//     if (savedOrder) {
+//       await Cart.findByIdAndDelete(cart._id);
+
+//       for (let item of availableItems) {
+//         await Product.findByIdAndUpdate(item.productId, {
+//           $inc: { quantity: -item.quantity },
+//         });
+//       }
+//     }
+
+//     res
+//       .status(200)
+//       .send({ message: "Order placed successfully", order: newOrder });
+//   } catch (error) {
+//     console.error("Error placing order:", error);
+//     res.status(500).send({ message: "Error placing order" });
+//   }
+// };
+
+const calculateDiscount=(items)=>{
+  let discount=0;
+  items.forEach(item=>{
+    discount+=item.productId.discount
+  })
+}
+
 const placeOrders = async (req, res) => {
   try {
-    const userId = req.session.user;
+    const userId = req.session.user._id;
     const { paymentMethod, selectedAddressId } = req.body;
 
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     const user = await User.findById(userId).populate("addresses");
+    const addressData = await Address.findOne({ 
+      userId, 
+      "address._id": selectedAddressId
+    },
+    { "address.$": 1 }
+  );
+
+    if (!addressData || !addressData.address || addressData.address.length === 0) {
+      return res.status(400).send({ message: "Selected address not found" });
+    }
+
+    const selectedAddress = addressData.address[0];
 
     const availableItems = cart.items.filter(
       (item) => !item.productId.isBlocked
@@ -18,31 +143,17 @@ const placeOrders = async (req, res) => {
     cart.items = availableItems;
 
     if (availableItems.length === 0) {
-      return res
-        .status(400)
-        .send({
-          message: "Your Cart is currently empty due to blocked products",
-        });
+      return res.status(400).send({
+        message: "Your Cart is currently empty due to blocked products",
+      });
     }
 
     const totalAmount = cart.items.reduce(
       (total, item) => total + item.totalPrice,
       0
     );
-    const discount = 0;
+    const discount = calculateDiscount(cart.items);
     const finalAmount = totalAmount - discount;
-
-    // let defaultAddress = user.addresses.find(
-    //   (addr) => addr._id.toString() === user.defaultAddressId
-    // );
-
-    // if (!defaultAddress && user.addresses.length > 0) {
-    //   defaultAddress = user.addresses[0];
-    // }
-
-    // if (!defaultAddress) {
-    //   return res.status(400).send({ message: "No address found" });
-    // }
 
     for (let item of availableItems) {
       if (item.productId.quantity < item.quantity) {
@@ -62,20 +173,21 @@ const placeOrders = async (req, res) => {
       totalPrice: totalAmount,
       finalAmount: finalAmount,
       discount: discount,
-      address: selectedAddressId,
+      address: {
+        addressType: selectedAddress.addressType,
+        name: selectedAddress.name,
+        city: selectedAddress.city,
+        landMark: selectedAddress.landMark,
+        state: selectedAddress.state,
+        pincode: selectedAddress.pincode,
+        phone: selectedAddress.phone,
+        altPhone: selectedAddress.altPhone,
+      },
       status: "Pending",
       paymentMethod,
     });
 
     let savedOrder = await newOrder.save();
-
-    // for (let item of cart.items) {
-    //   item.productId.quantity -= item.quantity;
-    //   if (item.productId.quantity === 0) {
-    //     item.productId.status = "Out of Stock";
-    //   }
-    //   await item.productId.save();
-    // }
 
     if (savedOrder) {
       await Cart.findByIdAndDelete(cart._id);
@@ -87,14 +199,13 @@ const placeOrders = async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .send({ message: "Order placed successfully", order: newOrder });
+    res.status(200).send({ message: "Order placed successfully", order: newOrder });
   } catch (error) {
     console.error("Error placing order:", error);
     res.status(500).send({ message: "Error placing order" });
   }
 };
+
 
 const getUserOrders = async (req, res) => {
   try {

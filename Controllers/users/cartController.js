@@ -70,7 +70,6 @@ const addItemToCart = async (req, res) => {
     }
 };
 
-
 const removeItemFromCart = async (req, res) => {
     const { productId } = req.body;
     const userId = req.session.user;
