@@ -71,6 +71,8 @@ const Brand = require('../../Models/brandModel');
 
 const loadShop = async (req, res) => {
     try {
+        const userId = req.session.user;
+
         const page = parseInt(req.query.page) || 1;
         const limit = 9;
         const skip = (page - 1) * limit;
@@ -122,6 +124,7 @@ const loadShop = async (req, res) => {
         const brands = await Brand.find({ isBlocked: false });
 
         res.render('users/shop', {
+            user: userId,
             products: products,
             categories: categories,
             brands: brands,

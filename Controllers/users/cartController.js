@@ -1,9 +1,12 @@
 const Cart = require('../../Models/cartModel');
 const Product = require('../../Models/productModel');
+const User=require('../../Models/userModel')
 
 const loadCart = async (req, res) => {
-    const userId = req.session.user;
+
     try {
+        const userId = req.session.user;
+        const user = await User.findById(userId);    
         const cart = await Cart.findOne({ userId }).populate('items.productId');
 
         if (!cart || cart.items.length === 0) {
@@ -15,7 +18,12 @@ const loadCart = async (req, res) => {
          // res.render('users/cart', { items: cart.items, cartTotal, discount: 0 });
 
         const cartTotal = cart.items.reduce((total, item) => !item.productId.isBlocked ? total + item.totalPrice : total, 0); 
-        res.render('users/cart', { items: cart.items, cartTotal, discount: 0, message: '' });
+        res.render('users/cart', {
+            items: cart.items,
+            cartTotal,
+            discount: 0,
+            message: ''
+        });
         
     } catch (error) {
         console.error("Error loading cart:", error);

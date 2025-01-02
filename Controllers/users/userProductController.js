@@ -27,7 +27,7 @@ const productDetails = async (req, res) => {
       if (!product) {
         return res.status(404).render('404-error', { message: 'Product not found' });
       }
-      console.log(product.brand);
+      // console.log(product.brand);
 
       const relatedProducts = await Product.find({
         category: product.category,
@@ -102,13 +102,13 @@ const productDetails = async (req, res) => {
 const searchProducts = async (req, res) => {
   try {
     const searchWord = req.query.searchWord || '';
-    console.log('Search Word:', searchWord);
+    // console.log('Search Word:', searchWord);
 
     const result = await Product.find({
       name: { $regex: searchWord, $options: 'i' }
     });
 
-    console.log('Search Results:', result);
+    // console.log('Search Results:', result);
     res.render('users/searchProducts', { result, searchWord });
   } catch (error) {
     console.error('Error loading search products:', error);

@@ -1,5 +1,127 @@
 <%- include('../layouts/user/header.ejs') %>
-    <div class="cart-container">
+<style>
+    .cart-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-container h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .cart-items {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cart-items th,
+    .cart-items td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+    }
+
+    .cart-items th {
+        background-color: #f0f0f0;
+    }
+
+    .cart-item .item-image {
+        display: flex;
+        align-items: center;
+    }
+
+    .item-image img {
+        max-width: 100px;
+        max-height: 100px;
+        margin-right: 10px;
+        border-radius: 5px;
+    }
+
+    .item-name h2 {
+        font-size: 1.2em;
+        margin: 0;
+        text-align: left;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .quantity-btn {
+        background-color: #1a237e;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .remove-btn {
+        background-color: #f44336;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .cart-summary {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .cart-summary p {
+        font-size: 1.2em;
+        margin: 10px 0;
+    }
+
+    .coupon-form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        width: 10rem;
+    }
+
+    .coupon-form input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .apply-coupon-btn {
+        background-color: #1a237e;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .checkout-btn {
+        display: inline-block;
+        background-color: #1a237e;
+        color: #fff;
+        text-align: center;
+        padding: 15px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+</style>
+
+<div class="cart-container">
         <h1>Your Shopping Cart</h1>
         <% if (items.length===0) { %>
             <p class="font-weight-bold">Your cart is currently empty.</p>
@@ -92,127 +214,6 @@
     <%- include('../layouts/user/footer.ejs') %>
 
 
-    <style>
-        .cart-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .cart-container h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .cart-items {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .cart-items th,
-        .cart-items td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-        }
-
-        .cart-items th {
-            background-color: #f0f0f0;
-        }
-
-        .cart-item .item-image {
-            display: flex;
-            align-items: center;
-        }
-
-        .item-image img {
-            max-width: 100px;
-            max-height: 100px;
-            margin-right: 10px;
-            border-radius: 5px;
-        }
-
-        .item-name h2 {
-            font-size: 1.2em;
-            margin: 0;
-            text-align: left;
-        }
-
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .quantity-btn {
-            background-color: #1a237e;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .remove-btn {
-            background-color: #f44336;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .cart-summary {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .cart-summary p {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-
-        .coupon-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            width: 10rem;
-        }
-
-        .coupon-form input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .apply-coupon-btn {
-            background-color: #1a237e;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .checkout-btn {
-            display: inline-block;
-            background-color: #1a237e;
-            color: #fff;
-            text-align: center;
-            padding: 15px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-    </style>
 
     <script>
         function confirmRemoveItem(productId) {

@@ -42,7 +42,7 @@ const orderSchema = new Schema({
             type: String,
             required: true
         },
-        altPhone: {
+        alterPhone: {
             type: String,
             required: true
         }
@@ -68,7 +68,7 @@ const orderSchema = new Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['COD', 'Online']
+        enum: ['COD','Bank','Online']
     },
     subTotal: {
         type: Number,
@@ -90,10 +90,10 @@ const orderSchema = new Schema({
         type: Number,
         required: true
     },
-    deliveryMethod: {
-        type: String,
-        required: true
-    },
+    // deliveryMethod: {
+    //     type: String,
+    //     required: true
+    // },
     invoiceDate: {
         type: Date
     },

@@ -229,7 +229,7 @@ const signin = async (req, res) => {
         };
         await req.session.save();
 
-        console.log('User Session Data:', req.session.user);
+        // console.log('User Session Data:', req.session.user);
 
         return res.redirect('/');
     } catch (error) {
@@ -328,7 +328,6 @@ const verifyOtp = async (req, res) => {
             });
         }
 
-        // Check OTP has expired
         const now = Date.now();
         const expiryTime = req.session.otpExpiry;
         console.log('Time check:', {
@@ -339,7 +338,6 @@ const verifyOtp = async (req, res) => {
         });
 
         if (now > expiryTime) {
-            // Clear session data
             delete req.session.userOtp;
             delete req.session.userData;
             delete req.session.otpExpiry;
