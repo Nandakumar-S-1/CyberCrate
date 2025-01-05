@@ -88,12 +88,12 @@ const orderSchema = new Schema({
     },
     deliveryCharge: {
         type: Number,
-        required: true
+        required: false
     },
-    // deliveryMethod: {
-    //     type: String,
-    //     required: true
-    // },
+    deliveryMethod: {
+        type: String,
+        required: false
+    },
     invoiceDate: {
         type: Date
     },

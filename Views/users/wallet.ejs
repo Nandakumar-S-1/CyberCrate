@@ -1,4 +1,112 @@
+<%- include('../layouts/user/header.ejs') %>
 
-<%-include('../layouts/user/header.ejs')%>
+    <div class="container mt-5">
+        <h2>My Wallet</h2>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Wallet Balance: ₹<%= wallet.amount.toFixed(2) %>
+                </h5>
+                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addMoneyModal">
+                    Add Money
+                </button>
+            </div>
+        </div>
 
-<%-include('../layouts/user/footer.ejs')%>
+        <h4 class="mt-5">Transaction History</h4>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Transaction ID</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (wallet.transactions.length> 0) { %>
+                    <% wallet.transactions.forEach((transaction, index)=> { %>
+                        <tr>
+                            <td>
+                                <%= index + 1 %>
+                            </td>
+                            <td>
+                                <%= transaction.transactionId %>
+                            </td>
+                            <td>
+                                <%= transaction.transactionType %>
+                            </td>
+                            <td>₹<%= transaction.amount.toFixed(2) %>
+                            </td>
+                            <td>
+                                <%= new Date(transaction.date).toLocaleString() %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" class="text-center">No transactions found</td>
+                                </tr>
+                                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Money Modal -->
+    <div class="modal fade" id="addMoneyModal" tabindex="-1" aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="addMoneyForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMoneyModalLabel">Add Funds to Wallet</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control" id="amount" name="amount" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Payment Method</label>
+                            <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Debit Card">Debit Card</option>
+                                <option value="UPI">UPI</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add Funds</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        document.getElementById("addMoneyForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const amount = document.getElementById("amount").value;
+            const paymentMethod = document.getElementById("paymentMethod").value;
+
+            try {
+                const response = await fetch("/wallet/addMoney", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId: "<%= user._id %>", amount, paymentMethod }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert("Funds added successfully!");
+                    location.reload();
+                } else {
+                    alert(data.message || "Failed to add funds.");
+                }
+            } catch (error) {
+                console.error("Error adding funds:", error);
+            }
+        });
+    </script>
+
+    <%- include('../layouts/user/footer.ejs') %>

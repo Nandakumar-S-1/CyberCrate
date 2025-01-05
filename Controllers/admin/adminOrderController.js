@@ -25,7 +25,8 @@ const getAllOrders = async (req, res) => {
             orders: pageOrders, 
             totalPages: totalPages, 
             currentPage: page,
-            filterStatus: filterStatus
+            filterStatus: filterStatus,
+            itemsPerPage: itemsPerPage
 
         });
     } catch (error) {
@@ -34,32 +35,56 @@ const getAllOrders = async (req, res) => {
     }
 };
 
+// const updateStatus = async (req, res) => {
+//     try {
+        
+//         const {orderId,updatedStatus}=req.body;
+//         const order = await Order.findById(orderId);
+
+//         if(!order){
+//             return res.status(404).send({message:"Order is Missing"});
+//         }
+
+//         if(order.status==='Cancelled'){
+//             return res.status(400).send({message:"You cannot update status of cancelled order"});
+//         }
+
+//         order.status=updatedStatus;
+
+//         await order.save();
+//         return res.json({message:"Status Updated Successfully"});
+
+//     } catch (error) {
+        
+//         console.log('error while updating order status',error);
+//         return res.status(500).send({message:"Error while updating order status"});
+        
+//     }
+// }
+
 const updateStatus = async (req, res) => {
     try {
-        
-        const {orderId,updatedStatus}=req.body;
+        const { orderId, updatedStatus } = req.body;
         const order = await Order.findById(orderId);
 
-        if(!order){
-            return res.status(404).send({message:"Order is Missing"});
+        if (!order) {
+            return res.status(404).json({ message: "Order is Missing" });
         }
 
-        if(order.status==='Cancelled'){
-            return res.status(400).send({message:"You cannot update status of cancelled order"});
+        if (order.status === 'Cancelled') {
+            return res.status(400).json({ message: "You cannot update status of cancelled order" });
         }
 
-        order.status=updatedStatus;
-
+        order.status = updatedStatus;
         await order.save();
-        return res.status(200).send({message:"Status Updated Successfully"});
+        return res.json({ message: "Status Updated Successfully" });
 
     } catch (error) {
-        
-        console.log('error while updating order status',error);
-        return res.status(500).send({message:"Error while updating order status"});
-        
+        console.log('Error while updating order status', error);
+        return res.status(500).json({ message: "Error while updating order status" });
     }
-}
+};
+
 
 module.exports = {
     getAllOrders,

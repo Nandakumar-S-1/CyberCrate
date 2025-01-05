@@ -8,6 +8,7 @@ const shopController = require('../Controllers/users/shopController')
 const wishlistController = require('../Controllers/users/wishListController')
 const orderController = require('../Controllers/users/orderController')
 const walletController = require('../Controllers/users/walletController')
+const couponController = require('../Controllers/users/couponController')
 const passport = require('passport');
 const {isLogAuth, checkBlockedStatus, checkUserStatus} = require('../Middleware/auth');
 
@@ -109,6 +110,11 @@ router.post('/wishlist/removeItem', isLogAuth, wishlistController.removeFromWish
 router.get('/wallet', isLogAuth, walletController.loadWallet);
 router.post('/wallet/addMoney', isLogAuth, walletController.addMoneyToWallet);
 router.post('/wallet/refund', isLogAuth, walletController.refundToWallet);
+router.post("/placeOrderWallet", isLogAuth, walletController.placeOrderWithWallet);
+
+//Coupon routes
+router.post('/verifyCoupon', isLogAuth, couponController.verifyCoupon);
+router.post('/verifyCoupon',isLogAuth, cartController.applyCoupon);
 
 
 router.get('/PageNotFound', userController.PageNotFound);

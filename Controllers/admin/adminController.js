@@ -2,6 +2,9 @@ const User = require('../../Models/userModel');
 const Product = require('../../Models/productModel');
 const Order = require('../../Models/orderModel');
 const mongoose = require('mongoose');
+const Category = require('../../Models/categoryModel');
+const Brand = require('../../Models/brandModel');
+const Coupon=require('../../Models/couponModel')    
 const bcrypt = require('bcrypt');
 const { create } = require('connect-mongo');
 
@@ -79,18 +82,75 @@ const loadDashboard = async (req, res) => {
         const bestSellingProducts = await Product.find()
             .sort({ quantity: 1 })
             .limit(5);
+
         const newCustomers = await User.find({ isAdmin: false })
             .sort({ createdOn: -1 })
             .limit(5);
+
         const recentOrders = await Order.find()
             .populate('user address', 'name email')
             .populate('orderedItems.product','productName productImage')
             .sort({ createdAt: -1 })
             .limit(5);
+
+            // console.log(recentOrders);            
+
+        const {orderId,updatedStatus}=req.body;
+        const order = await Order.findById(orderId);
+
+        console.log(orderId);
+        
+        // if(updatedStatus==='pending'){
+
+        // }
+    
             
         const totalOrders = await Order.countDocuments()
-        const activeOrders = await Order.countDocuments({status:'pending'});
-        const cancelledOrders = await Order.countDocuments({status:'cancelled'})
+        const activeOrders = await Order.countDocuments({status:{$in:['Pending','Processing']}});
+        const cancelledOrders = await Order.countDocuments({status:'Cancelled'})
+        const completedOrders = await Order.countDocuments({status:'Delivered'})
+        const returnedOrders = await Order.countDocuments({status:'Returned'})
+
+        // const orders=await Order.find({status:'delivered'})
+        // const totalRevenue=orders.reduce((sum,order)=>{
+        //     sum+order.finalAmount
+        // },0)
+
+        // const totalDiscount=orders.reduce((sum,order)=>{
+        //     sum+order.discount ||0
+        // },0)
+
+        const totalRevenueResult=await Order.aggregate([
+            {$group:{_id:null,totalRevenue:{$sum:'$finalAmount'}}}
+        ])
+        const totalDiscountResult=await Order.aggregate([
+            {$group:{_id:null,totalDiscount:{$sum:'$discount'}}}
+        ])
+        const couponsApplied=await Order.countDocuments({
+            couponsUsed:{$exists:true,$ne:null}
+        })
+        const couponDiscountResult=await Order.aggregate([
+            {$group:{_id:null,couponDiscount:{$sum:'$couponDiscount'}}}
+        ])
+
+        const numberOfCustomers=await User.countDocuments()
+
+        totalRevenue=totalRevenueResult[0]?.totalRevenue || 0;
+        totalDiscount=totalDiscountResult[0]?.totalDiscount || 0
+        const couponDiscount=couponDiscountResult[0]?.couponDiscount || 0
+
+        // console.log('Total Revenue Result:', totalRevenueResult);
+        // console.log('Total Discount Result:', totalDiscountResult);
+        // console.log('Coupon Discount Result:', couponDiscountResult);
+        // console.log('Coupon Discount:', couponDiscount);
+        // console.log('Coupons Applied:', couponsApplied);
+        // console.log('Total Revenue:', totalRevenue);
+        // console.log('Total Discount:', totalDiscount);
+        // console.log('Active Orders:', activeOrders);
+        // console.log('Cancelled Orders:', cancelledOrders);
+        // console.log('Completed Orders:', completedOrders);
+        // console.log('Returned Orders:', returnedOrders);       
+        
 
         res.render('admin/adminDashboard', {
             currentPage: 'dashboard',
@@ -99,7 +159,14 @@ const loadDashboard = async (req, res) => {
             recentOrders,
             totalOrders,
             activeOrders,
-            cancelledOrders
+            cancelledOrders,
+            completedOrders,
+            returnedOrders,
+            totalRevenue,
+            totalDiscount,
+            couponsApplied,
+            numberOfCustomers,
+            couponDiscount
         });
     } catch (error) {
         res.redirect('/pageError')

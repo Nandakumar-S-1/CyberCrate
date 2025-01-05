@@ -34,36 +34,34 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
+                                            <th>#</th>
                                             <th>ID</th>
                                             <th>Customer Name</th>
                                             <th>Order Date</th>
                                             <th>Product Name</th>
                                             <th>Status</th>
-                                            <th>Edit</th>
+                                            <th>Address</th>
+                                            <th>View</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% if (orders && orders.length> 0) { %> <% orders.forEach(order=> { %> <tr>
-                                                    <td>
-                                                        <%= order._id %>
+                                        <% if (orders && orders.length> 0) { %>
+                                            <% orders.forEach(order=> { %>
+                                                <tr>
+                                                    <td><%=(currentPage-1)* itemsPerPage + orders.indexOf(order)+1 %>
                                                     </td>
-                                                    <td>
-                                                        <%= order.user.name %>
-                                                    </td>
-                                                    <td>
-                                                        <%= new Date(order.createdAt).toLocaleDateString() %>
-                                                    </td>
-                                                    <td>
-                                                        <%= order.orderedItems.map(item=>
-                                                            item.product.productName).join(', ') %>
-                                                    </td>
+                                                    <td><%= order._id %></td>
+                                                    <td><%= order.user.name %></td>
+                                                    <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                                    <td><%= order.orderedItems.map(item=>
+                                                            item.product.productName).join(', ') %></td>
                                                     <td
                                                         class="status-<%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
                                                         <%= order.status %>
                                                             <form action="/admin/orderList/updateStatus" method="POST"
-                                                                style="display:inline;"> <input type="hidden"
-                                                                    name="orderId" value="<%= order._id %>"> <select
-                                                                    name="updatedStatus" onchange="this.form.submit()">
+                                                                style="display:inline;">
+                                                                <input type="hidden" name="orderId" value="<%= order._id %>"> 
+                                                                <select name="updatedStatus" onchange="this.form.submit()">
                                                                     <option value="Pending" <%=order.status==='Pending'
                                                                         ? 'selected' : '' %>>Pending</option>
                                                                     <option value="Processing"
@@ -83,10 +81,18 @@
                                                                     <option value="Returned"
                                                                         <%=order.status==='Returned' ? 'selected' : ''
                                                                         %>>Returned</option>
-                                                                </select> </form>
+                                                                </select>
+                                                            </form>
+                                                        </td>
+                                                    <td>
+                                                        <%= order.address %>
                                                     </td>
-                                                    <td><a href="/admin/orders/edit/<%= order._id %>"><i
-                                                                class="fas fa-edit"></i></a></td>
+                                                    <td>
+                                                        <a href="/admin/orderList/viewOrder/<%= order._id %>"
+                                                            class="btn btn-primary">View
+                                                        </a>
+                                                    </td>
+
                                                 </tr>
                                                 <% }); %>
                                                     <% } else { %>
@@ -117,39 +123,134 @@
 
         <%- include('../layouts/admin/footer.ejs') %>
 
-        <script>
-            $(document).ready(function () {
-                $('select[name="updatedStatus"]').on('change', function () {
-                    const form = $(this).closest('form'); // Find the closest form
-                    const orderId = form.find('input[name="orderId"]').val();
-                    const updatedStatus = $(this).val();
+        <!-- <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectElements = document.querySelectorAll('select[name="updatedStatus"]');
         
-                    $.ajax({
-                        url: '/admin/orderList/updateStatus',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            orderId: orderId,
-                            updatedStatus: updatedStatus
-                        }),
-                        success: function (response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: response.message
-                            });
+                selectElements.forEach(selectElement => {
+                    selectElement.addEventListener('change', function () {
+                        const form = selectElement.closest('form');
+                        const orderId = form.querySelector('input[name="orderId"]').value;
+                        const updatedStatus = selectElement.value;
         
-                            const statusCell = form.closest('td');
-                            statusCell.removeClass().addClass('status-' + updatedStatus.toLowerCase().replace(/\s+/g, '-'));
-                        },
-                        error: function (xhr) {
-                            const errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred';
+                        Swal.fire({
+                            title: 'Updating...',
+                            text: 'Please wait while the status is updated.',
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+        
+                        fetch('/admin/orderList/updateStatus', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                orderId: orderId,
+                                updatedStatus: updatedStatus
+                            })
+                        })
+                        .then(response => {
+                            console.log(response);
+                            return response.json();  
+                        })
+                        .then(data => {
+                            Swal.close();  
+        
+                            if (data.message) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Status Updated',
+                                    text: `Order #${orderId} status has been updated to ${updatedStatus}.`
+                                });
+        
+                                const statusCell = form.closest('td');
+                                statusCell.className = `status-${updatedStatus.toLowerCase().replace(/\s+/g, '-')}`;
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Update Failed',
+                                    text: data.message || 'An unknown error occurred.'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.close();  
+        
+                            console.error(error); 
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Error',
-                                text: errorMessage
+                                title: 'Update Failed',
+                                text: 'An error occurred while updating the status. Please try again.'
                             });
-                        }
+                        });
+                    });
+                });
+            });
+        </script> -->
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectElements = document.querySelectorAll('select[name="updatedStatus"]');
+            
+                selectElements.forEach(selectElement => {
+                    selectElement.addEventListener('change', function () {
+                        const form = selectElement.closest('form');
+                        const orderId = form.querySelector('input[name="orderId"]').value;
+                        const updatedStatus = selectElement.value;
+            
+                        Swal.fire({
+                            title: 'Updating...',
+                            text: 'Please wait while the status is updated.',
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+            
+                        fetch('/admin/orderList/updateStatus', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                orderId: orderId,
+                                updatedStatus: updatedStatus
+                            })
+                        })
+                        .then(response => response.json())  
+                        .then(data => {
+                            Swal.close(); 
+                            
+                            if (data.message) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Status Updated',
+                                    text: `Order #${orderId} status has been updated to ${updatedStatus}.`
+                                });
+            
+                                const statusCell = form.closest('td');
+                                statusCell.className = `status-${updatedStatus.toLowerCase().replace(/\s+/g, '-')}`;
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Update Failed',
+                                    text: data.message || 'An unknown error occurred.'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.close();  
+        
+                            console.error(error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Update Failed',
+                                text: 'An error occurred while updating the status. Please try again.'
+                            });
+                        });
                     });
                 });
             });
@@ -157,93 +258,94 @@
         
 
             <!-- <script>
-                document.querySelectorAll('.status-form select').forEach(select=>{
-                    select.addEventListener('change',function(){
-                        const form=this.closest('.status-form');
-                        const orderId=form.dataSet.orderId;
-                        const updatedStatus=this.value;
+                $(document).ready(function () {
+                    $('select[name="updatedStatus"]').on('change', function () {
+                        const form = $(this).closest('form'); 
+                        const orderId = form.find('input[name="orderId"]').val();
+                        const updatedStatus = $(this).val();
 
-                        fetch('/admin/orderList/updateStatus',{
-                            method:'post',
-                            headers:{
-                                'Content-Type':'application/json'
+                        $.ajax({
+                            url: '/admin/orderList/updateStatus',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                orderId: orderId,
+                                updatedStatus: updatedStatus
+                            }),
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message
+                                });
+
+                                const statusCell = form.closest('td');
+                                statusCell.removeClass().addClass('status-' + updatedStatus.toLowerCase().replace(/\s+/g, '-'));
                             },
-                            body:JSON.stringify({
-                                orderId,
-                                updatedStatus
-                            })
-                            .then(response=>response.json())
-                            .then(data=>{
+                            error: function (xhr) {
+                                const errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred';
                                 Swal.fire({
-                                    icon:data.status===200?'success':'error',
-                                    title:data.status===200?'Success':'Error',
-                                    text:data.message
-                                })
-                                if(data.status===200){
-                                    form.closest('td').className='status-'+updatedStatus.toLowerCase().replace(/\s+/g, '-');
-                                }
-                            })
-                            .catch(error=>{
-                                Swal.fire({
-                                    icon:'error',
-                                    title:'Error',
-                                    text:error.message
-                                })
-                            })
-                        })
-                    })
-                })
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: errorMessage
+                                });
+                            }
+                        });
+                    });
+                });
             </script> -->
 
-<style>
-    .order-list-page {
-        padding: 20px;
-        margin-left: 250px;
-    }
 
-    .content {
-        margin-left: 250px;
-        padding: 20px;
-    }
 
-    .card-header {
-        background-color: #f8f9fa;
-    }
+            <style>
+                .order-list-page {
+                    padding: 20px;
+                    margin-left: 250px;
+                }
 
-    .table th,
-    .table td {
-        vertical-align: middle;
-    }
+                .content {
+                    margin-left: 250px;
+                    padding: 20px;
+                }
 
-    .table thead th {
-        background-color: #e9ecef;
-    }
+                .card-header {
+                    background-color: #f8f9fa;
+                }
 
-    .table td a i {
-        color: #007bff;
-    }
+                .table th,
+                .table td {
+                    vertical-align: middle;
+                }
 
-    .status-delivered {
-        color: green;
-    }
+                .table thead th {
+                    background-color: #e9ecef;
+                }
 
-    .status-processing {
-        color: purple;
-    }
+                .table td a i {
+                    color: #007bff;
+                }
 
-    .status-cancelled {
-        color: red;
-    }
+                .status-delivered {
+                    color: green;
+                }
 
-    .status-pending {
-        color: orange;
-    }
+                .status-processing {
+                    color: purple;
+                }
 
-    .status-return-request {
-        color: blue;
-    }
+                .status-cancelled {
+                    color: red;
+                }
 
-    .status-returned {
-        color: brown;
-    }
-</style>
+                .status-pending {
+                    color: orange;
+                }
+
+                .status-return-request {
+                    color: blue;
+                }
+
+                .status-returned {
+                    color: brown;
+                }
+            </style>
