@@ -172,6 +172,11 @@
         <% if (orders.length > 0) { %>
             <% orders.forEach(order => { %>
             <div class="order-card" style="background-color: #fff; border: 2px solid #d0b4ff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+                <p>Status:
+                    <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                        <%= order.status %>
+                    </span>
+                </p>
                 <!-- Order Image -->
                 <div class="order-image" style="text-align: center; margin-bottom: 10px;">
                     <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>" alt="<%= order.orderedItems[0].product.productName %>" style="width: 150px; height: auto; border-radius: 5px;">
@@ -189,6 +194,10 @@
                     <button onclick="viewOrder('<%= order.orderId %>')" style="background-color: #6e3bbb; color: #fff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
                         View
                     </button>
+                    <% if (order.status !=='Delivered' && order.status !=='Refund Completed' ) { %>
+                        <button onclick="cancelOrder('<%= order.orderId %>')"
+                            style="background-color: #c8aae9; color: #fff;">Cancel Order</button>
+                        <% } %>
                 </div>
             </div>
             <% }) %>

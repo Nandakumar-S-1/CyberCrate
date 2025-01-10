@@ -5,6 +5,7 @@
             <a href="/profile">Your Account</a> &gt;
             <a href="/profile/orders">Your Orders</a> &gt;
             <span>Order Details</span>
+            
         </nav>
 
         <div class="order-header main-detail">
@@ -19,6 +20,7 @@
                     <%=order.orderedItems[0].product.brand.brandName%>
                 </h4>
             </div>
+
             
             
             <p class="product-description" style="color: #6e3bbb; text-align: start ; margin-left: 2rem ;">
@@ -27,6 +29,11 @@
         </div>
 
         <h1>Order Details</h1>
+        <p>Status:
+            <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                <%= order.status %>
+            </span>
+        </p>
         <div class="order-header">
             <p>Ordered on: <strong>
                     <%= order.createdAt.toDateString() %>
@@ -67,11 +74,9 @@
                 <h3>Order Summary</h3>
                 <p>Item(s) Subtotal: ₹<%= order.totalPrice %>
                 </p>
-                <p>Shipping: ₹<%= order.shippingCost %>
-                </p>
                 <p>Total: ₹<%= order.totalPrice + order.shippingCost %>
                 </p>
-                <p>Promotion Applied: -₹<%= order.discount %>
+                <p>Coupon Applied: -₹<%= order.discount %>
                 </p>
                 <p><strong>Grand Total: ₹<%= order.finalAmount %></strong></p>
             </div>
