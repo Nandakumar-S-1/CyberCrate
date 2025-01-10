@@ -100,21 +100,28 @@ router.get('/profile/orders', isLogAuth, orderController.getUserOrders);
 router.get('/checkout', isLogAuth, orderController.getCheckoutPage);
 router.post('/cancelOrder', isLogAuth, orderController.cancelOrder);
 router.post('/verifyPayment', isLogAuth, orderController.verifyPayment);
+// router.get('/orderDetails/:id', isLogAuth, orderController.orderDetails);
+router.get('/profile/orderDetails/:id', isLogAuth, orderController.orderDetails);
+
 
 // Wishlist routes
 router.get('/wishlist', isLogAuth, wishlistController.loadWishlist);
 router.post('/wishlist/addItem', isLogAuth, wishlistController.addToWishlist);
 router.post('/wishlist/removeItem', isLogAuth, wishlistController.removeFromWishlist);
 
-//Wallet routes
-router.get('/wallet', isLogAuth, walletController.loadWallet);
-router.post('/wallet/addMoney', isLogAuth, walletController.addMoneyToWallet);
-router.post('/wallet/refund', isLogAuth, walletController.refundToWallet);
-router.post("/placeOrderWallet", isLogAuth, walletController.placeOrderWithWallet);
+// //Wallet routes
+router.use('/wallet', (err, req, res, next) => {
+    console.error('Wallet Error:', err);
+    res.status(500).json({
+        success: false,
+        message: 'Something went wrong with the wallet operation'
+    });
+});
+router.get('/wallet', isLogAuth, walletController.getWalletPage);
+router.post('/wallet/add-money', isLogAuth, walletController.addMoneyToWallet);
 
-//Coupon routes
 router.post('/verifyCoupon', isLogAuth, couponController.verifyCoupon);
-router.post('/verifyCoupon',isLogAuth, cartController.applyCoupon);
+router.post('/applyCoupon',isLogAuth, cartController.applyCoupon);
 
 
 router.get('/PageNotFound', userController.PageNotFound);

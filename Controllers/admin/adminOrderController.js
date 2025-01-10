@@ -72,7 +72,9 @@ const updateStatus = async (req, res) => {
         }
 
         if (order.status === 'Cancelled') {
-            return res.status(400).json({ message: "You cannot update status of cancelled order" });
+            if(order.status!=='Refund Completed'){
+                return res.status(400).json({ message: "You cannot update status of cancelled order" });
+            }
         }
 
         order.status = updatedStatus;

@@ -117,7 +117,6 @@ const updateCategory = async (req, res) => {
     }
 };
 
-
 // const updateCategory = async (req, res) => {
 //     try {
 //         const id = req.body.categoryId;

@@ -32,8 +32,8 @@
                                 <td>₹<%= product.productId.salePrice %>
                                 </td>
                                 <td class="actions"> <button class="add-to-cart"
-                                        onclick="addToCart('<%= product.productId._id %>')">Add to Cart</button> <button
-                                        class="view" onclick="viewProduct('<%= product.productId._id %>')">View</button>
+                                        onclick="addToCart('<%= product.productId._id %>')">Add to Cart</button>
+                                        <button class="view" onclick="viewProduct('<%= product.productId._id %>')">View</button>
                                     <button class="remove"
                                         onclick="removeFromWishlist('<%= product.productId._id %>')">Remove</button>
                                 </td>
@@ -62,12 +62,15 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ productId, quantity: 1 })
+                    body: JSON.stringify({ productId, quantity: 1,removeFromWishlist:true })
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            Swal.fire('Added!', 'The item has been added to your cart.', 'success');
+                            Swal.fire('Added!', 'The item has been added to your cart.', 'success')
+                                .then(() => {
+                                    location.reload();
+                            })
                         } else {
                             Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
                         }
@@ -109,82 +112,114 @@
         </script>
 
         <%- include('../layouts/user/footer.ejs') %>
-
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    background-color: #f8f8f8;
-                    color: #333;
-                }
-
-                .container {
-                    width: 80%;
-                    margin: 0 auto;
-                    padding: 20px;
-                }
-
-                h1 {
-                    text-align: center;
-                }
-
-                .wishlist {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-
-                .wishlist th,
-                .wishlist td {
-                    padding: 10px;
-                    text-align: left;
-                    border-bottom: 1px solid #ddd;
-                }
-
-                .wishlist th {
-                    background-color: #f2f2f2;
-                }
-
-                .product-image {
-                    width: 100px;
-                }
-
-                .actions button {
-                    margin: 5px;
-                    padding: 10px;
-                    border: none;
-                    cursor: pointer;
-                }
-
-                .add-to-cart {
-                    background-color: #4CAF50;
-                    color: white;
-                }
-
-                .view {
-                    background-color: #2196F3;
-                    color: white;
-                }
-
-                .remove {
-                    background-color: #f44336;
-                    color: white;
-                }
-
-                .pagination {
-                    text-align: center;
-                    margin-top: 20px;
-                }
-
-                .pagination a {
-                    margin: 0 5px;
-                    padding: 10px 15px;
-                    text-decoration: none;
-                    color: #333;
-                    background-color: #fff;
-                    border: 1px solid #ddd;
-                }
-
-                .pagination a.active {
-                    background-color: #2196F3;
-                    color: white;
-                }
-            </style>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f9f5ff; /* Light lavender background */
+                color: #3e0a77; /* Deep purple for text */
+            }
+        
+            .container {
+                width: 80%;
+                margin: 0 auto;
+                padding: 20px;
+            }
+        
+            h1 {
+                text-align: center;
+                color: #3e0a77;
+            }
+        
+            .wishlist {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                background-color: #fff; /* White background for table */
+                border: 2px solid #d0b4ff; /* Light purple border */
+                border-radius: 10px;
+                overflow: hidden;
+            }
+        
+            .wishlist th,
+            .wishlist td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #d0b4ff;
+                color: #3e0a77;
+            }
+        
+            .wishlist th {
+                background-color: #f2e8ff; /* Soft purple */
+            }
+        
+            .wishlist td {
+                background-color: #f9f5ff; /* Matches the body background */
+            }
+        
+            .product-image {
+                width: 100px;
+                border-radius: 8px;
+                border: 1px solid #d0b4ff;
+            }
+        
+            .actions button {
+                margin: 5px;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                color: #fff;
+            }
+        
+            .add-to-cart {
+                background-color: #6e3bbb; /* Purple button */
+            }
+        
+            .add-to-cart:hover {
+                background-color: #3e0a77;
+            }
+        
+            .view {
+                background-color: #2196F3; /* Blue button */
+            }
+        
+            .view:hover {
+                background-color: #1565C0;
+            }
+        
+            .remove {
+                background-color: #f44336; /* Red button */
+            }
+        
+            .remove:hover {
+                background-color: #d32f2f;
+            }
+        
+            .pagination {
+                text-align: center;
+                margin-top: 20px;
+            }
+        
+            .pagination a {
+                display: inline-block;
+                padding: 10px 15px;
+                margin: 0 5px;
+                border: 1px solid #6e3bbb;
+                color: #3e0a77;
+                text-decoration: none;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+        
+            .pagination a.active {
+                background-color: #6e3bbb;
+                color: #fff;
+            }
+        
+            .pagination a:hover {
+                background-color: #3e0a77;
+                color: #fff;
+            }
+        </style>
+        

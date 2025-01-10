@@ -30,7 +30,7 @@
                                             <td><%= c.minimumPrice %></td>
                                             <td><%= c.offerPrice %></td>
                                             <td><%= new Date(c.expireOn).toLocaleDateString() %></td>
-                                            <td><%= c.isActive ? 'Active' : 'Inactive' %></td>
+                                            <td><%=c.isListed ? 'Active' : 'Inactive'%></td>
                                             <td>
                                                 <button class="btn btn-warning btn-sm" onclick="window.location.href='/admin/coupons/edit/<%= c._id %>'">Edit</button>
                                                 <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= c._id %>')">Delete</button>

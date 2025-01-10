@@ -62,13 +62,14 @@ const orderSchema = new Schema({
             default: 0
         }
     }],
+    
     categoryId: {
         type: Schema.Types.ObjectId,
         ref: 'Category'
     },
     paymentMethod: {
         type: String,
-        enum: ['COD','Bank','Online']
+        enum: ['COD','Bank','Wallet']
     },
     subTotal: {
         type: Number,
@@ -100,7 +101,7 @@ const orderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned']
+        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned',"Refund Completed"]
     },
     couponApplied: {
         type: Boolean,

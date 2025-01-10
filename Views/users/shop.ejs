@@ -1,100 +1,207 @@
 <%- include('../layouts/user/header.ejs') %>
-    
-<style>
-    .shop-container {
-        display: flex;
-    }
 
-    .sidebar {
-        width: 300px;
-        padding: 20px;
-        background-color: #f5f5f5;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f5ff;
+            /* Light lavender background */
+            color: #3e0a77;
+            /* Deep purple for text */
+            margin: 0;
+            padding: 0;
+        }
 
-    .filter-group {
-        margin-bottom: 20px;
-    }
+        .add-to-favorites.in-wishlist i {
+            color: red;
+            /* Change the icon color for items already in the wishlist */
+        }
 
-    .price-range {
-        display: flex;
-        justify-content: space-between;
-    }
+        .discount-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #c8aae9;
+            /* Deep purple */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: #fff;
+            /* White text */
+        }
 
-    .product-list {
-        flex: 1;
-        padding: 20px;
-    }
+        .shop-container {
+            display: flex;
+        }
 
-    .products {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-    }
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            background-color: #f2e8ff;
+            /* Soft purple */
+            border-right: 2px solid #d0b4ff;
+            /* Lighter border */
+        }
 
-    .product-card {
-        width: 100%;
-        padding: 10px;
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        text-align: center;
-    }
+        .filter-group h3 {
+            color: #3e0a77;
+            margin-bottom: 10px;
+        }
 
-    .product-card img {
-        max-width: 100%;
-        height: auto;
-    }
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #3e0a77;
+        }
 
-    .product-card h2 {
-        font-size: 1em;
-    }
+        .filter-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d0b4ff;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            outline: none;
+        }
 
-    .product-card p {
-        font-size: 0.9em;
-    }
+        .product-list {
+            flex: 1;
+            padding: 20px;
+        }
 
-    .product-buttons {
-        margin-top: 10px;
-        display: flex;
-        justify-content: end;
-        gap: 10px;
-    }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
 
-    .icon-btn {
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 1.2em;
-    }
+        .product-card {
+            background-color: #fff;
+            border: 2px solid #d0b4ff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    .icon-btn i {
-        color: #1a237e;
-    }
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
 
-    .icon-btn:last-child i {
-        color: #e53935;
-    }
+        .product-card h2 {
+            font-size: 1rem;
+            color: #3e0a77;
+            margin: 5px 0;
+        }
 
-    .pagination {
-        margin-top: 20px;
-        text-align: center;
-    }
+        .product-card p {
+            font-size: 0.9rem;
+            color: #6e3bbb;
+            margin: 5px 0;
+        }
 
-    .pagination a {
-        display: inline-block;
-        padding: 10px 15px;
-        margin: 0 5px;
-        border: 1px solid #ddd;
-        color: #1a237e;
-        text-decoration: none;
-        border-radius: 5px;
-    }
+        .product-buttons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .pagination a.active {
-        background-color: #1a237e;
-        color: #fff;
-    }
-</style>
+        .icon-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .icon-btn i {
+            color: #8f1717;
+            transition: transform 0.2s ease;
+        }
+
+        .icon-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border: 1px solid #6e3bbb;
+            color: #3e0a77;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination a.active {
+            background-color: #6e3bbb;
+            color: #fff;
+        }
+
+        .pagination a:hover {
+            background-color: #3e0a77;
+            color: #fff;
+        }
+
+        button {
+            background-color: #6e3bbb;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3e0a77;
+        }
+
+        #price-slider {
+            width: 100%;
+            background-color: #d0b4ff;
+            height: 6px;
+            border-radius: 3px;
+            position: relative;
+            margin: 15px 0;
+        }
+
+        #price-slider::before {
+            content: '';
+            width: 40%;
+            height: 100%;
+            background-color: #6e3bbb;
+            position: absolute;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .shop-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #d0b4ff;
+            }
+
+            .products {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
 
     <div class="shop-container">
         <aside class="sidebar">
@@ -167,14 +274,14 @@
                             Low</option>
                         <option value="averageRatings" <%=sortWays==='averageRatings' ? 'selected' : '' %>>Average
                             Ratings</option>
-                            <option value="featured" <%= sortWays === 'featured' ? 'selected' : '' %>>Featured</option>
+                        <option value="featured" <%=sortWays==='featured' ? 'selected' : '' %>>Featured</option>
                         <option value="newArrivals" <%=sortWays==='newArrivals' ? 'selected' : '' %>>New Arrivals
                         </option>
                         <option value="aToZ" <%=sortWays==='aToZ' ? 'selected' : '' %>>Name: Ascending</option>
                         <option value="zToA" <%=sortWays==='zToA' ? 'selected' : '' %>>Name: Descending</option>
                     </select>
                 </div>
-                <button type="submit">Apply Filters</button>    
+                <button type="submit">Apply Filters</button>
             </form>
         </aside>
 
@@ -183,30 +290,42 @@
             <div class="products">
                 <% products.forEach(product=> { %>
                     <div class="product-card">
+
                         <a href="/productDetails/<%= product._id %>">
-                            <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>">
+                            <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>"
+                                loading="lazy">
                             <h2>
                                 <%= product.productName %>
                             </h2>
                         </a>
-                        <p>Offer Price: ₹<%= product.salePrice %>
+                        <p>Offer Price: ₹<%= product.salePrice.toFixed(2) %>
                         </p>
-                        <p>Original Price: ₹<%= product.realPrice %>
+                        <p>Original Price: ₹<%= product.realPrice.toFixed(2) %>
                         </p>
-                        <p>
-                            <%= product.discount %>
-                        </p>
+
+                        <p>You Save: ₹<%= product.discountAmount %> on this product</p>
                         <p>Stocks left: <%= product.quantity %>
                         </p>
                         <div class="product-buttons">
+                            <div class="discount-circle">
+                                <p class="m-0" style="color: #8f1717;">
+                                    <%= product.discountPercentage %>%
+                                </p>
+                            </div>
                             <button class="icon-btn" onclick="addToCart('<%= product._id %>')">
-                                <i class="fas fa-shopping-cart"></i>
+                                <i class="fas fa-shopping-cart discount-circle"></i>
                             </button>
-                            <button class="icon-btn" onclick="addToFavorites('<%= product._id %>')">
-                                <i class="fas fa-heart"></i>
+                            <button
+                                class="icon-btn add-to-favorites <%= wishListProducts.includes(product._id.toString()) ? 'in-wishlist' : '' %>"
+                                onclick="addToFavorites('<%= product._id %>')">
+                                <i class="fas fa-heart discount-circle"></i>
                             </button>
+                            <!-- <button class="icon-btn " onclick="addToFavorites('<%= product._id %>')">
+                                <i class="fas fa-heart discount-circle"></i>
+                            </button> -->
                         </div>
                     </div>
+
                     <% }); %>
             </div>
             <div class="pagination">
@@ -219,6 +338,77 @@
         </main>
     </div>
 
+    <script>
+        function addToCart(productId) {
+            fetch('/cart/addItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId, quantity: 1 })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Added!', 'The item has been added to your cart.', 'success');
+                    } else {
+                        Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
+                });
+        }
+
+        function addToFavorites(productId) {
+            const wishListBtn = document.querySelector(`.add-to-favorites[onclick="addToFavorites('${productId}')"]`);
+
+            if (wishListBtn.classList.contains('in-wishlist')) {
+                Swal.fire('Info', 'This item is already in your wishlist.', 'info');
+                return;
+            }
+
+            fetch('/wishlist/addItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        wishListBtn.classList.add('in-wishlist');
+                        Swal.fire('Added!', 'The item has been added to your wishlist.', 'success');
+                    } else {
+                        Swal.fire('Error!', 'Failed to add the item to your wishlist.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while adding the item to your wishlist.', 'error');
+                });
+        }
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".product-card").forEach((card) => {
+                const productId = card.querySelector("a").getAttribute("href").split("/").pop();
+                card.querySelector(".add-to-cart").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    addToCart(productId);
+                });
+                card.querySelector(".add-to-favorites").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    addToFavorites(productId);
+                });
+                card.querySelector(".product-title").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
 
     <script>
         document.getElementById('more-categories').addEventListener('click', function () {
@@ -260,11 +450,9 @@
                   <i class="fas fa-shopping-cart"></i>
                 </button>
                 <button class="icon-btn" onclick="addToFavorites('${product._id}')">
-                  <i class="fas fa-heart"></i>
-                </button>
-              </div>
-            </div>
-          `;
+                    <i class="fas fa-heart"></i>
+                </button></div>
+            </div>`;
                         productsContainer.insertAdjacentHTML('beforeend', productCard);
                     });
 
@@ -337,115 +525,6 @@
 
     </script>
 
-<script>
-    function addToCart(productId) {
-        fetch('/cart/addItem', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId, quantity: 1 })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire('Added!', 'The item has been added to your cart.', 'success');
-            } else {
-                Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
-        });
-    }
 
-    function addToFavorites(productId) {
-        fetch('/wishlist/addItem', {  // Corrected endpoint
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire('Added!', 'The item has been added to your wishlist.', 'success');
-            } else {
-                Swal.fire('Error!', 'Failed to add the item to your wishlist.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error!', 'An error occurred while adding the item to your wishlist.', 'error');
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".product-card").forEach((card) => {
-            const productId = card.querySelector("a").getAttribute("href").split("/").pop();
-            card.querySelector(".add-to-cart").addEventListener("click", (e) => {
-                e.stopPropagation();
-                addToCart(productId);
-            });
-            card.querySelector(".add-to-favorites").addEventListener("click", (e) => {
-                e.stopPropagation();
-                addToFavorites(productId);
-            });
-            card.querySelector(".product-title").addEventListener("click", (e) => {
-                e.stopPropagation();
-            });
-        });
-    });
-</script>
-
-
-    <!-- <script>
-        function addToCart(productId) {
-            fetch('/cart/addItem', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId, quantity: 1 })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire('Added!', 'The item has been added to your cart.', 'success');
-                    } else {
-                        Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
-                });
-        }
-
-        function addToFavorites(productId) {
-            fetch('/favorites/addItem', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire('Added!', 'The item has been added to your favorites.', 'success');
-                    } else {
-                        Swal.fire('Error!', 'Failed to add the item to your favorites.', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error!', 'An error occurred while adding the item to your favorites.', 'error');
-                });
-        }
-    </script> -->
 
     <%- include('../layouts/user/footer.ejs') %>
-

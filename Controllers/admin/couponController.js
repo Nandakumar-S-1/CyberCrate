@@ -20,9 +20,9 @@ const loadAddCoupon=async(req,res)=>{
 
 const createCoupon = async (req,res) => {
     try {
-        const {code,offerPrice,minimumPrice,maximumPrice,expireOn,usageLimit,isActive,isListed}=req.body;
+        const {code,offerPrice,minimumPrice,maximumPrice,expireOn,usageLimit,isListed}=req.body;
         const newCoupon=new Coupon({
-            code,offerPrice,minimumPrice,maximumPrice,expireOn,usageLimit,isActive,isListed
+            code,offerPrice,minimumPrice,maximumPrice,expireOn,usageLimit,isListed
         })
 
         await newCoupon.save();
@@ -51,7 +51,7 @@ const loadUpdateCoupon=async(req,res)=>{
 const updateCoupon = async (req,res) => {
     try {
         const {id}=req.params;
-        const {code,offerPrice,minimumPrice,maximumPrice,expireOn,usageLimit,isActive,isListed}=req.body;
+        const {code,offerPrice,minimumPrice,maximumPrice,expireOn,usageLimit,isListed}=req.body;
         const coupon= await Coupon.findById(id);
         if(coupon){
             coupon.code=code;
@@ -60,7 +60,6 @@ const updateCoupon = async (req,res) => {
             coupon.maximumPrice=maximumPrice;
             coupon.expireOn=expireOn;
             coupon.usageLimit=usageLimit;
-            coupon.isActive=isActive;
             coupon.isListed=isListed;
             await coupon.save();
         }else{

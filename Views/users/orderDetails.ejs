@@ -1,0 +1,180 @@
+<%- include('../layouts/user/header.ejs') %>
+
+    <div class="order-details-container">
+        <nav class="breadcrumb">
+            <a href="/profile">Your Account</a> &gt;
+            <a href="/profile/orders">Your Orders</a> &gt;
+            <span>Order Details</span>
+        </nav>
+
+        <div class="order-header main-detail">
+            <div class="order-image" style="text-align: center; margin: 10px; border:2px solid #7b21da;">
+                <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>" alt="<%= order.orderedItems[0].product.productName %>" style="width: 150px; height: auto; border-radius: 5px;">
+            </div>
+            <div class="product-info-2" >
+                <h3 class="product-name" style="color: #3e0a77; font-weight: bold; text-align: center; font-size: 25px;">
+                    <%= order.orderedItems[0].product.productName %>
+                </h3>
+                <h4 style="color: #a50808; font-weight: bold; text-align: center ; font-size: 15px; " >
+                    <%=order.orderedItems[0].product.brand.brandName%>
+                </h4>
+            </div>
+            
+            
+            <p class="product-description" style="color: #6e3bbb; text-align: start ; margin-left: 2rem ;">
+                <%= order.orderedItems[0].product.description || "No description available." %>
+            </p>
+        </div>
+
+        <h1>Order Details</h1>
+        <div class="order-header">
+            <p>Ordered on: <strong>
+                    <%= order.createdAt.toDateString() %>
+                </strong></p>
+            <p>Order#: <strong>
+                    <%= order.orderId %>
+                </strong></p>
+            <a href="#" class="invoice-link">Invoice</a>
+        </div>
+
+        <div class="order-summary-section">
+            <div class="summary-box">
+                <h3>Shipping Address</h3>
+                <p>
+                    <%= order.address.name %>
+                </p>
+                <p>
+                    <%= order.address.address %>
+                </p>
+                <p>
+                    <%= order.address.addressType    %>, 
+                    <%= order.address.landMark %>,
+                    <%= order.address.city %>,
+                    <%= order.address.state %>
+                    <!-- <%= order.address.zip %> -->
+                </p>
+                <p>
+                    <%= order.address.pincode %>
+                </p>
+            </div>
+            <div class="summary-box">
+                <h3>Payment Methods</h3>
+                <p>
+                    <%= order.paymentMethod %>
+                </p>
+            </div>
+            <div class="summary-box">
+                <h3>Order Summary</h3>
+                <p>Item(s) Subtotal: ₹<%= order.totalPrice %>
+                </p>
+                <p>Shipping: ₹<%= order.shippingCost %>
+                </p>
+                <p>Total: ₹<%= order.totalPrice + order.shippingCost %>
+                </p>
+                <p>Promotion Applied: -₹<%= order.discount %>
+                </p>
+                <p><strong>Grand Total: ₹<%= order.finalAmount %></strong></p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f5ff;
+            color: #3e0a77;
+        }
+
+        .breadcrumb {
+            margin: 20px 0;
+            color: #6e3bbb;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            text-decoration: none;
+            color: #3e0a77;
+        }
+        .product-info-2{
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: start;
+            margin: auto;
+            border: 2px solid #d0b4ff;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .main-detail{
+            display: flex;
+            /* flex-direction: column; */
+            align-items: center;
+            border: 2px solid #d0b4ff;
+        }
+        .order-details-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 2px solid #d0b4ff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order-header p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .invoice-link {
+            color: #6e3bbb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .invoice-link:hover {
+            text-decoration: underline;
+        }
+
+        .order-summary-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .summary-box {
+            flex: 1;
+            min-width: 220px;
+            background-color: #f2e8ff;
+            border: 2px solid #d0b4ff;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .summary-box h3 {
+            margin-bottom: 10px;
+            color: #3e0a77;
+        }
+
+        .summary-box p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        h1 {
+            color: #3e0a77;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <%- include('../layouts/user/footer.ejs') %>

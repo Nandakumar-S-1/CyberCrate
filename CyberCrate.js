@@ -57,9 +57,6 @@ app.listen(port, () => {
         console.log(`Admin Server is running at http://localhost:${port}/admin/dashboard`);
 });
 
-console.log('Main');
-
-
 module.exports = app;
 
 

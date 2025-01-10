@@ -26,6 +26,7 @@ router.get('/users', isAdminAuthenticated, customerController.loadUsers);
 router.get('/blockCustomer', isAdminAuthenticated, customerController.blockCustomer);
 router.get('/unBlockCustomer', isAdminAuthenticated, customerController.unBlockCustomer);
 
+
 // categoryManagemanet routes
 router.get('/categories',isAdminAuthenticated,categoryController.loadCategories);
 router.post('/categories',isAdminAuthenticated,categoryController.addNewCategories)
@@ -71,5 +72,7 @@ router.get('/coupons/edit/:id',isAdminAuthenticated,couponController.loadUpdateC
 router.post('/coupons/edit/:id',isAdminAuthenticated,couponController.updateCoupon);
 router.get('/deleteCoupon',isAdminAuthenticated,couponController.deleteCoupon);
 
-
+//salesManagement routes
+router.get('/salesPage',isAdminAuthenticated,adminController.loadSalesPage);
+router.post('/salesPage',isAdminAuthenticated,adminController.salesReport);
 module.exports = router;

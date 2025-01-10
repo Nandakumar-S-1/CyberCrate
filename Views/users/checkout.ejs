@@ -125,6 +125,7 @@
         </div>
       </div>
 
+      
       <div class="card">
         <div class="card-header">Order Summary</div>
         <div class="card-content">
@@ -146,21 +147,22 @@
                     </div>
             </div>
             <% }) %>
-              <div class="cart-summary">
+            <div class="cart-summary">
+              <p>Total Amount: ₹<%= cart.totalAmount %></p>
+              <p>Discount: ₹<%= cart.discount %></p>
+              <p>Coupon Reduction: ₹<%= cart.couponReduction %></p>
+              <p>Final Amount: ₹<%= cart.finalAmount %></p>
+            </div>
+
+              <!-- <div class="cart-summary">
                 <p>Total Amount: ₹<%= cart.totalAmount || 0 %>
                 </p>
                 <p>Discount: ₹<%= cart.discount || 0 %>
                 </p>
+                <p>Coupon Reduction: ₹<%=cart.couponReduction%></p>
                 <p>Final Amount: ₹<%= cart.finalAmount || 0 %>
                 </p>
-              </div>
-
-
-              <!-- <div class="cart-summary">
-              <p>Total Amount: ₹<%= cart.totalAmount %></p>
-              <p>Discount: ₹<%= cart.discount %></p>
-              <p>Final Amount: ₹<%= cart.finalAmount %></p>
-            </div> -->
+              </div> -->
 
         </div>
       </div>
@@ -231,6 +233,7 @@
                 confirmButtonText: 'OK'
               });
             });
+
         } else if (paymentMethod === 'Bank') {
           fetch('/placeOrders', {
             method: 'POST',
@@ -324,6 +327,22 @@
             .catch(error => console.error('Error:', error));
         }
       });
+
+
+
+      document.getElementById('checkout-form').addEventListener('submit', function (event) {
+        const address = document.querySelector('select[name="selectedAddressId"]').value;
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (!address) {
+          event.preventDefault();
+          Swal.fire('Please select a delivery address.');
+        }
+        if (!paymentMethod) {
+          event.preventDefault();
+          Swal.fire('Please select a payment method.');
+        }
+      });
+
     </script>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

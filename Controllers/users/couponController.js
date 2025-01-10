@@ -2,73 +2,111 @@ const Coupon=require('../../Models/couponModel');
 const Order=require('../../Models/orderModel');
 const User=require('../../Models/userModel');
 
+// const verifyCoupon = async (req, res) => {
+//     try {
+//         const { couponCode, cartTotal } = req.body;
+
+//         console.log("Request body:", req.body);
+
+//         // Fetch coupon from database
+//         const coupon = await Coupon.findOne({ code: couponCode });
+//         console.log("Coupon fetched:", coupon);
+
+//         if (!coupon) {
+//             return res.status(404).json({ success: false, message: 'Coupon not found' });
+//         }
+
+//         // Check coupon validity
+//         if (new Date(coupon.expireOn) < new Date()) {
+//             return res.status(400).json({ success: false, message: 'The coupon you have entered is expired.' });
+//         }
+
+//         if (cartTotal < coupon.minimumPrice || cartTotal > coupon.maximumPrice) {
+//             return res.status(400).json({ success: false, message: 'The coupon is not applicable for this order.' });
+//         }
+
+//         if (coupon.usedCount >= coupon.usageLimit) {
+//             return res.status(400).json({ success: false, message: 'Coupon usage limit has been reached.' });
+//         }
+
+//         if (!coupon.isActive || !coupon.isListed) {
+//             return res.status(400).json({ success: false, message: 'This coupon is not valid.' });
+//         }
+
+//         // Calculate coupon reduction
+//         const couponReduction = Math.min(coupon.offerPrice, cartTotal);
+//         console.log("Calculated coupon reduction:", couponReduction);
+
+//         // Respond with success
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Coupon applied successfully!',
+//             couponReduction: couponReduction,
+//         });
+//     } catch (error) {
+//         console.error('Error while verifying coupon:', error);
+//         return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+//     }
+// };
 
 const verifyCoupon = async (req, res) => {
     try {
         const { couponCode, cartTotal } = req.body;
-        const userId = req.session.user;
 
+        
         const coupon = await Coupon.findOne({ code: couponCode });
-
         if (!coupon) {
-            return res.status(404).json({ error: 'Coupon not found' });
+            return res.status(404).json({ success: false, message: 'Coupon not found' });
         }
 
-        if (coupon.expireOn < new Date()) {
-            return res.status(400).json({ error: 'The Coupon you have entered is expired' });
+        // Check coupon validity
+        if (new Date(coupon.expireOn) < new Date()) {
+            return res.status(400).json({ success: false, message: 'Coupon expired.' });
         }
 
-        if (cartTotal < coupon.minimumPrice) {
-            return res.status(400).json({ success: false, message: 'The Coupon you have entered is not applicable for this order' });
+        // Check if coupon is applicable or not
+        if (cartTotal < coupon.minimumPrice || cartTotal > coupon.maximumPrice) {
+            return res.status(400).json({ success: false, message: 'Coupon not applicable for this order.' });
         }
 
-        const couponReduction = Math.min(cartTotal * (coupon.offerPrice / 100), coupon.maximumPrice);
+        // Check if coupon usage limit reached
+        if (coupon.usedCount >= coupon.usageLimit) {
+            return res.status(400).json({ success: false, message: 'Coupon usage limit reached.' });
+        }
 
-        return res.status(200).json({ message: 'Coupon applied successfully', couponReduction });
+        // Check if coupon is active and listed
+        if (!coupon.isListed) {
+            return res.status(400).json({ success: false, message: 'Coupon is not valid.' });
+        }
 
+        // Calculate coupon reduction
+        const couponReduction = Math.min(coupon.offerPrice, cartTotal);
+
+        // Store in session
+        req.session.coupon = couponCode;
+        req.session.couponReduction = couponReduction;
+
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.status(500).json({ success: false, message: 'Error saving session data.' });
+            }
+
+            // Respond with success
+            return res.status(200).json({
+                success: true,
+                message: 'Coupon applied successfully!',
+                couponReduction: couponReduction,
+            });
+        });
+        
     } catch (error) {
-        console.log('Error while applying coupon', error);
-        if (!res.headersSent) {
-            return res.status(500).json({ error: 'Server error' });
-        }
+        console.error('Error while verifying coupon:', error);
+        return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
     }
 };
 
 
-// const verifyCoupon = async (req, res) => {
-//     try {
-//         const { couponCode, cartTotal } = req.body;
-//         const userId = req.session.user;
-
-//         const coupon = await Coupon.findOne({ code: couponCode });
-
-//         if (!coupon) {
-//             return res.status(404).json({ error: 'Coupon not found' });
-//         }
-
-//         if (coupon.expireOn < new Date()) {
-//             return res.status(404).send('The Coupon you have entered is Expired');
-//         }
-
-//         if (cartTotal < coupon.minimumPrice) {
-//             return res.status(404).json({ success: false, message: 'The Coupon you have entered is not applicable for this order' });
-//         }
-
-//         const couponReduction = Math.min(cartTotal * (coupon.offerPrice / 100), coupon.maximumPrice);
-//         if (couponReduction > coupon.maximumPrice) {
-//             return res.status(404).json({ success: false, message: 'The Coupon you have entered is not applicable for this order' });
-//         }
-
-//         return res.status(200).json({ message: 'Coupon applied successfully', couponReduction });
-
-//     } catch (error) {
-//         console.log('Error while applying coupon', error);
-//         if (!res.headersSent) {
-//             return res.status(500).json({ error: 'Server error' });
-//         }
-//     }
-// };
-
 module.exports = {
-    verifyCoupon
+    verifyCoupon,
 };

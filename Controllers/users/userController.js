@@ -241,59 +241,6 @@ const signin = async (req, res) => {
     }
 };
 
-
-// const signin = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
-//         const findUser = await User.findOne({ email });
-
-//         if (!findUser) {
-//             return res.render('users/authPage', { 
-//                 message: 'User not found',
-//                 activeForm: 'signin'
-//             });
-//         }
-
-//         if (findUser.isAdmin) {
-//             return res.render('users/authPage', {
-//                 message: 'Please use admin login',
-//                 activeForm: 'signin'
-//             });
-//         }
-
-
-//         if (findUser.isBlocked) {
-//             return res.render('users/authPage', {
-//                 message: 'Your account has been blocked by the admin. Please contact support.',
-//                 activeForm: 'signin'
-//             });
-//         }
-
-//         const passwordMatch = await bcrypt.compare(password, findUser.password);
-//         if (!passwordMatch) {
-//             return res.render('users/authPage', {
-//                 message: 'Invalid password',
-//                 activeForm: 'signin'
-//             });
-//         }
-
-
-//         req.session.user ={ _id: findUser._id}
-//         await req.session.save();
-
-//         console.log("----------------------------------------",req.session.user);
-        
-
-//         return res.redirect('/');
-//     } catch (error) {
-//         console.error('Signin error:', error);
-//         res.render('users/authPage', {
-//             message: 'Login failed, please try again',
-//             activeForm: 'signin'
-//         });
-//     }
-// };
-
 const securePassword = async (password) => {
     
     try {

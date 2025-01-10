@@ -1,128 +1,221 @@
-const Order=require('../../Models/orderModel');
-const User=require('../../Models/userModel');
-const Wallet=require('../../Models/walletModel');
+const Order = require('../../Models/orderModel');
+const Wallet = require('../../Models/walletModel');
+const User = require('../../Models/userModel');
+const { v4: uuidv4 } = require('uuid');
 
-const loadWallet=async(req,res)=>{
+// const getWalletPage = async (req, res) => { 
+//     try {
+//         const userId = req.session.user._id;
+//         let wallet = await Wallet.findOne({ userId });
+
+
+//         if (!wallet) {
+//                 wallet = new Wallet({
+//                 userId,
+//                 balance: 0,
+//                 walletHistory: [{
+//                     transactionId: uuidv4(),
+//                     transactionType: 'credit',
+//                     amount: 0,
+//                     date: new Date(),
+//                     description: 'Initial balance'
+//                 }]
+//             });
+//             await wallet.save();
+//             // return res.render('users/wallet', { wallet: newWallet });
+//         }
+
+//         res.render('users/wallet',{wallet});
+//     } catch (error) {
+//         console.error('Error loading wallet page:', error);
+//         res.status(500).send({ message: 'Error loading wallet page' });
+//     }
+// };
+
+// const addMoneyToWallet = async (req, res) => {
+//     try {
+//         const { amount } = req.body;
+//         const userId = req.session.user._id;
+
+//         let wallet = await Wallet.findOne({ userId });
+//         if (!wallet) {
+//             wallet = new Wallet({ userId, balance: 0 });
+//         }
+
+//         let transaction={
+//             transactionId:uuidv4(),
+//             transactionType:'credit',
+//             amount:Number(amount),
+//             date:new Date(),
+//             description:'Add to Wallet'
+//         }
+
+//         wallet.balance += Number(amount);
+//         wallet.walletHistory.push(transaction);
+
+//         await wallet.save();
+//         res.status(200).json({ success: true, balance: wallet.balance });
+//     } catch (error) {
+//         console.error('Error adding money to wallet:', error);
+//         res.status(500).json({ success: false, message: 'Error adding money' });
+//     }
+// };
+
+const getWalletPage = async (req, res) => {
     try {
         
-        const userId=req.session.user._id;
-        const user=await User.findById(userId);
-        let wallet=await Wallet.findOne({userId:userId});
+        // const userId = req.session.user._id;
+        const userId = req.session.user;
+        let wallet = await Wallet.findOne({ userId });
 
-        if(!wallet){
-            wallet=new Wallet({userId:userId,amount:0,transactions:[],refundHistory:[],onlinePayments:[]});
+        if (!wallet) {
+            wallet = new Wallet({
+                userId,
+                balance: 0,
+                walletHistory: [{
+                    transactionId: uuidv4(), 
+                    transactionType: 'credit',
+                    amount: 0,
+                    description: 'Add to Wallet' 
+                }]
+            });
+
+            console.log('New wallet:', wallet);
+            
             await wallet.save();
         }
 
-        res.render('users/wallet',{user,wallet});
+        res.render('users/wallet', { wallet,user:userId });
     } catch (error) {
-        console.error('Error fetching wallet:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Error loading wallet page:', error);
+        res.status(500).send({ message: 'Error loading wallet page' });
     }
-}
+};
 
-const addMoneyToWallet=async(req,res)=>{
+
+const addMoneyToWallet = async (req, res) => {
     try {
-        
-        const {userId,paymentMethod,amount}=req.body;
-        if(!userId || !paymentMethod || !amount){
-            return res.status(400).json({ message: 'Missing required fields' });
+        const { amount } = req.body;
+        const userId = req.session.user._id;
+
+        let wallet = await Wallet.findOne({ userId });
+        if (!wallet) {
+            wallet = new Wallet({ userId, balance: 0 });
         }
-        let wallet=await Wallet.findOne({userId:userId});
-        if(!wallet){
-            wallet=new Wallet({userId:userId,amount:0});
-            await wallet.save();
-        }
+
+        let transaction = {
+            transactionId: uuidv4(), 
+            transactionType: 'credit',
+            amount: Number(amount),
+            date: new Date(),
+            description: 'Add to Wallet'
+        };
+        console.log('Transaction:', transaction);
         
-        wallet.transactions.push({
-            trsactionId:Date.now(),
-            paymentMethod:paymentMethod,
-            amount:amount
-        });
-        wallet.amount+=amount;
+
+        wallet.balance += Number(amount);
+        wallet.walletHistory.push(transaction);
+
+        console.log('Wallet-------------:', wallet);
+        
         await wallet.save();
-        res.status(200).json({ message: 'Amount added to wallet successfully' });
-
+        res.status(200).json({ success: true, balance: wallet.balance });
     } catch (error) {
-        console.log('error while adding money to wallet',error);
-        res.status(500).json({ message: 'Internal Server Error' });
-        
+        console.error('Error adding money to wallet:', error);
+        res.status(500).json({ success: false, message: 'Error adding money' });
     }
-}
+};
 
-const refundToWallet=async(req,res)=>{
-    try {
-        const {userId,amount,refundId,orderId}=req.body;
-        if(!userId || !amount || !refundId || !orderId){
-            return res.status(400).json({ message: 'Missing required fields' });
-        }
+const getWalletBalance = async (userId) => {
+    const wallet = await Wallet.findOne({ userId });
+    return wallet ? wallet.balance : 0;
+};
 
-        const wallet=await Wallet.findOne({userId:userId});
-        if(!wallet){
-            return res.status(404).json({ message: 'Wallet not found' });
-        }
+const checkWalletBalance = async (userId, amount) => {
+    const wallet = await Wallet.findOne({ userId });
+    return wallet && wallet.balance >= amount;
+};
 
-        wallet.refundHistory.push({
-            refundId:refundId,
-            orderId:orderId,
-            amount:amount
-        });
-        wallet.amount+=amount;
-        await wallet.save();
-        res.status(200).json({ message: 'Refund added to wallet successfully' });
-
-    } catch (error) {
-        
+const walletPayment = async (userId, amount, description) => {
+    const wallet = await Wallet.findOne({ userId });
+    if (!wallet || wallet.balance < amount) {
+        throw new Error('Insufficient wallet balance');
     }
-}
 
-const placeOrderWithWallet=async(req,res)=>{
-    try {
+    wallet.balance -= amount;
+    wallet.walletHistory.push({
+        transactionId: uuidv4(), 
+        transactionType: 'debit',
+        amount: amount,
+        description: description
+    });
 
-        const {userId,amount,orderId}=req.body;
-        if(!userId || !amount || !orderId){
-            return res.status(400).json({ message: 'Missing required fields' });
-        }
-        const wallet=await Wallet.findOne({userId:userId});
-        if(!wallet||wallet.amount<amount){
-            return res.status(400).json({ message: 'Balance in your wallet is not enough' });
-        }
+    await wallet.save();
+    return wallet;
+};
 
-        wallet.amount-=amount;
-        wallet.onlinePurchase.push({
-            orderId:orderId,
-            amount:amount,
-            date:Date.now()
-        })
-        await wallet.save();
-
-        const newOrder=new Order({
-            userId:userId,
-            orderedItems:[{
-                productId:orderId,
-                quantity:1
-            }],
-            paymentMethod:'wallet',
-            totalPrice:amount,
-            // finalAmount:amount,
-            deliveryCharge:0,
-            status:'Success',
-        })/
-
-        await newOrder.save();
-        res.status(200).json({success:true,orderId:newOrder._id});
-
-    } catch (error) {
-        console.error('Error while placing order with wallet:', error);
-        res.status(500).json({ message: 'Internal Server Error' }); 
-        
+const walletRefund = async (userId, amount, description) => {
+    let wallet = await Wallet.findOne({ userId });
+    if (!wallet) {
+        wallet = new Wallet({ userId, balance: 0 });
     }
-}
+
+    wallet.balance += amount;
+    wallet.walletHistory.push({
+        transactionId: uuidv4(), 
+        transactionType: 'credit',
+        amount: amount,
+        description: description
+    });
+
+    await wallet.save();
+    return wallet;
+};
 
 
-module.exports={
-    loadWallet,
+// const walletPayment = async (userId, amount, description) => {
+//     const wallet = await Wallet.findOne({ userId });
+//     if (!wallet || wallet.balance < amount) {
+//         throw new Error('Insufficient wallet balance');
+//     }
+
+//     wallet.balance -= amount;
+//     wallet.walletHistory.push({
+//         transactionId: uuidv4(),
+//         transactionType: 'debit',
+//         amount: amount,
+//         description: description
+//     });
+
+//     await wallet.save();
+//     return wallet;
+// };
+
+// const walletRefund = async (userId, amount, description) => {
+//     let wallet = await Wallet.findOne({ userId });
+//     if (!wallet) {
+//         wallet = new Wallet({ userId, balance: 0 });
+//     }
+
+//     wallet.balance += amount;
+//     wallet.walletHistory.push({
+//         transactionId: uuidv4(),
+//         transactionType: 'credit',
+//         amount: amount,
+//         description: description
+//     });
+
+//     await wallet.save();
+//     return wallet;
+// };
+
+
+
+module.exports = {
+    getWalletPage,
     addMoneyToWallet,
-    refundToWallet,
-    placeOrderWithWallet
+    walletPayment,
+    walletRefund,
+    checkWalletBalance,
+    getWalletBalance
 };

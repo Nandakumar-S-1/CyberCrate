@@ -62,31 +62,27 @@
                                                                 style="display:inline;">
                                                                 <input type="hidden" name="orderId" value="<%= order._id %>"> 
                                                                 <select name="updatedStatus" onchange="this.form.submit()">
-                                                                    <option value="Pending" <%=order.status==='Pending'
-                                                                        ? 'selected' : '' %>>Pending</option>
-                                                                    <option value="Processing"
-                                                                        <%=order.status==='Processing' ? 'selected' : ''
-                                                                        %>>Processing</option>
-                                                                    <option value="Shipped" <%=order.status==='Shipped'
-                                                                        ? 'selected' : '' %>>Shipped</option>
-                                                                    <option value="Delivered"
-                                                                        <%=order.status==='Delivered' ? 'selected' : ''
-                                                                        %>>Delivered</option>
-                                                                    <option value="Cancelled"
-                                                                        <%=order.status==='Cancelled' ? 'selected' : ''
-                                                                        %>>Cancelled</option>
-                                                                    <option value="Return Request"
-                                                                        <%=order.status==='Return Request' ? 'selected'
-                                                                        : '' %>>Return Request</option>
-                                                                    <option value="Returned"
-                                                                        <%=order.status==='Returned' ? 'selected' : ''
-                                                                        %>>Returned</option>
+                                                                    <option value="Pending" <%=order.status==='Pending' ? 'selected' : '' %>>Pending</option>
+                                                                    <option value="Processing" <%=order.status==='Processing' ? 'selected' : '' %>>Processing</option>
+                                                                    <option value="Shipped" <%=order.status==='Shipped' ? 'selected' : '' %>>Shipped</option>
+                                                                    <option value="Delivered" <%=order.status==='Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                                    <option value="Cancelled" <%=order.status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                                                    <option value="Return Request" <%=order.status==='Return Request' ? 'selected' : '' %>>Return Request</option>
+                                                                    <option value="Returned" <%=order.status==='Returned' ? 'selected' : '' %>>Returned</option>
+                                                                    <option value="Refund Completed" <%=order.status==='Refund Completed' ? 'selected' : '' %>>Refund Completed</option>
                                                                 </select>
                                                             </form>
                                                         </td>
-                                                    <td>
-                                                        <%= order.address %>
-                                                    </td>
+                                                        <td>
+                                                            <%= order.address.name %>, 
+                                                            <%= order.address.addressType %>, 
+                                                            <%= order.address.landMark %>, 
+                                                            <%= order.address.city %>, 
+                                                            <%= order.address.state %>, 
+                                                            <%= order.address.pincode %>, 
+                                                            Phone: <%= order.address.phone %>, 
+                                                            Alt Phone: <%= order.address.alterPhone %>
+                                                        </td>
                                                     <td>
                                                         <a href="/admin/orderList/viewOrder/<%= order._id %>"
                                                             class="btn btn-primary">View

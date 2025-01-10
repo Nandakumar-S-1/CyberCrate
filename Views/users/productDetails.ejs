@@ -243,25 +243,32 @@
                         <div class="row mb-50">
                             <div class="col-md-6 col-sm-12 col-xs-12">
                                 <div class="detail-gallery">
-                                    
-                                    <div class="main-image img-magnifier-container">
+                                    <!-- Main Image -->
+                                    <div class="main-image">
                                         <figure class="border-radius-10">
-                                            <img id="currentImage" src="/img/products/<%= product.productImage[0] %>"
+                                            <img 
+                                                id="currentImage" 
+                                                src="/img/products/<%= product.productImage[0] %>" 
                                                 alt="Main Product Image"
+                                                class="zoomable-image"
                                                 style="object-fit: cover; width: 100%; height: auto;">
                                         </figure>
                                     </div>
+                                    
+                                    <!-- Thumbnail Images -->
                                     <div class="slider-nav-thumbnails mt-3">
-                                        <% product.productImage.forEach((image, index)=> { %>
+                                        <% product.productImage.forEach((image, index) => { %>
                                             <div class="thumbnail" onclick="switchImage('<%= image %>')">
-                                                <img id="<%= image %>" src="/img/products/<%= image %>"
-                                                    alt="Thumbnail <%= index + 1 %>"
+                                                <img 
+                                                    src="/img/products/<%= image %>" 
+                                                    alt="Thumbnail <%= index + 1 %>" 
                                                     style="object-fit: contain; width: 70px; height: 70px;">
                                             </div>
-                                            <% }); %>
+                                        <% }); %>
                                     </div>
                                 </div>
                             </div>
+                            
 
                             <div class="col-md-6 col-sm-12 col-xs-12 border border-2 border-success-subtle ">
                                 <div class="detail-info">
@@ -270,19 +277,19 @@
                                     </h2>
                                     <div
                                         class="product-detail-rating d-flex align-items-center justify-content-between">
-                                        <span class="font-weight-bold">Brand: <a href="#">
-                                                <%= product.brandName %>
+                                        <span class="font-weight-bold">Brand: <a href="#" class="fw-bold text-decoration-none">
+                                                <%= product.brand.brandName %>
                                             </a></span>
                                         <div class="product-rate">
-                                            <span class="font-small text-muted"><%=product.category.name%></span>
+                                            <span class="font-small fw-bold text-primary"><%=product.category.name%></span>
                                             <br>
                                             <span class="font-small ml-5 text-muted">(n reviews)</span>
                                         </div>
                                     </div>
                                     <div class="product-price mt-3">
                                         <h3>
-                                            <span class="text-brand">₹<%= product.salePrice %></span>
-                                            <del class="old-price">₹<%= product.realPrice %></del>
+                                            <span class="text-brand fw-bold ">₹<%= product.salePrice %></span>
+                                            <del class="old-price fw-bold">₹<%= product.realPrice %></del>
                                         </h3>
                                         <p class="save-price text-success">
                                             You save: ₹<%= product.realPrice - product.salePrice %>
@@ -394,7 +401,31 @@
     </section>
 
 
-    <script>
+
+<!-- Include Medium Zoom Script -->
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initialize Medium Zoom for the main image
+        const zoomableImage = document.querySelector('#currentImage');
+        const zoomInstance = mediumZoom(zoomableImage, { background: 'rgba(0, 0, 0, 0.8)' });
+
+        // Switch Image Functionality
+        function switchImage(imageSrc) {
+            const currentImage = document.getElementById('currentImage');
+            currentImage.src = '/img/products/' + imageSrc;
+
+            // Update Medium Zoom image after switching
+            zoomInstance.detach(); // Detach the zoom instance
+            zoomInstance.attach(currentImage); // Attach to the new image
+        }
+
+        // Expose the switchImage function globally
+        window.switchImage = switchImage;
+    });
+</script>
+
+    <!-- <script>
         $(document).ready(function () {
             function initializeMagnifier(imageID) {
                 $("#" + imageID).elevateZoom({
@@ -422,47 +453,6 @@
             });
         });
     </script>
-
-    <script> 
-    document.getElementById('addToCartBtn').addEventListener('click',function(){
-        const form = document.getElementById('add-to-cart-form')
-        const formData = new FormData(form)
-        const data = Object.fromEntries(formData.entries())
-        fetch('/cart/addItem', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data) 
-        })
-        .then(response => response.json())
-        .then(data=>{
-            if(data.success){
-                Swal.fire({ 
-                    title: 'Success',
-                    text: 'Item added to cart',
-                    icon: 'success', 
-                    confirmButtonText: 'OK' 
-                })
-            }else{ 
-                Swal.fire({ 
-                    title: 'Error',
-                    text: 'Failed to add item to cart: ' + data.message,
-                    icon: 'error', 
-                    confirmButtonText: 'OK' 
-                })
-            } 
-        })
-        .catch(error => {
-            console.error('Error:', error); 
-            Swal.fire({ 
-                title: 'Error', 
-                text: 'An error occurred while adding the item to cart', 
-                icon: 'error', 
-                confirmButtonText: 'OK' 
-                }); 
-            }); 
-        }); 
-    </script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const descriptionElement = document.querySelector(".product-description");
@@ -528,9 +518,50 @@
         magnify("currentImage", 3);
 
     </script>
+    <script src="path/to/jquery.elevateZoom.min.js"></script> -->
+
+
+    <script> 
+    document.getElementById('addToCartBtn').addEventListener('click',function(){
+        const form = document.getElementById('add-to-cart-form')
+        const formData = new FormData(form)
+        const data = Object.fromEntries(formData.entries())
+        fetch('/cart/addItem', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data) 
+        })
+        .then(response => response.json())
+        .then(data=>{
+            if(data.success){
+                Swal.fire({ 
+                    title: 'Success',
+                    text: 'Item added to cart',
+                    icon: 'success', 
+                    confirmButtonText: 'OK' 
+                })
+            }else{ 
+                Swal.fire({ 
+                    title: 'Error',
+                    text: 'Failed to add item to cart: ' + data.message,
+                    icon: 'error', 
+                    confirmButtonText: 'OK' 
+                })
+            } 
+        })
+        .catch(error => {
+            console.error('Error:', error); 
+            Swal.fire({ 
+                title: 'Error', 
+                text: 'An error occurred while adding the item to cart', 
+                icon: 'error', 
+                confirmButtonText: 'OK' 
+                }); 
+            }); 
+        }); 
+    </script>
 
     <script src="path/to/jquery.min.js"></script>
-    <script src="path/to/jquery.elevateZoom.min.js"></script>
 
 
     <%- include('../layouts/user/footer') %>

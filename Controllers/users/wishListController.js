@@ -6,6 +6,7 @@ const Brand = require('../../Models/brandModel');
 const loadWishlist = async (req, res) => {
     try {
         const userId = req.session.user._id;
+        
         const wishlist = await Wishlist.findOne({ userId }).populate({
             path: 'products.productId',
             select: 'productName productImage realPrice salePrice brand category',
@@ -26,42 +27,12 @@ const loadWishlist = async (req, res) => {
         const totalPages = Math.ceil(wishlist.products.length / itemsPerPage);
         const pageProducts = wishlist.products.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-        res.render('users/wishlist', { wishlist: { products: pageProducts }, totalPages, currentPage: page });
+        res.render('users/wishlist', {user: userId, wishlist: { products: pageProducts }, totalPages, currentPage: page });
     } catch (error) {
         console.error('Error loading wishlist:', error);
         res.status(500).send({ message: 'Error loading wishlist' });
     }
 };
-
-// const loadWishlist = async (req, res) => {
-//     try {
-//         const userId = req.session.user._id;
-//         const wishlist = await Wishlist.findOne({ userId }).populate({
-//             path: 'products.productId',populate: {
-//                 path: 'category',
-//      }
-//             })
-//         if (!wishlist || wishlist.products.length === 0) {
-//             return res.render('users/wishlist', {
-//                 wishlist: { products: [] },
-//                 totalPages: 0,
-//                 currentPage: 1
-//             });
-//         }
-
-//         wishlist.products.sort((a, b) => b.addedOn - a.addedOn);
-
-//         const itemsPerPage = 6;
-//         const page = parseInt(req.query.page) || 1;
-//         const totalPages = Math.ceil(wishlist.products.length / itemsPerPage);
-//         const pageProducts = wishlist.products.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-
-//         res.render('users/wishlist', { wishlist: { products: pageProducts }, totalPages, currentPage: page });
-//     } catch (error) {
-//         console.error('Error loading wishlist:', error);
-//         res.status(500).send({ message: 'Error loading wishlist' });
-//     }
-// };
 
 const addToWishlist = async (req, res) => {
     try {

@@ -2,6 +2,36 @@ const Cart = require('../../Models/cartModel');
 const Product = require('../../Models/productModel');
 const User=require('../../Models/userModel')
 const Coupon=require('../../Models/couponModel')
+const Wishlist = require('../../Models/wishlistModel');
+const { verifyCoupon } = require('../../Controllers/admin/couponController');
+const axios = require('axios');
+
+
+
+// const validateCoupon = async (couponCode, cartTotal) => {
+
+//     let couponReduction = 0;
+    
+//     const coupon = await Coupon.findOne({
+//         code: couponCode,
+//         isActive: true,
+//         isListed: true,
+//         expireOn: { $gt: new Date() }
+//     });
+
+//     if (!coupon) {
+//         return { valid: false, message: 'Invalid coupon code' };
+//     }
+
+//     if (cartTotal >= coupon.minimumPrice) {
+//         // couponReduction = Math.min(cartTotal * (coupon.offerPrice / 100), coupon.maximumPrice);
+
+//         const couponReduction = Math.min(coupon.offerPrice, cartTotal);
+//         return { valid: true, couponReduction };
+//     }
+
+//     return { valid: false, message: 'Cart total is less than the coupon minimum price' };
+// };
 
 // const loadCart = async (req, res) => {
 //     try {
@@ -15,13 +45,14 @@ const Coupon=require('../../Models/couponModel')
 //                 cartTotal: 0,
 //                 discount: 0,
 //                 couponReduction: 0,
+//                 coupon: null,
 //                 message: 'Your cart is empty.'
 //             });
 //         }
 
 //         let cartTotal = 0;
 //         let totalDiscount = 0;
-//         let couponReduction = 0;
+//         let couponReduction = parseFloat(req.session.couponReduction || 0); // Retrieve session data if its available
 
 //         const items = cart.items.map(item => {
 //             if (!item.productId) return null;
@@ -43,29 +74,45 @@ const Coupon=require('../../Models/couponModel')
 //             };
 //         }).filter(Boolean);
 
-//         const appliedCoupon = req.query.coupon || null;
-//         if (appliedCoupon) {
-//             const coupon = await Coupon.findOne({
-//                 code: appliedCoupon,
-//                 isActive: true,
-//                 isListed: true,
-//                 expireOn: { $gt: new Date() }
-//             });
+//         const appliedCoupon = req.query.coupon||req.session.coupon || null;
+        
+        
+//         if (appliedCoupon&&!req.session.coupon) {
+//             const couponResult = await validateCoupon(appliedCoupon, cartTotal);
+//             console.log("Coupon Result:", couponResult);
+            
+//             if (couponResult.valid) {
+//                 couponReduction = couponResult.couponReduction;
 
-//             if (coupon) {
-//                 if (cartTotal >= coupon.minimumPrice) {
-//                     couponReduction = Math.min(cartTotal * (coupon.offerPrice / 100), coupon.maximumPrice);
-//                 }
+//                 req.session.coupon = appliedCoupon;
+//                 req.session.couponReduction = couponReduction;
+
+//                 console.log('Session Coupon:', req.session.coupon);
+//                 console.log('Session Coupon Reduction:', req.session.couponReduction);
+
+
+//                 req.session.save((err) => {
+//                     if (err) console.error("Session save error:", err);
+//                 });
+//             } else {
+//                 console.log(couponResult.message);
 //             }
 //         }
+//         console.log('Applied Coupon:', appliedCoupon);
+
+
+//         console.log('Applied Coupon:', req.session.coupon);
+//         console.log('Coupon Reduction:', req.session.couponReduction);
 
 //         res.render('users/cart', {
 //             items,
-//             cartTotal: cartTotal.toFixed(2),
-//             discount: totalDiscount.toFixed(2),
-//             couponReduction: couponReduction.toFixed(2),
+//             cartTotal: parseFloat(cartTotal.toFixed(2)),
+//             discount: parseFloat(totalDiscount.toFixed(2)),
+//             couponReduction: parseFloat(couponReduction.toFixed(2)),
+//             coupon: req.session.coupon || null,
 //             message: ''
 //         });
+        
 //     } catch (error) {
 //         console.error("Error loading cart:", error);
 //         res.status(500).send("Internal server error");
@@ -73,67 +120,99 @@ const Coupon=require('../../Models/couponModel')
 // };
 
 // const applyCoupon = async (req, res) => {
-
 //     try {
 //         const { couponCode, cartTotal } = req.body;
-//         let couponReduction = 0;    
 
-//         const coupon = await Coupon.findOne({
-//             code: couponCode,
-//             isActive: true,
-//             isListed: true,
-//             expireOn: { $gt: new Date() }
-//         });
+//         const couponResult = await validateCoupon(couponCode, cartTotal);
+//         console.log("Coupon Result:", couponResult);
 
-//         if (!coupon) {
-//             return res.status(400).json({ success: false, message: 'Invalid coupon code' });
-//         }
+//         if (couponResult.valid) {
+//             req.session.coupon = couponCode;
+//             req.session.couponReduction = couponResult.couponReduction;
+//             console.log("ssession after applying coupon",req.session.couponReduction);
 
-//         if (cartTotal >= coupon.minimumPrice) {
-//             couponReduction = Math.min(cartTotal * (coupon.offerPrice / 100), coupon.maximumPrice);
+//             // req.session.save((err) => {
+//             //     if (err) {
+//             //         console.error("Session save error:", err);
+//             //         return res.status(500).json({ success: false, message: 'Error saving session' });
+//             //     }
+//             //     console.log("ssession after applying coupon:", req.session);
+
+//             //     res.status(200).json({
+//             //         success: true,
+//             //         message: 'Coupon applied successfully',
+//             //         discount: couponResult.couponReduction.toFixed(2),
+//             //         couponReduction: couponResult.couponReduction.toFixed(2)
+//             //     });
+//             // });
 //         } else {
-//             return res.status(400).json({ success: false, message: 'Cart total is less than the coupon minimum price' });
+//             res.status(400).json({ success: false, message: couponResult.message });
 //         }
-
-//         res.status(200).json({
-//             success: true,
-//             message: 'Coupon applied successfully',
-//             discount: couponReduction.toFixed(2),
-//             couponReduction: couponReduction.toFixed(2)
-//         });
 //     } catch (error) {
 //         console.error("Error applying coupon:", error);
 //         res.status(500).json({ success: false, message: 'Internal server error' });
 //     }
 // };
+// const applyCoupon = async (req, res) => {
+//     try {
+//         const { couponCode, cartTotal } = req.body;
+        
+//         // Call the verifyCoupon function
+//         const response = await verifyCoupon({ body: { couponCode, cartTotal } }, res);
+
+//         if (response.success) {
+//             req.session.coupon = couponCode;
+//             req.session.couponReduction = response.couponReduction;
+
+//             return res.status(200).json({
+//                 success: true,
+//                 message: response.message,
+//                 couponReduction: response.couponReduction,
+//             });
+//         } else {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: response.message,
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Error applying coupon:', error);
+//         return res.status(500).json({ success: false, message: 'Internal server error' });
+//     }
+// };
 
 
-const validateCoupon = async (couponCode, cartTotal) => {
-    let couponReduction = 0;
-    
-    const coupon = await Coupon.findOne({
-        code: couponCode,
-        isActive: true,
-        isListed: true,
-        expireOn: { $gt: new Date() }
-    });
+const applyCoupon = async (req, res) => {
+    try {
+        const { couponCode, cartTotal } = req.body;
 
-    if (!coupon) {
-        return { valid: false, message: 'Invalid coupon code' };
+        const response = await axios.post('http://localhost:3000/coupons/verifyCoupon', { couponCode, cartTotal });
+
+        if (response.data.success) {
+            req.session.coupon = couponCode;
+            req.session.couponReduction = response.data.couponReduction;
+
+            return res.status(200).json({
+                success: true,
+                message: response.data.message,
+                couponReduction: response.data.couponReduction,
+                discount: req.session.discount
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: response.data.message,
+            });
+        }
+    } catch (error) {
+        console.error('Error applying coupon:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
-
-    if (cartTotal >= coupon.minimumPrice) {
-        couponReduction = Math.min(cartTotal * (coupon.offerPrice / 100), coupon.maximumPrice);
-        return { valid: true, couponReduction };
-    }
-
-    return { valid: false, message: 'Cart total is less than the coupon minimum price' };
 };
 
 const loadCart = async (req, res) => {
     try {
         const userId = req.session.user;
-        const user = await User.findById(userId);
         const cart = await Cart.findOne({ userId }).populate('items.productId');
 
         if (!cart || cart.items.length === 0) {
@@ -142,13 +221,15 @@ const loadCart = async (req, res) => {
                 cartTotal: 0,
                 discount: 0,
                 couponReduction: 0,
-                message: 'Your cart is empty.'
+                coupon: null,
+                message: 'Your cart is empty.',
             });
         }
 
         let cartTotal = 0;
         let totalDiscount = 0;
-        let couponReduction = 0;
+        let couponReduction = 0
+        // parseFloat(req.session.couponReduction || 0);
 
         const items = cart.items.map(item => {
             if (!item.productId) return null;
@@ -166,57 +247,46 @@ const loadCart = async (req, res) => {
                 ...item.toObject(),
                 discount: discount.toFixed(2),
                 isBlocked: item.productId.isBlocked,
-                unavailableMessage: item.productId.isBlocked ? "This product is unavailable." : null,
+                unavailableMessage: item.productId.isBlocked ? 'This product is unavailable.' : null,
             };
         }).filter(Boolean);
 
-        const appliedCoupon = req.query.coupon || null;
-        if (appliedCoupon) {
-            const couponResult = await validateCoupon(appliedCoupon, cartTotal);
+        const appliedCoupon = req.query.coupon || req.session.coupon || null;
 
-            if (couponResult.valid) {
-                couponReduction = couponResult.couponReduction;
+        if (appliedCoupon && !req.session.coupon) {
+            // Call the verifyCoupon function
+            const response = await verifyCoupon({ body: { couponCode: appliedCoupon, cartTotal } }, res);
+
+            if (response.success) {
+                couponReduction = response.couponReduction;
+
+                req.session.coupon = appliedCoupon;
+                req.session.couponReduction = couponReduction;
+
+                req.session.save(err => {
+                    if (err) console.error('Session save error:', err);
+                });
             } else {
-                console.log(couponResult.message);
+                console.log(response.message);
             }
         }
+
         res.render('users/cart', {
             items,
-            cartTotal: cartTotal.toFixed(2),
-            discount: totalDiscount.toFixed(2),
-            couponReduction: couponReduction.toFixed(2),
-            message: ''
+            cartTotal: parseFloat(cartTotal.toFixed(2)),
+            discount: parseFloat(totalDiscount.toFixed(2)),
+            couponReduction: parseFloat(couponReduction.toFixed(2)),
+            coupon: req.session.coupon || null,
+            message: '',
         });
     } catch (error) {
-        console.error("Error loading cart:", error);
-        res.status(500).send("Internal server error");
-    }
-};
-
-const applyCoupon = async (req, res) => {
-    try {
-        const { couponCode, cartTotal } = req.body;
-
-        const couponResult = await validateCoupon(couponCode, cartTotal);
-
-        if (couponResult.valid) {
-            res.status(200).json({
-                success: true,
-                message: 'Coupon have been applied successfully',
-                discount: couponResult.couponReduction.toFixed(2),
-                couponReduction: couponResult.couponReduction.toFixed(2)
-            });
-        } else {
-            res.status(400).json({ success: false, message: couponResult.message });
-        }
-    } catch (error) {
-        console.error("Error applying coupon:", error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        console.error('Error loading cart:', error);
+        res.status(500).send('Internal server error');
     }
 };
 
 const addItemToCart = async (req, res) => {
-    const { productId, quantity } = req.body;
+    const { productId, quantity ,removeFromWishlist} = req.body;
     const userId = req.session.user;
 
     try {
@@ -252,6 +322,14 @@ const addItemToCart = async (req, res) => {
                 price: product.salePrice,
                 totalPrice: product.salePrice * newQuantity
             });
+        }
+
+        if(removeFromWishlist){
+            const wishlist=await Wishlist.findOne({userId:userId});
+            if(wishlist){
+                wishlist.products=wishlist.products.filter(item=>item.productId.toString()!==productId);
+                await wishlist.save();
+            }
         }
 
         await cart.save();
