@@ -1,38 +1,41 @@
 <%- include('../layouts/admin/header.ejs') %>
     <%- include('../layouts/admin/sidebar.ejs', { currentPage: 'orderList' }) %>
 
-
         <div class="content">
             <div class="container-fluid p-3">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h3>Order List</h3>
-                                <div class="form-inline"> <input class="form-control mr-sm-2" type="search"
-                                        placeholder="Search" aria-label="Search"> <button
-                                        class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                                <h3 class="text-primary">Order List</h3>
+                                <div class="form-inline">
+                                    <input class="form-control mr-sm-2" type="search" placeholder="Search"
+                                        aria-label="Search">
+                                    <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
                                 </div>
-                                <div class="dropdown"> <button class="btn btn-secondary dropdown-toggle" type="button"
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
                                         id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false"> Filter by Status </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"> <a
-                                            class="dropdown-item" href="/admin/orderList?status=">All</a> <a
-                                            class="dropdown-item" href="/admin/orderList?status=Pending">Pending</a> <a
-                                            class="dropdown-item"
-                                            href="/admin/orderList?status=Processing">Processing</a> <a
-                                            class="dropdown-item" href="/admin/orderList?status=Shipped">Shipped</a> <a
-                                            class="dropdown-item" href="/admin/orderList?status=Delivered">Delivered</a>
+                                        aria-expanded="false">
+                                        Filter by Status
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="/admin/orderList?status=">All</a>
+                                        <a class="dropdown-item" href="/admin/orderList?status=Pending">Pending</a>
+                                        <a class="dropdown-item"
+                                            href="/admin/orderList?status=Processing">Processing</a>
+                                        <a class="dropdown-item" href="/admin/orderList?status=Shipped">Shipped</a>
+                                        <a class="dropdown-item" href="/admin/orderList?status=Delivered">Delivered</a>
                                         <a class="dropdown-item" href="/admin/orderList?status=Cancelled">Cancelled</a>
                                         <a class="dropdown-item" href="/admin/orderList?status=Return%20Request">Return
-                                            Request</a> <a class="dropdown-item"
-                                            href="/admin/orderList?status=Returned">Returned</a>
+                                            Request</a>
+                                        <a class="dropdown-item" href="/admin/orderList?status=Returned">Returned</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <table class="table table-bordered">
-                                    <thead>
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-light">
                                         <tr>
                                             <th>#</th>
                                             <th>ID</th>
@@ -48,58 +51,82 @@
                                         <% if (orders && orders.length> 0) { %>
                                             <% orders.forEach(order=> { %>
                                                 <tr>
-                                                    <td><%=(currentPage-1)* itemsPerPage + orders.indexOf(order)+1 %>
+                                                    <td>
+                                                        <%= (currentPage - 1) * itemsPerPage + orders.indexOf(order) + 1
+                                                            %>
                                                     </td>
-                                                    <td><%= order._id %></td>
-                                                    <td><%= order.user.name %></td>
-                                                    <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
-                                                    <td><%= order.orderedItems.map(item=>
-                                                            item.product.productName).join(', ') %></td>
+                                                    <td>
+                                                        <%= order._id %>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.user.name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= new Date(order.createdAt).toLocaleDateString() %>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.orderedItems.map(item=>
+                                                            item.product.productName).join(', ') %>
+                                                    </td>
                                                     <td
-                                                        class="status-<%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                                                        class="text-center status-<%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
                                                         <%= order.status %>
                                                             <form action="/admin/orderList/updateStatus" method="POST"
                                                                 style="display:inline;">
-                                                                <input type="hidden" name="orderId" value="<%= order._id %>"> 
-                                                                <select name="updatedStatus" onchange="this.form.submit()">
-                                                                    <option value="Pending" <%=order.status==='Pending' ? 'selected' : '' %>>Pending</option>
-                                                                    <option value="Processing" <%=order.status==='Processing' ? 'selected' : '' %>>Processing</option>
-                                                                    <option value="Shipped" <%=order.status==='Shipped' ? 'selected' : '' %>>Shipped</option>
-                                                                    <option value="Delivered" <%=order.status==='Delivered' ? 'selected' : '' %>>Delivered</option>
-                                                                    <option value="Cancelled" <%=order.status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
-                                                                    <option value="Return Request" <%=order.status==='Return Request' ? 'selected' : '' %>>Return Request</option>
-                                                                    <option value="Returned" <%=order.status==='Returned' ? 'selected' : '' %>>Returned</option>
-                                                                    <option value="Refund Completed" <%=order.status==='Refund Completed' ? 'selected' : '' %>>Refund Completed</option>
+                                                                <input type="hidden" name="orderId"
+                                                                    value="<%= order._id %>">
+                                                                <select name="updatedStatus" class="form-control-sm"
+                                                                    onchange="this.form.submit()">
+                                                                    <option value="Pending" <%=order.status==='Pending'
+                                                                        ? 'selected' : '' %>>Pending</option>
+                                                                    <option value="Processing"
+                                                                        <%=order.status==='Processing' ? 'selected' : ''
+                                                                        %>>Processing</option>
+                                                                    <option value="Shipped" <%=order.status==='Shipped'
+                                                                        ? 'selected' : '' %>>Shipped</option>
+                                                                    <option value="Delivered"
+                                                                        <%=order.status==='Delivered' ? 'selected' : ''
+                                                                        %>>Delivered</option>
+                                                                    <option value="Cancelled"
+                                                                        <%=order.status==='Cancelled' ? 'selected' : ''
+                                                                        %>>Cancelled</option>
+                                                                    <option value="Return Request"
+                                                                        <%=order.status==='Return Request' ? 'selected'
+                                                                        : '' %>>Return Request</option>
+                                                                    <option value="Returned"
+                                                                        <%=order.status==='Returned' ? 'selected' : ''
+                                                                        %>>Returned</option>
+                                                                    <option value="Refund Completed"
+                                                                        <%=order.status==='Refund Completed'
+                                                                        ? 'selected' : '' %>>Refund Completed</option>
                                                                 </select>
                                                             </form>
-                                                        </td>
-                                                        <td>
-                                                            <%= order.address.name %>, 
-                                                            <%= order.address.addressType %>, 
-                                                            <%= order.address.landMark %>, 
-                                                            <%= order.address.city %>, 
-                                                            <%= order.address.state %>, 
-                                                            <%= order.address.pincode %>, 
-                                                            Phone: <%= order.address.phone %>, 
-                                                            Alt Phone: <%= order.address.alterPhone %>
-                                                        </td>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.address.name %>,
+                                                            <%= order.address.addressType %>,
+                                                                <%= order.address.landMark %>,
+                                                                    <%= order.address.city %>,
+                                                                        <%= order.address.state %>,
+                                                                            <%= order.address.pincode %>,
+                                                                                Phone: <%= order.address.phone %>,
+                                                                                    Alt Phone: <%=
+                                                                                        order.address.alterPhone %>
+                                                    </td>
                                                     <td>
                                                         <a href="/admin/orderList/viewOrder/<%= order._id %>"
-                                                            class="btn btn-primary">View
-                                                        </a>
+                                                            class="btn btn-primary btn-sm">View</a>
                                                     </td>
-
                                                 </tr>
                                                 <% }); %>
                                                     <% } else { %>
                                                         <tr>
-                                                            <td colspan="7">No orders found</td>
+                                                            <td colspan="8" class="text-center">No orders found</td>
                                                         </tr>
                                                         <% } %>
                                     </tbody>
                                 </table>
                             </div>
-
                             <div class="pagination-container mt-3">
                                 <ul class="pagination justify-content-center">
                                     <% for (let i=1; i <=totalPages; i++) { %>
@@ -119,7 +146,163 @@
 
         <%- include('../layouts/admin/footer.ejs') %>
 
-        <!-- <script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const selectElements = document.querySelectorAll('select[name="updatedStatus"]');
+
+                    selectElements.forEach(selectElement => {
+                        selectElement.addEventListener('change', function () {
+                            const form = selectElement.closest('form');
+                            const orderId = form.querySelector('input[name="orderId"]').value;
+                            const updatedStatus = selectElement.value;
+
+                            Swal.fire({
+                                title: 'Updating...',
+                                text: 'Please wait while the status is updated.',
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            fetch('/admin/orderList/updateStatus', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    orderId: orderId,
+                                    updatedStatus: updatedStatus
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+
+                                    if (data.message) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Status Updated',
+                                            text: `Order #${orderId} status has been updated to ${updatedStatus}.`
+                                        });
+
+                                        const statusCell = form.closest('td');
+                                        statusCell.className = `status-${updatedStatus.toLowerCase().replace(/\s+/g, '-')}`;
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Update Failed',
+                                            text: data.message || 'An unknown error occurred.'
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    Swal.close();
+
+                                    console.error(error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Update Failed',
+                                        text: 'An error occurred while updating the status. Please try again.'
+                                    });
+                                });
+                        });
+                    });
+                });
+            </script>
+
+
+            <style>
+                .content {
+                    background-color: #000000;
+                }
+
+                .order-list-page {
+                    padding: 20px;
+                    margin-left: 250px;
+                }
+
+                .content {
+                    margin-left: 250px;
+                    padding: 20px;
+                }
+
+                .card-header {
+                    background-color: #000000;
+                }
+
+                .table th,
+                .table td {
+                    vertical-align: middle;
+                }
+
+                .table thead th {
+                    background-color: #e9ecef;
+                }
+
+                .table td a i {
+                    color: #007bff;
+                }
+
+                .status-delivered {
+                    color: green;
+                }
+
+                .status-processing {
+                    color: purple;
+                }
+
+                .status-cancelled {
+                    color: red;
+                }
+
+                .status-pending {
+                    color: orange;
+                }
+
+                .status-return-request {
+                    color: blue;
+                }
+
+                .status-returned {
+                    color: brown;
+                }
+            </style>
+
+            <style>
+                .table th,
+                .table td {
+                    vertical-align: middle;
+                    padding: 0.5rem;
+                }
+
+                .status-pending {
+                    color: orange;
+                    font-weight: bold;
+                }
+
+                .status-processing {
+                    color: blue;
+                    font-weight: bold;
+                }
+
+                .status-shipped {
+                    color: purple;
+                    font-weight: bold;
+                }
+
+                .status-delivered {
+                    color: green;
+                    font-weight: bold;
+                }
+
+                .status-cancelled {
+                    color: red;
+                    font-weight: bold;
+                }
+            </style>
+
+            <!-- <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const selectElements = document.querySelectorAll('select[name="updatedStatus"]');
         
@@ -186,162 +369,3 @@
                 });
             });
         </script> -->
-        
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const selectElements = document.querySelectorAll('select[name="updatedStatus"]');
-            
-                selectElements.forEach(selectElement => {
-                    selectElement.addEventListener('change', function () {
-                        const form = selectElement.closest('form');
-                        const orderId = form.querySelector('input[name="orderId"]').value;
-                        const updatedStatus = selectElement.value;
-            
-                        Swal.fire({
-                            title: 'Updating...',
-                            text: 'Please wait while the status is updated.',
-                            showConfirmButton: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-            
-                        fetch('/admin/orderList/updateStatus', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                orderId: orderId,
-                                updatedStatus: updatedStatus
-                            })
-                        })
-                        .then(response => response.json())  
-                        .then(data => {
-                            Swal.close(); 
-                            
-                            if (data.message) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Status Updated',
-                                    text: `Order #${orderId} status has been updated to ${updatedStatus}.`
-                                });
-            
-                                const statusCell = form.closest('td');
-                                statusCell.className = `status-${updatedStatus.toLowerCase().replace(/\s+/g, '-')}`;
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Update Failed',
-                                    text: data.message || 'An unknown error occurred.'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            Swal.close();  
-        
-                            console.error(error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Update Failed',
-                                text: 'An error occurred while updating the status. Please try again.'
-                            });
-                        });
-                    });
-                });
-            });
-        </script>
-        
-
-            <!-- <script>
-                $(document).ready(function () {
-                    $('select[name="updatedStatus"]').on('change', function () {
-                        const form = $(this).closest('form'); 
-                        const orderId = form.find('input[name="orderId"]').val();
-                        const updatedStatus = $(this).val();
-
-                        $.ajax({
-                            url: '/admin/orderList/updateStatus',
-                            type: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                orderId: orderId,
-                                updatedStatus: updatedStatus
-                            }),
-                            success: function (response) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    text: response.message
-                                });
-
-                                const statusCell = form.closest('td');
-                                statusCell.removeClass().addClass('status-' + updatedStatus.toLowerCase().replace(/\s+/g, '-'));
-                            },
-                            error: function (xhr) {
-                                const errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred';
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: errorMessage
-                                });
-                            }
-                        });
-                    });
-                });
-            </script> -->
-
-
-
-            <style>
-                .order-list-page {
-                    padding: 20px;
-                    margin-left: 250px;
-                }
-
-                .content {
-                    margin-left: 250px;
-                    padding: 20px;
-                }
-
-                .card-header {
-                    background-color: #f8f9fa;
-                }
-
-                .table th,
-                .table td {
-                    vertical-align: middle;
-                }
-
-                .table thead th {
-                    background-color: #e9ecef;
-                }
-
-                .table td a i {
-                    color: #007bff;
-                }
-
-                .status-delivered {
-                    color: green;
-                }
-
-                .status-processing {
-                    color: purple;
-                }
-
-                .status-cancelled {
-                    color: red;
-                }
-
-                .status-pending {
-                    color: orange;
-                }
-
-                .status-return-request {
-                    color: blue;
-                }
-
-                .status-returned {
-                    color: brown;
-                }
-            </style>

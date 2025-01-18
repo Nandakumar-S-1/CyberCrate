@@ -2,53 +2,7 @@ const Coupon=require('../../Models/couponModel');
 const Order=require('../../Models/orderModel');
 const User=require('../../Models/userModel');
 
-// const verifyCoupon = async (req, res) => {
-//     try {
-//         const { couponCode, cartTotal } = req.body;
-
-//         console.log("Request body:", req.body);
-
-//         // Fetch coupon from database
-//         const coupon = await Coupon.findOne({ code: couponCode });
-//         console.log("Coupon fetched:", coupon);
-
-//         if (!coupon) {
-//             return res.status(404).json({ success: false, message: 'Coupon not found' });
-//         }
-
-//         // Check coupon validity
-//         if (new Date(coupon.expireOn) < new Date()) {
-//             return res.status(400).json({ success: false, message: 'The coupon you have entered is expired.' });
-//         }
-
-//         if (cartTotal < coupon.minimumPrice || cartTotal > coupon.maximumPrice) {
-//             return res.status(400).json({ success: false, message: 'The coupon is not applicable for this order.' });
-//         }
-
-//         if (coupon.usedCount >= coupon.usageLimit) {
-//             return res.status(400).json({ success: false, message: 'Coupon usage limit has been reached.' });
-//         }
-
-//         if (!coupon.isActive || !coupon.isListed) {
-//             return res.status(400).json({ success: false, message: 'This coupon is not valid.' });
-//         }
-
-//         // Calculate coupon reduction
-//         const couponReduction = Math.min(coupon.offerPrice, cartTotal);
-//         console.log("Calculated coupon reduction:", couponReduction);
-
-//         // Respond with success
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Coupon applied successfully!',
-//             couponReduction: couponReduction,
-//         });
-//     } catch (error) {
-//         console.error('Error while verifying coupon:', error);
-//         return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
-//     }
-// };
-
+//function to verify coupon
 const verifyCoupon = async (req, res) => {
     try {
         const { couponCode, cartTotal } = req.body;

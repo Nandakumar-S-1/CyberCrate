@@ -1,6 +1,14 @@
 <%- include('../layouts/user/header.ejs') %>
 
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f5ff;
+      color: #3e0a77;
+      margin: 0;
+      padding: 0;
+    }
+
     .checkout-page {
       max-width: 1200px;
       margin: 0 auto;
@@ -10,63 +18,79 @@
     .checkout-header {
       text-align: center;
       margin-bottom: 30px;
+      color: #3e0a77;
+      font-size: 2rem;
     }
 
     .card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      background-color: #fff;
+      border: 2px solid #d0b4ff;
+      border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .card-header {
-      font-size: 1.5em;
+      font-size: 1.5rem;
+      color: #3e0a77;
       margin-bottom: 10px;
     }
 
-    .card-content {
-      margin-top: 10px;
+    .card-content p {
+      margin: 10px 0;
+      font-size: 1rem;
+      color: #6e3bbb;
     }
 
-    .cart-item {
+    .button-container {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .cart-item img {
-      height: 80px;
-      width: auto;
-    }
-
-    .cart-summary {
-      border-top: 1px solid #ddd;
-      padding-top: 20px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .checkout-actions {
-      text-align: right;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .button-edit,
     .button-select,
     .button-add {
-      background-color: #007bff;
+      background-color: #6e3bbb;
       color: white;
       border: none;
       padding: 10px 20px;
-      margin-top: 10px;
-      cursor: pointer;
       border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
     }
 
     .button-edit:hover,
     .button-select:hover,
     .button-add:hover {
-      background-color: #0056b3;
+      background-color: #3e0a77;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .cart-item img {
+      height: 80px;
+      width: auto;
+      border-radius: 8px;
+      border: 1px solid #d0b4ff;
+    }
+
+    .cart-summary {
+      border-top: 2px solid #d0b4ff;
+      padding-top: 20px;
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+
+    .checkout-actions {
+      text-align: right;
     }
 
     .button-confirm {
@@ -75,20 +99,43 @@
       border: none;
       padding: 15px 30px;
       margin-top: 20px;
-      cursor: pointer;
       border-radius: 5px;
       font-size: 1.2em;
+      cursor: pointer;
+      transition: background-color 0.3s;
     }
 
     .button-confirm:hover {
       background-color: #218838;
     }
 
-    .button-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    select {
+      padding: 8px;
+      border: 1px solid #d0b4ff;
+      border-radius: 5px;
+      background-color: #f2e8ff;
+      color: #3e0a77;
+      outline: none;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .button-container {
+        flex-direction: column;
+      }
+
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .cart-item img {
+        margin-bottom: 10px;
+      }
     }
   </style>
 
@@ -115,7 +162,7 @@
             <select name="selectedAddressId">
               <% addresses.forEach(address=> { %>
                 <option value="<%= address._id %>" <%=defaultAddress && defaultAddress._id.equals(address._id)
-                  ? 'selected' : '' %> >
+                  ? 'selected' : '' %>>
                   <%= address.addressType %>, <%= address.city %>, <%= address.state %>, <%= address.pincode %>
                 </option>
                 <% }); %>
@@ -125,56 +172,47 @@
         </div>
       </div>
 
-      
+
       <div class="card">
         <div class="card-header">Order Summary</div>
         <div class="card-content">
           <% cart.items.forEach(item=> { %>
             <div class="cart-item">
-              <%if(item.productId && item.productId.productImage && item.productId.productImage.length>0 ){%>
-                <img src="<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName || 'no name' %>">
-                <%}else{%>
-                  <img src="/img/products/default.png" alt="default image">
-                  <%}%>
-                    <div>
-                      <h2>
-                        <%= item.productId.productName %>
-                      </h2>
-                      <p>Quantity: <%= item.quantity %>
-                      </p>
-                      <p>Price: ₹<%= item.totalPrice %>
-                      </p>
-                    </div>
+              <img src="/img/products/<%= item.productId?.productImage?.[0] || 'default.png' %>"
+                alt="<%= item.productId?.productName || 'Product Image' %>"
+                style="width: 150px; height: auto; border-radius: 5px;">
+              <div>
+                <h2>
+                  <%= item.productId.productName %>
+                </h2>
+                <p>Quantity: <%= item.quantity %>
+                </p>
+                <p>Price: ₹<%= item.totalPrice %>
+                </p>
+              </div>
             </div>
             <% }) %>
-            <div class="cart-summary">
-              <p>Total Amount: ₹<%= cart.totalAmount %></p>
-              <p>Discount: ₹<%= cart.discount %></p>
-              <p>Coupon Reduction: ₹<%= cart.couponReduction %></p>
-              <p>Final Amount: ₹<%= cart.finalAmount %></p>
-            </div>
-
-              <!-- <div class="cart-summary">
-                <p>Total Amount: ₹<%= cart.totalAmount || 0 %>
+              <div class="cart-summary">
+                <p>Total Amount: ₹<%= cart.totalAmount %>
                 </p>
-                <p>Discount: ₹<%= cart.discount || 0 %>
+                <p>Discount: ₹<%= cart.discount %>
                 </p>
-                <p>Coupon Reduction: ₹<%=cart.couponReduction%></p>
-                <p>Final Amount: ₹<%= cart.finalAmount || 0 %>
+                <p>deliveryCharge: ₹<%= cart.deliveryCharge %> </p>
+                <p>Coupon Reduction: ₹<%= cart.couponReduction %>
                 </p>
-              </div> -->
-
+                <p>Final Amount: ₹<%= cart.finalAmount %>
+                </p>
+              </div>
         </div>
       </div>
+
 
       <div class="card">
         <div class="card-header">Payment Options</div>
         <div class="card-content">
-          <div>
-            <input type="radio" id="cod" name="paymentMethod" value="COD" required> Cash on Delivery<br>
-            <input type="radio" id="razorpay" name="paymentMethod" value="Bank" required> Razorpay<br>
-            <input type="radio" id="wallet" name="paymentMethod" value="Wallet" required> Wallet Payment<br>
-          </div>
+          <label><input type="radio" name="paymentMethod" value="COD" required> Cash on Delivery</label>
+          <label><input type="radio" name="paymentMethod" value="Razorpay" required> Razorpay</label>
+          <label><input type="radio" name="paymentMethod" value="Wallet" required> Wallet Payment</label>
           <div class="checkout-actions">
             <button id="confirmOrder" class="button-confirm">Confirm Order</button>
           </div>
@@ -234,7 +272,9 @@
               });
             });
 
-        } else if (paymentMethod === 'Bank') {
+        }
+
+        else if (paymentMethod === 'Razorpay') {
           fetch('/placeOrders', {
             method: 'POST',
             headers: {
@@ -244,7 +284,20 @@
           })
             .then(response => response.json())
             .then(order => {
-              // console.log('Order:------------------------------------------------------------------------------------------', order.razorpay_order_id);
+
+              if (!razorpayIdKey) {
+                console.error('Razorpay Key is not set.');
+                Swal.fire({
+                  title: 'Error',
+                  text: 'Payment gateway key is missing',
+                  icon: 'error',
+                  confirmButtonText: 'OK',
+                });
+                return;
+              }
+
+              console.log('Order:--------------------------------------------------------------', order, '--------i', order.razorpayOrderId);
+
               if (!order.razorpayOrderId) {
                 Swal.fire({
                   title: 'Error',
@@ -261,9 +314,19 @@
                 name: 'CyberCrate',
                 description: 'Order Payment',
                 order_id: order.razorpayOrderId,
-                handler: function (response) {
-                  console.log('Razorpay Response:-', response);
 
+
+                handler: function (response) {
+                  // console.log('fr----Razorpay Response:-', response);
+                  if (!response.razorpay_payment_id || !response.razorpay_order_id || !response.razorpay_signature) {
+                    Swal.fire({
+                      title: 'Error',
+                      text: 'The payment response is incomplete,try again',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                    })
+                    return
+                  }
 
                   fetch('/verifyPayment', {
                     method: 'POST',
@@ -276,9 +339,10 @@
                       razorpay_signature: response.razorpay_signature
                     })
                   })
+                    // console.log("jj---------------",razorpay_order_id,razorpay_payment_id,razorpay_signature,'--------')
                     .then(res => res.json())
                     .then(data => {
-                      if (data.status === 'success') {
+                      if (data.status === "success") {
                         Swal.fire({
                           title: 'Success',
                           text: data.message,
@@ -290,14 +354,16 @@
                       } else {
                         Swal.fire({
                           title: 'Error',
-                          text: data.message,
+                          text: data.message || 'Payment verification has failed',
                           icon: 'error',
                           confirmButtonText: 'OK'
-                        });
+                        }).then(() => {
+                          window.location.href = '/profile/orders';
+                        })
                       }
                     })
                     .catch(error => {
-                      console.error('Error in verification:', error);
+                      console.error('Fr----Error in verification:', error);
                       Swal.fire({
                         title: 'Error',
                         text: 'An error occurred while verifying payment,contact the support team',
@@ -308,10 +374,13 @@
                 },
               };
               var rzp1 = new Razorpay(options);
-              // rzp1.on('payment.failed', function (response) {
-              //   console.error('Payment failed:', response.error);
-              // });
+
+              let isPaymentProcessing = false;
+
               rzp1.on('payment.failed', function (response) {
+                console.error('Payment failed:', response.error);
+                if (isPaymentProcessing) return;
+                isPaymentProcessing = true;
                 console.error('Payment failed:', response.error);
                 Swal.fire({
                   title: 'Payment Failed',
@@ -325,6 +394,50 @@
               rzp1.open();
             })
             .catch(error => console.error('Error:', error));
+        }
+
+        else if (paymentMethod === 'Wallet') {
+          fetch('/placeOrders', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => {
+              console.log('Response:', response);
+              return response.json();
+            })
+
+            .then((data) => {
+  console.log('Backend Response:', data);
+  if (data.success) {
+    Swal.fire({
+      title: 'Success',
+      text: data.message,
+      icon: 'success',
+      confirmButtonText: 'OK',
+    }).then(() => {
+      window.location.href = '/profile/orders';
+    });
+  } else {
+    Swal.fire({
+      title: 'Error',
+      text: data.message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+    });
+  }
+})
+            .catch((error) => {
+              console.error('Error:', error);
+              Swal.fire({
+                title: 'Error',
+                text: 'An error occurred while placing the order',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            });
         }
       });
 

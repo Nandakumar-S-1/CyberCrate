@@ -1,5 +1,6 @@
 const User = require('../../Models/userModel');
 
+//load the users page
 const loadUsers = async (req, res) => { 
     try {
         let search = "";
@@ -48,7 +49,7 @@ const loadUsers = async (req, res) => {
         res.status(500).render('admin/error', { error: 'Internal Server Error' });
     }
 };
-
+//block the customer
 const blockCustomer = async (req, res) => {
     try {
         const userId = req.query.id;
@@ -61,6 +62,7 @@ const blockCustomer = async (req, res) => {
     }
 };
 
+//unblock the customer
 const unBlockCustomer = async (req, res) => {
     try {
         const userId = req.query.id;

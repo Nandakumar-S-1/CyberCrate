@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 
-
+//function to load products
 const loadProducts = async (req, res) => {
   try {
     const search = req.query.search || "";
@@ -76,20 +76,25 @@ const loadProducts = async (req, res) => {
   }
 };
 
+//function to add new product
 const loadAddProduct = async (req, res) => {
   try {
     const categories = await Category.find({ isListed: true });
     const brands = await Brand.find({ isBlocked: false });
+    const product= await Product.find({});
     console.log("Fetched brands:", brands);
-    res.render("admin/addProducts", { category: categories, brand: brands });
+    res.render("admin/addProducts", { category: categories, brand: brands , product:product});
   } catch (error) {
     console.error("Error loading add product page:", error);
     res.redirect("/pageError");
   }
 };
 
+//function to add new product
 const addNewProduct = async (req, res) => {
+
   try {
+    
       const {
           productName,
           description,
@@ -155,12 +160,14 @@ const addNewProduct = async (req, res) => {
       } else {
           res.status(500).json({ error: "Failed to save product" });
       }
+
   } catch (error) {
       console.log("Error adding new product:", error);
       res.redirect("/pageError");
   }
 };
 
+//function to edit product
 const editProduct = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -228,7 +235,7 @@ const editProduct = async (req, res) => {
     res.redirect('/pageError');
   }
 };
-
+//function to block product
 const blockProduct = async(req,res)=>{
   try {
     
@@ -246,7 +253,7 @@ const blockProduct = async(req,res)=>{
   }
 
 }
-
+//function to unblock product
 const unBlockProduct = async(req,res)=>{
   
   try {
@@ -260,7 +267,7 @@ const unBlockProduct = async(req,res)=>{
   }
 
 }
-
+//function to load edit product
 const loadEditProduct = async (req,res)=>{
   try {
     
@@ -287,7 +294,7 @@ const loadEditProduct = async (req,res)=>{
     
   }
 }
-
+//function to delete single image
 const deleteSingleImage = async(req,res)=>{
   try {
     const {imageName,productId}=req.body;
@@ -314,7 +321,7 @@ const deleteSingleImage = async(req,res)=>{
 
   }
 }
-
+//function to update product
 const updateProduct = async(req,res)=>{
   try {
   const productId = req.query.id;
@@ -359,7 +366,7 @@ const updateProduct = async(req,res)=>{
   res.redirect('/pageError')
  } 
 }
-
+//function to delete offer
 const deleteOffer=async(req,res)=>{
   try {
     

@@ -6,6 +6,7 @@ const Category = require('../../Models/categoryModel');
 const Product  = require('../../Models/productModel');
 const Brand = require('../../Models/brandModel');
 
+// Controller for loading the home page
 const loadHome = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -53,7 +54,7 @@ const loadHome = async (req, res) => {
         return res.render('users/homePage', { user: null, products: [], topSellingProducts: [] });
     }
 };
-
+//function for loading auth page
 const loadAuth = async (req, res) => {
     try {
 
@@ -67,11 +68,11 @@ const loadAuth = async (req, res) => {
         res.redirect('/PageNotFound')
     }
 };
-
+//function for generating otp
 function generateOtp() {
     return Math.floor(100000 + Math.random()*900000).toString();
 }
-
+//function for sending email
 async function sendVerificationEmail(email, otp) {
     try {
         console.log('Starting email verification process...');
@@ -133,7 +134,7 @@ async function sendVerificationEmail(email, otp) {
         return false;
     }
 }
-
+//function for signup
 const signup = async (req, res) => {
     try {
         const { name, email, phone, password, cPassword } = req.body;
@@ -189,7 +190,7 @@ const signup = async (req, res) => {
         res.redirect('/PageNotFound');
     }
 }
-
+//function for signin
 const signin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -240,7 +241,7 @@ const signin = async (req, res) => {
         });
     }
 };
-
+//function for secure password
 const securePassword = async (password) => {
     
     try {
@@ -255,7 +256,7 @@ const securePassword = async (password) => {
     }
 
 }
-
+//function for verify otp
 const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body;
@@ -345,7 +346,7 @@ const verifyOtp = async (req, res) => {
         });
     }
 }
-
+//function for resend otp
 const resendOtp = async(req,res)=>{
     try {
         
@@ -374,7 +375,7 @@ const resendOtp = async(req,res)=>{
 
     }
 }
-
+//function for logout
 const logout = async (req, res) => {
     try {
         req.session.destroy((err)=>{
@@ -392,12 +393,15 @@ const logout = async (req, res) => {
     }
 };
 
+// Function for page not found
 const PageNotFound = async (req, res) => {
     try {
-        res.render('404-error');
+        const errorMessage = "Oops! The page you are looking for cannot be found.";
+        const errorCode = 404; // You can change this based on the error
+        res.render('users/404-error', { errorMessage, errorCode });
     } catch (error) {
         console.error('PageNotFound error:', error);
-        res.redirect('/PageNotFound')
+        res.redirect('/pageNotFound');
     }
 };
 

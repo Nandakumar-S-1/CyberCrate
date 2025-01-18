@@ -4,7 +4,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
     </head>
 
-    <style>
+    <!-- <style>
         .error-message {
             color: red;
         }
@@ -35,8 +35,190 @@
             border-radius: 5px;
             cursor: pointer;
         }
-    </style>
+    </style> -->
+<style>
+    /* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    color: #333333;
+    margin: 0;
+    padding: 0;
+}
 
+/* Main Section */
+.content-main {
+    padding: 2rem;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 1200px;
+}
+
+/* Header */
+.content-header {
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.content-title {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-control {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #333333;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+    outline: none;
+}
+
+/* Error Messages */
+.error-message {
+    font-size: 0.85rem;
+    color: #e74c3c;
+    margin-top: 0.3rem;
+}
+
+/* Card Styles */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    padding: 1rem;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #dcdcdc;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #34495e;
+}
+
+/* Buttons */
+button,
+.publish-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #3498db;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+button:hover,
+.publish-button:hover {
+    background-color: #217dbb;
+}
+
+a.btn {
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    background-color: #3498db;
+    border-radius: 6px;
+}
+
+a.btn:hover {
+    background-color: #217dbb;
+}
+
+/* Select Dropdown */
+.form-select {
+    padding: 0.8rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #ffffff;
+    color: #333333;
+    transition: border-color 0.3s ease;
+}
+
+.form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+    outline: none;
+}
+
+/* Thumbnail Container */
+.thumbnails-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.card-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Row Layout */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.col-lg-6,
+.col-lg-4 {
+    flex: 1;
+    min-width: calc(50% - 1rem);
+}
+
+/* Publish Button Container */
+.publish-button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .col-lg-6,
+    .col-lg-4 {
+        min-width: 100%;
+    }
+}
+
+</style>
+
+    
     <section class="content-main">
         <div class="row">
             <div class="col-9">
@@ -76,7 +258,7 @@
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Regular price</label>
-                                        <input placeholder="₹" name="regularPrice" type="text"
+                                        <input placeholder="₹ " name="regularPrice" type="text"
                                             class="form-control border">
                                         <div id="regularPrice-error" class="error-message"></div>
                                     </div>
@@ -84,7 +266,7 @@
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Sale price</label>
-                                        <input placeholder="$" name="salePrice" type="text" class="form-control border">
+                                        <input placeholder="₹" name="salePrice" type="text" class="form-control border">
                                     </div>
                                     <div id="salePrice-error" class="error-message"></div>
                                 </div>
@@ -128,7 +310,7 @@
                                 </div>
                             </div>
 
-                            <!-- image -->
+                            <!-- image
                             <div class="card mb-2">
                                 <div class="card-header">
                                     <h4>Choose images</h4>
@@ -180,7 +362,31 @@
                                     </div>
                                 </div>
 
+                            </div> -->
+
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    <h4>Choose images</h4>
+                                </div>
+                                <div class="border row">
+                                    <div id="addedImagesContainer" class="thumbnails-container"></div>
+                                </div>
+                            
+                                <div class="row">
+                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                        <img src="" alt="" id="imgView1">
+                                        <input class="form-control" type="file" name="images" id="input1"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onchange="viewImage(event, 1)">
+                                    </div>
+                                    <div class="image-cropper d-flex align-items-center"
+                                        style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                        <img src="" id="croppedImg1" alt="">
+                                        <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
+                                    </div>
+                                </div>
                             </div>
+                            
                             <div class="publish-button-container">
                                 <button class="publish-button" type="submit"
                                     onclick="validateAndSubmit()">Publish</button>
@@ -293,56 +499,6 @@
         }
 
 
-        function viewImage(event, index) {
-            let input = event.target;
-            let reader = new FileReader();
-            reader.onload = function () {
-                let dataURL = reader.result;
-                let image = document.getElementById('imgView' + index);
-                image.src = dataURL;
-                let cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    guides: true,
-                    background: false,
-                    autoCropArea: 1,
-                    zoomable: true,
-                    crop(event) {
-                        const canvasData = cropper.getCanvasData();
-                        cropper.setCanvasData({
-                            left: 0,
-                            top: 0,
-                            width: canvasData.width,
-                            height: canvasData.height,
-                        });
-                    }
-                });
-                let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
-                cropperContainer.style.display = 'block';
-                let saveButton = document.querySelector('#saveButton' + index);
-                saveButton.addEventListener('click', async function () {
-                    let croppedCanvas = cropper.getCroppedCanvas({
-                        width: 300,
-                        height: 500
-                    });
-                    let croppedImage = document.getElementById("croppedImg" + index);
-                    croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
-                    let timestamp = new Date().getTime();
-                    let fileName = `cropped-img-${timestamp}-${index}.png`;
-                    await croppedCanvas.toBlob(blob => {
-                        let input = document.getElementById('input' + index);
-                        let imgFile = new File([blob], fileName, blob);
-                        const fileList = new DataTransfer();
-                        fileList.items.add(imgFile);
-                        input.files = fileList.files;
-                    });
-                    cropperContainer.style.display = 'none';
-                });
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-
-
         // function viewImage(event, index) {
         //     let input = event.target;
         //     let reader = new FileReader();
@@ -356,29 +512,90 @@
         //             guides: true,
         //             background: false,
         //             autoCropArea: 1,
-        //             zoomable: true
+        //             zoomable: true,
+        //             crop(event) {
+        //                 const canvasData = cropper.getCanvasData();
+        //                 cropper.setCanvasData({
+        //                     left: 0,
+        //                     top: 0,
+        //                     width: canvasData.width,
+        //                     height: canvasData.height,
+        //                 });
+        //             }
         //         });
         //         let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
         //         cropperContainer.style.display = 'block';
         //         let saveButton = document.querySelector('#saveButton' + index);
         //         saveButton.addEventListener('click', async function () {
-        //             let croppedCanvas = cropper.getCroppedCanvas();
+        //             let croppedCanvas = cropper.getCroppedCanvas({
+        //                 width: 300,
+        //                 height: 500
+        //             });
         //             let croppedImage = document.getElementById("croppedImg" + index);
         //             croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
         //             let timestamp = new Date().getTime();
         //             let fileName = `cropped-img-${timestamp}-${index}.png`;
         //             await croppedCanvas.toBlob(blob => {
         //                 let input = document.getElementById('input' + index);
-        //                 let imgFile = new File([blob], fileName, blob)
+        //                 let imgFile = new File([blob], fileName, blob);
         //                 const fileList = new DataTransfer();
         //                 fileList.items.add(imgFile);
-        //                 input.files = fileList.files
+        //                 input.files = fileList.files;
         //             });
         //             cropperContainer.style.display = 'none';
         //         });
         //     };
         //     reader.readAsDataURL(input.files[0]);
         // }
+        
+        function viewImage(event, index) {
+    let input = event.target;
+    let reader = new FileReader();
+    reader.onload = function () {
+        let dataURL = reader.result;
+        let image = document.getElementById('imgView' + index);
+        image.src = dataURL;
+        let cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            guides: true,
+            background: false,
+            autoCropArea: 1,
+            zoomable: true,
+            crop(event) {
+                const canvasData = cropper.getCanvasData();
+                cropper.setCanvasData({
+                    left: 0,
+                    top: 0,
+                    width: canvasData.width,
+                    height: canvasData.height,
+                });
+            }
+        });
+        let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
+        cropperContainer.style.display = 'block';
+        let saveButton = document.querySelector('#saveButton' + index);
+        saveButton.addEventListener('click', async function () {
+            let croppedCanvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 500
+            });
+            let croppedImage = document.getElementById("croppedImg" + index);
+            croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
+            let timestamp = new Date().getTime();
+            let fileName = `cropped-img-${timestamp}-${index}.png`;
+            await croppedCanvas.toBlob(blob => {
+                let input = document.getElementById('input' + index);
+                let imgFile = new File([blob], fileName, blob);
+                const fileList = new DataTransfer();
+                fileList.items.add(imgFile);
+                input.files = fileList.files;
+            });
+            cropperContainer.style.display = 'none';
+        });
+    };
+    reader.readAsDataURL(input.files[0]);
+}
 
 
         const selectedImages = [];

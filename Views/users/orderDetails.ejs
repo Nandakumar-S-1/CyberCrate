@@ -1,185 +1,255 @@
 <%- include('../layouts/user/header.ejs') %>
 
-    <div class="order-details-container">
-        <nav class="breadcrumb">
-            <a href="/profile">Your Account</a> &gt;
-            <a href="/profile/orders">Your Orders</a> &gt;
-            <span>Order Details</span>
-            
-        </nav>
+<!-- orderDetails.ejs -->
+<div class="order-details-container">
+    <nav class="breadcrumb">
+        <a href="/profile">Home</a> &gt;
+        <a href="/profile/account">My Account</a> &gt;
+        <a href="/profile/orders">My Orders</a> &gt;
+        <span><%= order.orderId %></span>
+    </nav>
 
-        <div class="order-header main-detail">
-            <div class="order-image" style="text-align: center; margin: 10px; border:2px solid #7b21da;">
-                <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>" alt="<%= order.orderedItems[0].product.productName %>" style="width: 150px; height: auto; border-radius: 5px;">
-            </div>
-            <div class="product-info-2" >
-                <h3 class="product-name" style="color: #3e0a77; font-weight: bold; text-align: center; font-size: 25px;">
-                    <%= order.orderedItems[0].product.productName %>
-                </h3>
-                <h4 style="color: #a50808; font-weight: bold; text-align: center ; font-size: 15px; " >
-                    <%=order.orderedItems[0].product.brand.brandName%>
-                </h4>
-            </div>
-
-            
-            
-            <p class="product-description" style="color: #6e3bbb; text-align: start ; margin-left: 2rem ;">
-                <%= order.orderedItems[0].product.description || "No description available." %>
-            </p>
+    <!-- Delivery Address Section -->
+    <div class="info-section">
+        <div class="section-header">Delivery Address</div>
+        <div class="section-content">
+            <h3><%= order.address.name %></h3>
+            <p><%= order.address.addressType %></p>
+            <p><%= order.address.landMark %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></p>
+            <p class="phone">Phone number: <%= order.address.phone %></p>
         </div>
+    </div>
 
-        <h1>Order Details</h1>
-        <p>Status:
-            <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
-                <%= order.status %>
-            </span>
-        </p>
-        <div class="order-header">
-            <p>Ordered on: <strong>
-                    <%= order.createdAt.toDateString() %>
-                </strong></p>
-            <p>Order#: <strong>
-                    <%= order.orderId %>
-                </strong></p>
-            <a href="#" class="invoice-link">Invoice</a>
-        </div>
-
-        <div class="order-summary-section">
-            <div class="summary-box">
-                <h3>Shipping Address</h3>
-                <p>
-                    <%= order.address.name %>
-                </p>
-                <p>
-                    <%= order.address.address %>
-                </p>
-                <p>
-                    <%= order.address.addressType    %>, 
-                    <%= order.address.landMark %>,
-                    <%= order.address.city %>,
-                    <%= order.address.state %>
-                    <!-- <%= order.address.zip %> -->
-                </p>
-                <p>
-                    <%= order.address.pincode %>
-                </p>
+    <!-- Order Tracker -->
+    <div class="order-tracker">
+        <div class="tracker-steps">
+            <div class="step <%= order.status === 'Pending' || order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : '' %>">
+                <div class="step-icon">✓</div>
+                <div class="step-label">Order Confirmed</div>
+                <div class="step-date"><%= new Date(order.createdAt).toLocaleDateString() %></div>
             </div>
-            <div class="summary-box">
-                <h3>Payment Methods</h3>
-                <p>
-                    <%= order.paymentMethod %>
-                </p>
+            <div class="step <%= order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : '' %>">
+                <div class="step-icon">✓</div>
+                <div class="step-label">Processing</div>
+                <div class="step-date"></div>
             </div>
-            <div class="summary-box">
-                <h3>Order Summary</h3>
-                <p>Item(s) Subtotal: ₹<%= order.totalPrice %>
-                </p>
-                <p>Total: ₹<%= order.totalPrice + order.shippingCost %>
-                </p>
-                <p>Coupon Applied: -₹<%= order.discount %>
-                </p>
-                <p><strong>Grand Total: ₹<%= order.finalAmount %></strong></p>
+            <div class="step <%= order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : '' %>">
+                <div class="step-icon">✓</div>
+                <div class="step-label">Shipped</div>
+                <div class="step-date"><%= order.status === 'Shipped' || order.status === 'Delivered' ? new Date(order.updatedAt).toLocaleDateString() : '' %></div>
+            </div>
+            <div class="step <%= order.status === 'Delivered' ? 'completed' : '' %>">
+                <div class="step-icon">✓</div>
+                <div class="step-label">Delivered</div>
+                <div class="step-date"><%= order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : '' %></div>
             </div>
         </div>
     </div>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f5ff;
-            color: #3e0a77;
-        }
+    <!-- Product Details -->
+    <div class="product-card">
+        <div class="product-image">
+            <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>" 
+                 alt="<%= order.orderedItems[0].product.productName %>">
+        </div>
+        <div class="product-details">
+            <h2><%= order.orderedItems[0].product.productName %></h2>
+            <p class="brand"><%= order.orderedItems[0].product.brand.brandName %></p>
+            <p class="description"><%= order.orderedItems[0].product.description %></p>
+            <div class="price-section">
+                <span class="price">₹<%= order.finalAmount %></span>
+            </div>
+        </div>
+        <div class="order-actions">
+            <a href="/orders/<%= order.orderId %>/invoice" class="action-button">
+                <i class="fas fa-download"></i> Download Invoice
+            </a>
+            <button class="action-button chat">
+                <i class="fas fa-comment"></i> Chat with us
+            </button>
+        </div>
+    </div>
+</div>
 
-        .breadcrumb {
-            margin: 20px 0;
-            color: #6e3bbb;
-            font-size: 14px;
-        }
+<style>
+.order-details-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
 
-        .breadcrumb a {
-            text-decoration: none;
-            color: #3e0a77;
-        }
-        .product-info-2{
-            display: flex;
-            flex-direction: column;
-            justify-content: start;
-            align-items: start;
-            margin: auto;
-            border: 2px solid #d0b4ff;
-        }
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        .main-detail{
-            display: flex;
-            /* flex-direction: column; */
-            align-items: center;
-            border: 2px solid #d0b4ff;
-        }
-        .order-details-container {
-            max-width: 800px;
-            margin: 3rem auto;
-            background-color: #fff;
-            padding: 20px;
-            border: 2px solid #d0b4ff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+.breadcrumb {
+    margin-bottom: 20px;
+    color: #878787;
+}
 
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
+.breadcrumb a {
+    color: #2874f0;
+    text-decoration: none;
+}
 
-        .order-header p {
-            margin: 0;
-            font-size: 16px;
-        }
+.info-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
 
-        .invoice-link {
-            color: #6e3bbb;
-            text-decoration: none;
-            font-weight: bold;
-        }
+.section-header {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
 
-        .invoice-link:hover {
-            text-decoration: underline;
-        }
+.order-tracker {
+    background: #fff;
+    padding: 30px 20px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
 
-        .order-summary-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+.tracker-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 0 auto;
+}
 
-        .summary-box {
-            flex: 1;
-            min-width: 220px;
-            background-color: #f2e8ff;
-            border: 2px solid #d0b4ff;
-            border-radius: 10px;
-            padding: 15px;
-        }
+.tracker-steps::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e0e0e0;
+    z-index: 1;
+}
 
-        .summary-box h3 {
-            margin-bottom: 10px;
-            color: #3e0a77;
-        }
+.step {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 120px;
+}
 
-        .summary-box p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: #fff;
+    font-weight: bold;
+}
 
-        h1 {
-            color: #3e0a77;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-    </style>
+.step.completed .step-icon {
+    background: #2874f0;
+}
+
+.step-label {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #878787;
+}
+
+.step.completed .step-label {
+    color: #2874f0;
+}
+
+.step-date {
+    font-size: 12px;
+    color: #878787;
+    margin-top: 4px;
+}
+
+.product-card {
+    display: flex;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.product-image {
+    width: 120px;
+    height: 120px;
+    margin-right: 20px;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.product-details {
+    flex: 1;
+}
+
+.product-details h2 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #212121;
+}
+
+.brand {
+    color: #878787;
+    margin-bottom: 8px;
+}
+
+.description {
+    color: #212121;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.price-section {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.order-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+.action-button {
+    padding: 8px 16px;
+    border: 1px solid #2874f0;
+    border-radius: 4px;
+    background: #fff;
+    color: #2874f0;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.action-button:hover {
+    background: #f5f5f5;
+}
+
+.action-button.chat {
+    border-color: #ff6161;
+    color: #ff6161;
+}
+
+.phone {
+    margin-top: 8px;
+    color: #212121;
+}
+</style>
 
     <%- include('../layouts/user/footer.ejs') %>

@@ -1,6 +1,7 @@
 const Coupon=require('../../Models/couponModel')
 const Order=require('../../Models/orderModel');
 
+//load coupons
 const loadCoupons=async(req,res)=>{
     try {
         const coupons=await Coupon.find()
@@ -9,7 +10,7 @@ const loadCoupons=async(req,res)=>{
         console.log(error);
     }
 }
-
+//load add coupon
 const loadAddCoupon=async(req,res)=>{
     try {
         res.render('admin/addCoupon')
@@ -17,7 +18,7 @@ const loadAddCoupon=async(req,res)=>{
         console.log(error);
     }
 }
-
+//creating a coupon
 const createCoupon = async (req,res) => {
     try {
         const {code,offerPrice,minimumPrice,maximumPrice,expireOn,usageLimit,isListed}=req.body;
@@ -32,7 +33,7 @@ const createCoupon = async (req,res) => {
         res.status(500).send('something went wrong')
     }
 }
-
+//load update coupon page
 const loadUpdateCoupon=async(req,res)=>{
     try {
         const {id}=req.params;
@@ -47,7 +48,7 @@ const loadUpdateCoupon=async(req,res)=>{
         res.status(500).send('Error loading coupon for update');
     }
 }
-
+//updating a coupon
 const updateCoupon = async (req,res) => {
     try {
         const {id}=req.params;
@@ -71,7 +72,7 @@ const updateCoupon = async (req,res) => {
         res.status(500).send('Server Error');
     }
 }
-
+//deleting a coupon
 const deleteCoupon = async (req,res) => {
     
     try {

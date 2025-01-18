@@ -1,191 +1,220 @@
+<!-- Footer Section Begin -->
+<style>
+    .footer {
+        background-color: #11012B;
+        color: #fff;
+        padding: 60px 0 30px;
+        margin-top: 10px;
+    }
 
-    <!-- Footer Section Begin -->
-    <style>
+    .footer-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .footer-logo img {
+        height: 50px;
+    }
+
+    .footer-description {
+        color: #999;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .footer h4 {
+        color: #ff3c6e;
+        font-size: 18px;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 12px;
+        color: #999;
+    }
+
+    .footer-links a {
+        color: #999;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+        color: #ff3c6e;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-links a {
+        color: #fff;
+        background-color: #333;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+        background-color: #ff3c6e;
+        transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+        border-top: 1px solid #333;
+        margin-top: 40px;
+        padding-top: 20px;
+        text-align: center;
+        color: #666;
+    }
+
+    .payment-methods {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .payment-methods img {
+        height: 30px;
+        filter: grayscale(1);
+        transition: filter 0.3s ease;
+    }
+
+    .payment-methods img:hover {
+        filter: grayscale(0);
+    }
+
+    @media (max-width: 768px) {
         .footer {
-            background-color: #11012B;
-            color: #fff;
-            padding: 60px 0 30px;
-            margin-top: 10px;
+            padding: 40px 0 20px;
         }
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .footer-logo img {
-            height: 50px;
-        }
-        .footer-description {
-            color: #999;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-        .footer h4 {
-            color: #ff3c6e;
-            font-size: 18px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .footer-links li {
-            margin-bottom: 12px;
-            color: #999;
-        }
-        .footer-links a {
-            color: #999;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .footer-links a:hover {
-            color: #ff3c6e;
-        }
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .social-links a {
-            color: #fff;
-            background-color: #333;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .social-links a:hover {
-            background-color: #ff3c6e;
-            transform: translateY(-3px);
-        }
-        .footer-bottom {
-            border-top: 1px solid #333;
-            margin-top: 40px;
-            padding-top: 20px;
-            text-align: center;
-            color: #666;
-        }
+
         .payment-methods {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+            justify-content: center;
+            margin-top: 30px;
         }
-        .payment-methods img {
-            height: 30px;
-            filter: grayscale(1);
-            transition: filter 0.3s ease;
-        }
-        .payment-methods img:hover {
-            filter: grayscale(0);
-        }
-        @media (max-width: 768px) {
-            .footer {
-                padding: 40px 0 20px;
-            }
-            .payment-methods {
-                justify-content: center;
-                margin-top: 30px;
-            }
-        }
-    </style>
-    
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="footer-logo">
-                        <img src="/img/cyber.png" alt="Cyber Crate">
-                        <span style="color: #ff0844; font-weight: bold;">CYBER CRATE</span>
-                    </div>
-                    <p class="footer-description">
-                        Your ultimate destination for premium gaming gadgets, powerful PCs, laptops, accessories, and more. We're committed to delivering top-notch products and unparalleled customer service to elevate your gaming experience. Game on with us!
-                    </p>
+    }
+</style>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-logo">
+                    <img src="/img/cyber.png" alt="Cyber Crate">
+                    <span style="color: #ff0844; font-weight: bold;">CYBER CRATE</span>
                 </div>
-                
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h4>Information</h4>
-                    <ul class="footer-links">
-                        <li><a href="/about">About Us</a></li>
-                        <li><a href="/information">Information</a></li>
-                        <li><a href="/privacy">Privacy Policy</a></li>
-                        <li><a href="/terms">Terms & Conditions</a></li>
-                    </ul>
-                </div>
-    
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h4>Service</h4>
-                    <ul class="footer-links">
-                        <li><a href="/support">24/7 Customer Support</a></li>
-                        <li><a href="/refunds">Easy Refunds</a></li>
-                        <li><a href="/delivery">Fast Delivery</a></li>
-                        <li><a href="/recommendations">Expert Product Recommendations</a></li>
-                        <li><a href="/terms">Terms & Conditions</a></li>
-                    </ul>
-                </div>
-    
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h4>Contact Us</h4>
-                    <p style="color: #999;">Cyber-Crate Pvt Ltd,<br>
+                <p class="footer-description">
+                    Your ultimate destination for premium gaming gadgets, powerful PCs, laptops, accessories, and more.
+                    We're committed to delivering top-notch products and unparalleled customer service to elevate your
+                    gaming experience. Game on with us!
+                </p>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h4>Information</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/information">Information</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms & Conditions</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h4>Service</h4>
+                <ul class="footer-links">
+                    <li><a href="/support">24/7 Customer Support</a></li>
+                    <li><a href="/refunds">Easy Refunds</a></li>
+                    <li><a href="/delivery">Fast Delivery</a></li>
+                    <li><a href="/recommendations">Expert Product Recommendations</a></li>
+                    <li><a href="/terms">Terms & Conditions</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h4>Contact Us</h4>
+                <p style="color: #999;">Cyber-Crate Pvt Ltd,<br>
                     Maradu P O, Kochi,<br>
                     Kerala, India</p>
-                    
-                    <h4 class="mt-4">Follow Us</h4>
-                    <p class="mb-3" style="color: #999;">Follow us on social media to stay updated on the latest deals, product launches, and gaming trends. Let's build a gaming community together!</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
-                        <a href="#"><i class="fab fa-google"></i></a>
-                    </div>
+
+                <h4 class="mt-4">Follow Us</h4>
+                <p class="mb-3" style="color: #999;">Follow us on social media to stay updated on the latest deals,
+                    product launches, and gaming trends. Let's build a gaming community together!</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-google"></i></a>
                 </div>
-            </div>
-    
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <h4>Outlets</h4>
-                    <ul class="footer-links">
-                        <li>Mumbai | New Delhi | Chennai</li>
-                        <li>Kochi | Bangalore | Hyderabad</li>
-                        <li>Kolkata | Ahemmedabad</li>
-                    </ul>
-                </div>
-            </div>
-    
-            <div class="footer-bottom">
-                <p>Cyber Crate eCommerce  2021. All right reserved</p>
             </div>
         </div>
-    </footer>
 
-    <!-- Js Plugins -->
-    <script src="path/to/jquery.min.js"></script>
-    <script src="path/to/jquery.elevateZoom.min.js"></script>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h4>Outlets</h4>
+                <ul class="footer-links">
+                    <li>Mumbai | New Delhi | Chennai</li>
+                    <li>Kochi | Bangalore | Hyderabad</li>
+                    <li>Kolkata | Ahemmedabad</li>
+                </ul>
+            </div>
+        </div>
 
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.nice-select.min.js"></script>
-    <script src="js/jquery.nicescroll.min.js"></script>
-    <script src="js/jquery.magnific-popup.min.js"></script>
-    <script src="js/jquery.countdown.min.js"></script>
-    <script src="js/jquery.slicknav.js"></script>
-    <script src="js/mixitup.min.js"></script>
-    <script src="js/owl.carousel.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <div class="footer-bottom">
+            <p>Cyber Crate eCommerce 2021. All right reserved</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Js Plugins -->
+<script src="path/to/jquery.min.js"></script>
+<script src="path/to/jquery.elevateZoom.min.js"></script>
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.nice-select.min.js"></script>
+<script src="js/jquery.nicescroll.min.js"></script>
+<script src="js/jquery.magnific-popup.min.js"></script>
+<script src="js/jquery.countdown.min.js"></script>
+<script src="js/jquery.slicknav.js"></script>
+<script src="js/mixitup.min.js"></script>
+<script src="js/owl.carousel.min.js"></script>
+<script src="js/main.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+
+<script src="path/to/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.7.0/nouislider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wnumb/1.2.0/wNumb.min.js"></script>
+<!-- Bootstrap JS (required for carousel functionality) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.7.0/nouislider.min.js"></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wnumb/1.2.0/wNumb.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

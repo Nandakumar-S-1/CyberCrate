@@ -4,7 +4,7 @@ const Product = require('../../Models/productModel');
 const Category = require('../../Models/categoryModel');
 const Brand = require('../../Models/brandModel');
 
-
+// Get all orders
 const getAllOrders = async (req, res) => {
     try {
         const filterStatus = req.query.status || "";
@@ -24,7 +24,7 @@ const getAllOrders = async (req, res) => {
         res.render("admin/orderList", { 
             orders: pageOrders, 
             totalPages: totalPages, 
-            currentPage: page,
+            currentPage: "orderList",
             filterStatus: filterStatus,
             itemsPerPage: itemsPerPage
 
@@ -35,33 +35,7 @@ const getAllOrders = async (req, res) => {
     }
 };
 
-// const updateStatus = async (req, res) => {
-//     try {
-        
-//         const {orderId,updatedStatus}=req.body;
-//         const order = await Order.findById(orderId);
-
-//         if(!order){
-//             return res.status(404).send({message:"Order is Missing"});
-//         }
-
-//         if(order.status==='Cancelled'){
-//             return res.status(400).send({message:"You cannot update status of cancelled order"});
-//         }
-
-//         order.status=updatedStatus;
-
-//         await order.save();
-//         return res.json({message:"Status Updated Successfully"});
-
-//     } catch (error) {
-        
-//         console.log('error while updating order status',error);
-//         return res.status(500).send({message:"Error while updating order status"});
-        
-//     }
-// }
-
+// Update order status
 const updateStatus = async (req, res) => {
     try {
         const { orderId, updatedStatus } = req.body;
@@ -87,8 +61,23 @@ const updateStatus = async (req, res) => {
     }
 };
 
+const viewOrder = async (req, res) => {
+    try {
+        
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId).populate("orderedItems.product");
+        if (!order) {
+            return res.status(404).send({ message: "Order not found" });
+        }
+        res.render("admin/viewOrder", { order });
+    } catch (error) {
+        console.error("Error fetching order details:", error.message);
+        res.status(500).send({ message: "Internal Server Error" });
+    }
+};
 
 module.exports = {
     getAllOrders,
-    updateStatus
+    updateStatus,
+    viewOrder
 };

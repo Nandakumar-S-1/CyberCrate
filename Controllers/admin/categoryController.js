@@ -4,6 +4,7 @@ const user = require('../../Models/userModel');
 const order = require('../../Models/orderModel');
 const banner = require('../../Models/bannerModel');
 
+//load categories
 const loadCategories = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -33,6 +34,7 @@ const loadCategories = async (req, res) => {
     }
 }
 
+//add new categories
 const addNewCategories = async(req,res)=>{
     const {name,description,categoryOffer}=req.body;
 
@@ -58,7 +60,7 @@ const addNewCategories = async(req,res)=>{
         return res.status(500).json({error:'Internal Server Error'})
     }
 } 
-
+//edit category
 const editCategory = async(req,res)=>{
     try {
         
@@ -74,7 +76,7 @@ const editCategory = async(req,res)=>{
         
     }
 }
-
+//update category
 const updateCategory = async (req, res) => {
     try {
         const id = req.body.categoryId;
@@ -116,52 +118,7 @@ const updateCategory = async (req, res) => {
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
-
-// const updateCategory = async (req, res) => {
-//     try {
-//         const id = req.body.categoryId;
-//         const { name, description, categoryOffer } = req.body;
-
-//         const existingCategory = await category.findOne({ name, _id: { $ne: id } });
-//         if (existingCategory) {
-//             return res.status(400).json({ error: 'Category Already Exists, write another One' });
-//         }
-
-//         const updateCategory = await category.findByIdAndUpdate(id, {
-//             name: name,
-//             description: description,
-//             categoryOffer: categoryOffer || 0
-//         }, { new: true });
-
-//         if(!updateCategory){
-//             return res.status(404).json({ error: 'Category Not Found' });
-//         }
-
-//         const products=await Product.find({category:id});
-//         for(let p of products){
-//             const categoeryOfferValue=parseFloat(categoryOffer)||0;
-//             const productOffer=parseFloat(p.productOffer)||0;
-//             const regularPrice=parseFloat(p.realPrice)||0;
-
-//             const highestOffer=Math.max(categoeryOfferValue,productOffer);
-
-//             const finalSalePrice=regularPrice-(regularPrice*highestOffer/100,0);
-//             p.salePrice=!isNaN(finalSalePrice)?finalSalePrice:regularPrice;
-
-//             // const finalSalePrice=p.realPrice -(p.realPrice*(p.productOffer+p.categoryOffer)/100);
-//             // p.salePrice=finalSalePrice;
-//             await p.save();
-//         }
-
-//         return res.json({ message: 'Category Updated Successfully' });
-
-//         // return updateCategory ? res.json({ message: 'Category Updated Successfully' }) : res.status(404).json({ error: 'Category Not Found' });
-//     } catch (error) {
-//         console.log('Error while updating category', error);
-//         return res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
-
+//list categories
 const listCategories = async(req,res)=>{
     try {
         
@@ -177,7 +134,7 @@ const listCategories = async(req,res)=>{
 
     }
 }
-
+//unlist categories
 const unListCategories = async(req,res)=>{
     try {
         

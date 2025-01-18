@@ -2,6 +2,7 @@ const Banner = require('../../Models/bannerModel');
 const path = require('path');
 const fs = require('fs');
 
+//  for loading banners
 const loadBanners = async (req, res) => {
     try {
         const banners = await Banner.find({});
@@ -14,7 +15,7 @@ const loadBanners = async (req, res) => {
         res.redirect('/pageError');
     }
 };
-
+// for adding new banner
 const addNewBanner = async (req, res) => {
     try {
         const banner = new Banner({

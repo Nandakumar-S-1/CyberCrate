@@ -5,11 +5,15 @@ const bcrypt = require('bcrypt');
 const env = require('dotenv').config();
 const session = require('express-session');
 
-
+// Generate OTP
 function generateOtp() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+
+
+
+//the controller function for sending email
 async function sendVerificationEmail(email, otp) {
     try {
         console.log('Starting email verification process...');
@@ -71,6 +75,7 @@ async function sendVerificationEmail(email, otp) {
     }
 }
 
+//load forgot password
 const forgotPassword = async (req, res) => {
     try {
         res.render('users/forgotPassword');
@@ -79,6 +84,8 @@ const forgotPassword = async (req, res) => {
     }
 };
 
+
+//the controller function for sending email validation
 const forgotEmailValidation = async (req, res) => {
     try {
         const { email } = req.body;
@@ -106,6 +113,9 @@ const forgotEmailValidation = async (req, res) => {
     }
 };
 
+
+
+//the controller function for verifying otp on forgot password
 const forgotPasswordOtp = async (req, res) => {
     try {
         const { otp } = req.body;
@@ -154,6 +164,8 @@ const forgotPasswordOtp = async (req, res) => {
     }
 };
 
+
+//load otp page
 const renderOtpPage = async (req, res) => {
     try {
         res.render('users/forgotPasswordOtp');
@@ -162,6 +174,8 @@ const renderOtpPage = async (req, res) => {
     }
 };
 
+
+//the controller function for reset password
 const resetPassword = async (req, res) => {
     try {
         if (!req.session.email) {
@@ -180,6 +194,8 @@ const resetPassword = async (req, res) => {
     }
 };
 
+
+//the controller function for reset password
 const resetPasswordValidation = async (req, res) => {
     try {
         const { password, confirmPassword } = req.body;
@@ -214,21 +230,57 @@ const resetPasswordValidation = async (req, res) => {
     }
 };
 
+
+//load profile
+// const loadProfile = async (req, res) => {
+//     try {
+//         console.log('Session User:', req.session.user);
+
+//         if (!req.session.user) {
+//             return res.redirect('/auth');
+//         }
+//         const userId = req.session.user;
+//         if (req.session.user.email) {
+//             return res.render('users/userProfile', { user: req.session.user });
+//         }
+
+//         const userData = await User.findById(userId).populate('addresses');
+//         console.log('User Data:', userData);
+//         console.log('Phone:', userData.phone); 
+//         if (!userData) {
+//             return res.redirect('/auth');
+//         }
+
+//         console.log('User Data:', userData);
+//     console.log('Phone:', userData.addresses.phone); 
+
+
+//         res.render('users/userProfile', { user: userData });
+//     } catch (error) {
+//         console.error('Error loading profile:', error);
+//         res.redirect('/');
+//     }
+// };
 const loadProfile = async (req, res) => {
     try {
-
         if (!req.session.user) {
+            console.log('No user in session');
             return res.redirect('/auth');
         }
 
-        if (req.session.user.email) {
-            return res.render('users/userProfile', { user: req.session.user });
-        }
+        const userId = req.session.user._id;
+        const userData = await User.findById(userId).populate('addresses');
 
-        const userData = await User.findById(req.session.user).populate('addresses');
         if (!userData) {
+            console.log('No user data found in database');
             return res.redirect('/auth');
         }
+
+        // Update session with fresh user data
+        req.session.user = userData;
+
+        // Log phone number for debugging
+        console.log('Updated Phone:', userData.phone);
 
         res.render('users/userProfile', { user: userData });
     } catch (error) {
@@ -237,6 +289,8 @@ const loadProfile = async (req, res) => {
     }
 };
 
+
+//load edit profile
 const editProfile = async (req, res) => {
     try {
         const userData = await User.findById(req.session.user);
@@ -246,7 +300,7 @@ const editProfile = async (req, res) => {
         res.redirect('/');
     }
 };
-
+//the controller function for updating profile
 const updateProfile = async(req,res)=>{
     try {
         
@@ -268,28 +322,33 @@ const updateProfile = async(req,res)=>{
         res.status(500).json({ success: false, message: 'Internal server error. Please try again later.' });
     }
 }
-
+//load addresses
 const loadAddresses = async (req, res) => {
     try {
         const userId = req.session.user;
+        const userData = await User.findById(userId);
         const addressData = await Address.findOne({ userId });
         const addresses = addressData ? addressData.address : [];
-        res.render('users/addresses', { userId, addresses });
+        res.render('users/addresses', { userId,user:userData, addresses });
     } catch (error) {
         console.error('Error loading addresses:', error);
         res.redirect('/404-error');
     }
 };
 
+
+//load add address
 const loadAddAddress = async (req, res) => {
     try {
-        res.render('users/addAddress');
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+        res.render('users/addAddress',{user:userData});
     } catch (error) {
         console.error('Error loading add address page:', error);
         res.redirect('/404-error');
     }
 };
-
+//the controller function for adding address
 const addAddress = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -314,9 +373,13 @@ const addAddress = async (req, res) => {
         res.redirect('/404-error');
     }
 };
-
+//load edit address
 const loadEditAddressPage = async (req, res) => {
     try {
+
+        const userId = req.session.user;
+        const userData = await User.findById(userId);
+
         const addressId = req.params.id;
         const addressData = await Address.findOne({ 'address._id': addressId });
         if (!addressData) {
@@ -326,13 +389,13 @@ const loadEditAddressPage = async (req, res) => {
         if (!address) {
             return res.status(404).json({ error: 'Address not found' });
         }
-        res.render('users/editAddress', { address });
+        res.render('users/editAddress', { address, user:userData });
     } catch (error) {
         console.error('Error loading edit address page:', error);
         res.redirect('/404-error');
     }
 };
-
+//the controller function for editing address
 const editAddress = async (req, res) => {
     try {
         const { id, addressType, name, city, landMark, district, state, pincode, phone, alterPhone } = req.body;
@@ -389,7 +452,7 @@ const deleteAddress = async (req, res) => {
         res.status(500).redirect('/404-error');
     }
 };
-
+//load change password
 const changePassword = async (req, res) => {
     try {
         const user = req.user;
@@ -398,7 +461,7 @@ const changePassword = async (req, res) => {
         res.redirect('/404-error');
     }
 };
-
+//the controller function for changing password
 const changePasswordValidation = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -429,6 +492,7 @@ const changePasswordValidation = async (req, res) => {
     }
 };
 
+//the controller function for getting addresses
 const getAddresses = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -443,7 +507,7 @@ const getAddresses = async (req, res) => {
         res.status(500).send({ message: 'Error loading addresses' });
     }
 };
-
+//the controller function for setting default address
 
 const setDefaultAddress = async (req, res) => {
     try {

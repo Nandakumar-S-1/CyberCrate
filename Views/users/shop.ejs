@@ -1,5 +1,4 @@
 <%- include('../layouts/user/header.ejs') %>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -9,6 +8,10 @@
             /* Deep purple for text */
             margin: 0;
             padding: 0;
+        }
+        .p-name{
+            font-weight: 600;
+            font-size: 2rem;
         }
 
         .add-to-favorites.in-wishlist i {
@@ -294,7 +297,7 @@
                         <a href="/productDetails/<%= product._id %>">
                             <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>"
                                 loading="lazy">
-                            <h2>
+                            <h2 class="p-name">
                                 <%= product.productName %>
                             </h2>
                         </a>
@@ -303,7 +306,8 @@
                         <p>Original Price: ₹<%= product.realPrice.toFixed(2) %>
                         </p>
 
-                        <p>You Save: ₹<%= product.discountAmount %> on this product</p>
+                        <!-- <p>You Save: ₹<%= product.discountAmount %> on this product</p> -->
+                        
                         <p>Stocks left: <%= product.quantity %>
                         </p>
                         <div class="product-buttons">

@@ -1,211 +1,123 @@
 <%- include('../layouts/user/header.ejs') %>
 
-    <style>
-        .orders-page {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+<style>
+    body {
+        background-color: #dacbf2;
+    }
+    .orders-page {
+        max-width: 1000px;
+        margin: 3rem auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #cdbbe9;
+        border-radius: 10px;
+        border: 1px solid #21123b;
+        box-shadow: 0 14px 16px rgba(22, 26, 255, 0.1);
+    }
 
-        .orders-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    .orders-header {
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 30px;
+        color: #6e3bbb;
+    }
 
-        .order-image img {
-            width: 8rem;
-            height: 8rem;
-        }
+    .order-card {
+        display: flex;
+        align-items: flex-start;
+        background-color: #fff;
+        border: 1px solid #d0b4ff;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        .order-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+    .order-image {
+        flex-shrink: 0;
+        width: 150px;
+        height: 150px;
+        margin-right: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f9f4ff;
+        border-radius: 10px;
+    }
 
-        .order-header {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
+    .order-image img {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 5px;
+    }
 
-        .order-item {
-            margin-bottom: 10px;
-        }
+    .order-details {
+        flex-grow: 1;
+    }
 
-        .order-summary {
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-            margin-top: 10px;
-        }
+    .order-details h3 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #3e0a77;
+        margin: 0;
+    }
 
-        .order-status {
-            font-weight: bold;
-        }
+    .order-details p {
+        font-size: 0.9rem;
+        margin: 5px 0;
+        color: #6e3bbb;
+    }
 
-        .order-status.pending {
-            color: #007bff;
-        }
+    .actions {
+        margin-top: 10px;
+    }
 
-        .order-status.processing {
-            color: #ff9800;
-        }
+    .actions button {
+        background-color: #6e3bbb;
+        color: #fff;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
 
-        .order-status.shipped {
-            color: #3f51b5;
-        }
+    .actions button.cancel {
+        background-color: #c8aae9;
+    }
+</style>
 
-        .order-status.delivered {
-            color: #4caf50;
-        }
+<div class="orders-page">
+    <h1 class="orders-header">Your Orders</h1>
+    <% if (orders.length > 0) { %>
+        <% orders.forEach(order => { %>
+        <div class="order-card">
+            <div class="order-image">
+                <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>" alt="<%= order.orderedItems[0].product.productName %>">
+            </div>
+            <div class="order-details">
+                <h3><%= order.orderedItems[0].product.productName %></h3>
+                <p>Payment Method: <%= order.paymentMethod %></p>
 
-        .order-status.cancelled {
-            color: #f44336;
-        }
-
-        .order-status.return-request {
-            color: #ff5722;
-        }
-
-        .order-status.returned {
-            color: #9c27b0;
-        }
-
-
-        .more-details {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .payment-details {
-            display: none;
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #555;
-        }
-
-        .actions {
-            margin-top: 10px;
-        }
-
-        .actions button {
-            margin-right: 10px;
-        }
-    </style>
-
-    <!-- <div class="orders-page">
-        <h1 class="orders-header">Your Orders</h1>
-        <% if (orders.length> 0) { %>
-            <% orders.forEach(order=> { %>
-                <div class="order-card"
-                    style="background-color: #fff; border: 2px solid #d0b4ff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
-                    <div class="order-image">
-                        <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>"
-                            alt="<%= order.orderedItems[0].product.productName %>">
-                    </div>
-                    <div class="order-header" style="color: #3e0a77; font-weight: bold;">Order ID: <%= order.orderId %>
-                    </div>
-                    <div class="order-item" style="color: #6e3bbb;">
-                        <p>Status:
-                            <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
-                                <%= order.status %>
-                            </span>
-                        </p>
-                        <p>Order Date: <%= order.createdAt.toDateString() %>
-                        </p>
-                        <% order.orderedItems.forEach(item=> { %>
-                            <div>
-                                <h3 style="color: #3e0a77;">
-                                    <%= item.product.productName %>
-                                </h3>
-                                <p>Quantity: <%= item.quantity %>
-                                </p>
-                                <p>Price: ₹<%= item.price %>
-                                </p>
-                            </div>
-                            <% }) %>
-                                <div class="order-summary"
-                                    style="margin-top: 15px; padding: 10px; background-color: #f2e8ff; border-radius: 5px;">
-                                    <p>Total Price: ₹<%= order.totalPrice %>
-                                    </p>
-                                    <p>Discount: ₹<%= order.discount %>
-                                    </p>
-                                    <p>Final Amount: ₹<%= order.finalAmount %>
-                                    </p>
-                                </div>
-                    </div>
-                    <div class="more-details">
-                        <button onclick="togglePaymentDetails('<%= order.orderId %>')"
-                            style="background-color: #6e3bbb; color: #fff;">More</button>
-                        <div id="payment-<%= order.orderId %>" class="payment-details"
-                            style="display:none; color: #6e3bbb;">
-                            <p>Payment Method: <%= order.paymentMethod %>
-                            </p>
-                            <p>Transaction ID: <%= order.transactionId %>
-                            </p>
-                            <p>Payment Status: <%= order.paymentStatus %>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button onclick="viewOrder('<%= order.orderId %>')"
-                            style="background-color: #6e3bbb; color: #fff;">View</button>
-                        <% if (order.status !=='Delivered' && order.status !=='Refund Completed' ) { %>
-                            <button onclick="cancelOrder('<%= order.orderId %>')"
-                                style="background-color: #c8aae9; color: #fff;">Cancel Order</button>
-                            <% } %>
-                                <% if (order.status==='Delivered' ) { %>
-                                    <button onclick="returnOrder('<%= order.orderId %>')"
-                                        style="background-color: #3e0a77; color: #fff;">Return</button>
-                                    <% } %>
-                    </div>
-                </div>
-                <% }) %>
-                    <% } else { %>
-                        <p>No orders found.</p>
-                        <% } %>
-    </div> -->
-
-    <div class="orders-page">
-        <h1 class="orders-header">Your Orders</h1>
-        <% if (orders.length > 0) { %>
-            <% orders.forEach(order => { %>
-            <div class="order-card" style="background-color: #fff; border: 2px solid #d0b4ff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
-                <p>Status:
+                <p>Status: 
                     <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
                         <%= order.status %>
                     </span>
                 </p>
-                <!-- Order Image -->
-                <div class="order-image" style="text-align: center; margin-bottom: 10px;">
-                    <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>" alt="<%= order.orderedItems[0].product.productName %>" style="width: 150px; height: auto; border-radius: 5px;">
-                </div>
-                <!-- Product Name -->
-                <h3 class="product-name" style="color: #3e0a77; font-weight: bold; text-align: center;">
-                    <%= order.orderedItems[0].product.productName %>
-                </h3>
-                <!-- Product Description -->
-                <p class="product-description" style="color: #6e3bbb; text-align: center; margin-top: 5px;">
-                    <%= order.orderedItems[0].product.productDescription || "No description available." %>
-                </p>
-                <!-- View Button -->
-                <div class="actions" style="text-align: center; margin-top: 10px;">
-                    <button onclick="viewOrder('<%= order.orderId %>')" style="background-color: #6e3bbb; color: #fff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                        View
-                    </button>
-                    <% if (order.status !=='Delivered' && order.status !=='Refund Completed' ) { %>
-                        <button onclick="cancelOrder('<%= order.orderId %>')"
-                            style="background-color: #c8aae9; color: #fff;">Cancel Order</button>
-                        <% } %>
+                <div class="actions">
+                    <button onclick="viewOrder('<%= order.orderId %>')">View</button>
+                    <% if (order.status !== 'Delivered' && order.status !== 'Refund Completed') { %>
+                        <button onclick="cancelOrder('<%= order.orderId %>')" class="cancel">Cancel Order</button>
+                    <% } %>
                 </div>
             </div>
-            <% }) %>
-        <% } else { %>
-            <p style="text-align: center; color: #6e3bbb;">No orders found.</p>
-        <% } %>
-    </div>
-    <div id="loading-spinner" style="display: none;">Loading...</div>
+        </div>
+        <% }) %>
+    <% } else { %>
+        <p style="text-align: center; color: #130c1e; margin: 5rem;" >No orders found.</p>
+    <% } %>
+</div>
+
 
     <script> function updateStatus(orderId) {
             const form = document.getElementById(`status-form-${orderId}`);
@@ -254,15 +166,15 @@
             }
         }
 
-        function viewOrder(orderId) {
-        document.getElementById("loading-spinner").style.display = "block";
-        window.location.href = `/profile/orderDetails/${orderId}`;
-    }
+    //     function viewOrder(orderId) {
+    //     document.getElementById("loading-spinner").style.display = "block";
+    //     window.location.href = `/profile/orderDetails/${orderId}`;
+    // }
 
-        // function viewOrder(orderId) {
-        //     // window.location.href = `/orderDetails/${orderId}`;
-        //     window.location.href = `/profile/orderDetails/${orderId}`;
-        // }
+        function viewOrder(orderId) {
+            // window.location.href = `/orderDetails/${orderId}`;
+            window.location.href = `/profile/orderDetails/${orderId}`;
+        }
 
         function cancelOrder(orderId) {
             fetch('/cancelOrder', {
@@ -274,20 +186,22 @@
                 .then(data => {
                     if (data.success) {
                         Swal.fire({
-                            title: 'Success',
-                            text: 'The order has been cancelled successfully',
-                            icon: 'success',
+                            title: 'Error',
+                            text: data.message,
+                            icon: 'error',
                             confirmButtonText: 'OK'
                         }).then(() => {
                             location.reload();
                         });
                     } else {
                         Swal.fire({
-                            title: 'Error',
+                            title: 'Success',
                             text: data.message,
-                            icon: 'error',
+                            icon: 'success',
                             confirmButtonText: 'OK'
-                        });
+                        }).then(()=>{
+                            location.reload()
+                        })
                     }
                 })
                 .catch(error => {
@@ -300,45 +214,6 @@
                     });
                 });
         }
-
-
-        // function cancelOrder(orderId) {
-        //     fetch('/cancelOrder', {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({ orderId })
-        //     })
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             if (data.success) {
-        //                 Swal.fire({
-        //                     title: 'error',
-        //                     text: data.message,
-        //                     icon: 'error',
-        //                     confirmButtonText: 'OK'
-        //                 }).then(() => {
-        //                     location.reload();
-        //                 }
-        //                 );
-        //             } else {
-        //                 Swal.fire({
-        //                     title: 'Success',
-        //                     text: ' The order has been cancelled successfully',
-        //                     icon: 'success',
-        //                     confirmButtonText: 'OK'
-        //                 });
-        //             }
-        //         })
-        //         .catch(error => {
-        //             console.error('Error:', error);
-        //             Swal.fire({
-        //                 title: 'Error',
-        //                 text: 'An error occurred while cancelling the order',
-        //                 icon: 'error',
-        //                 confirmButtonText: 'OK'
-        //             });
-        //         });
-        // }
 
         function returnOrder(orderId) {
 

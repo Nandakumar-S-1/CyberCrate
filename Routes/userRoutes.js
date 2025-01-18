@@ -9,6 +9,7 @@ const wishlistController = require('../Controllers/users/wishListController')
 const orderController = require('../Controllers/users/orderController')
 const walletController = require('../Controllers/users/walletController')
 const couponController = require('../Controllers/users/couponController')
+const paymentController = require('../Controllers/users/paymentController')
 const passport = require('passport');
 const {isLogAuth, checkBlockedStatus, checkUserStatus} = require('../Middleware/auth');
 
@@ -86,7 +87,6 @@ router.post('/profile/addresses/setDefaultAddress/:id',isLogAuth, profileControl
 router.get('/profile/changePassword',isLogAuth, profileController.changePassword);
 router.post('/profile/changePassword',isLogAuth, profileController.changePasswordValidation);
 
-
 // cart routes
 router.get('/cart', isLogAuth, cartController.loadCart);
 router.post('/cart/addItem', isLogAuth, cartController.addItemToCart);
@@ -102,7 +102,15 @@ router.post('/cancelOrder', isLogAuth, orderController.cancelOrder);
 router.post('/verifyPayment', isLogAuth, orderController.verifyPayment);
 // router.get('/orderDetails/:id', isLogAuth, orderController.orderDetails);
 router.get('/profile/orderDetails/:id', isLogAuth, orderController.orderDetails);
+router.get('/orders/:id/invoice',isLogAuth, orderController.generateInvoice)
 
+// //payment routes
+// router.post('/payment', isLogAuth, paymentController.verifyPayment);
+// router.get('/payment/success', isLogAuth, paymentController.paymentSuccess);
+// router.get('/payment/cancel', isLogAuth, paymentController.paymentCancel);
+// router.post('/payment/payFromOrder', isLogAuth, paymentController.payFromOrder);
+// router.post('/payment/payNowSuccess', isLogAuth, paymentController.payNowSuccess);
+// router.post('/payment/payNowCancel', isLogAuth, paymentController.payNowCancel);
 
 // Wishlist routes
 router.get('/wishlist', isLogAuth, wishlistController.loadWishlist);
@@ -124,5 +132,14 @@ router.post('/verifyCoupon', isLogAuth, couponController.verifyCoupon);
 router.post('/applyCoupon',isLogAuth, cartController.applyCoupon);
 
 
-router.get('/PageNotFound', userController.PageNotFound);
+// Define the route for /pageNotFound
+router.get('/pageNotFound', userController.PageNotFound);
+
+// Catch-all route for undefined user routes
+router.all('*', (req, res) => {
+    const errorMessage = "The page you are looking for doesn't exist.";
+    const errorCode = 404; // You can change this if needed
+    res.render('users/404-error', { errorMessage, errorCode });
+});
+    
 module.exports = router;

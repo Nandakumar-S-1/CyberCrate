@@ -1,0 +1,189 @@
+<%- include('../layouts/admin/header.ejs') %>
+    <%- include('../layouts/admin/sidebar.ejs', { currentPage: 'orderList' }) %>
+
+        <style>
+            .container {
+                max-width: 1200px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            h1,
+            h2 {
+                color: #343a40;
+                margin-bottom: 10px;
+            }
+
+            .order-info,
+            .user-info,
+            .address-info,
+            .payment-summary {
+                margin-bottom: 20px;
+                padding: 15px;
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .product-cards {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .product-card {
+                flex: 1 1 calc(33.333% - 15px);
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .product-card img {
+                width: 100%;
+                height: auto;
+                max-height: 150px;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 10px;
+            }
+
+            .product-card h3 {
+                font-size: 1rem;
+                color: #343a40;
+                margin-bottom: 5px;
+                text-align: center;
+            }
+
+            .product-card p {
+                font-size: 0.9rem;
+                color: #6c757d;
+                margin: 2px 0;
+            }
+
+            .product-card .price {
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .product-card .quantity {
+                font-size: 0.85rem;
+                color: #495057;
+            }
+
+            .total-summary {
+                font-weight: bold;
+                color: #212529;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        </style>
+
+        <div class="main-content" style="margin-left: 270px;">
+            <div class="container">
+                <h1>Order Details</h1>
+
+                <!-- Order Info -->
+                <div class="order-info">
+                    <h2>Order Info</h2>
+                    <p><strong>Order ID:</strong>
+                        <%= order.orderId %>
+                    </p>
+                    <p><strong>Status:</strong>
+                        <%= order.status %>
+                    </p>
+                    <p><strong>Payment Status:</strong>
+                        <%= order.paymentStatus %>
+                    </p>
+                    <p><strong>Payment Method:</strong>
+                        <%= order.paymentMethod %>
+                    </p>
+                    <p><strong>Order Date:</strong>
+                        <%= new Date(order.createdAt).toLocaleDateString() %>
+                    </p>
+                </div>
+
+                <!-- User Info -->
+                <div class="user-info">
+                    <h2>User Details</h2>
+                    <p><strong>Name:</strong>
+                        <%= order.address.name %>
+                    </p>
+                    <p><strong>Phone:</strong>
+                        <%= order.address.phone %>
+                    </p>
+                    <p><strong>Alternate Phone:</strong>
+                        <%= order.address.alterPhone %>
+                    </p>
+                </div>
+
+                <!-- Address Info -->
+                <div class="address-info">
+                    <h2>Shipping Address</h2>
+                    <p><strong>Type:</strong>
+                        <%= order.address.addressType %>
+                    </p>
+                    <p><strong>City:</strong>
+                        <%= order.address.city %>
+                    </p>
+                    <p><strong>Landmark:</strong>
+                        <%= order.address.landMark %>
+                    </p>
+                    <p><strong>District:</strong>
+                        <%= order.address.district %>
+                    </p>
+                    <p><strong>State:</strong>
+                        <%= order.address.state %>
+                    </p>
+                    <p><strong>Pincode:</strong>
+                        <%= order.address.pincode %>
+                    </p>
+                </div>
+
+                <!-- Ordered Products -->
+                <div class="product-info">
+                    <h2>Ordered Products</h2>
+                    <div class="product-cards">
+                        <% order.orderedItems.forEach(item=> { %>
+                            <div class="product-card">
+                                <img src="<%= item.product.productImage %>" alt="<%= item.product.productName %>">
+                                <h3>
+                                    <%= item.product.productName %>
+                                </h3>
+                                <p class="price">Price: ₹<%= item.price %>
+                                </p>
+                                <p class="quantity">Quantity: <%= item.quantity %>
+                                </p>
+                                <p class="total-summary">Total: ₹<%= item.quantity * item.price %>
+                                </p>
+                            </div>
+                            <% }) %>
+                    </div>
+                </div>
+
+                <!-- Payment Summary -->
+                <div class="payment-summary">
+                    <h2>Payment Summary</h2>
+                    <p><strong>Subtotal:</strong> ₹<%= order.subTotal %>
+                    </p>
+                    <p><strong>Discount:</strong> ₹<%= order.discount %>
+                    </p>
+                    <p><strong>Delivery Charge:</strong> ₹<%= order.deliveryCharge || 0 %>
+                    </p>
+                    <p><strong>Coupon Discount:</strong> ₹<%= order.couponDiscount || 0 %>
+                    </p>
+                    <p><strong>Total Amount:</strong> ₹<%= order.finalAmount %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <%- include('../layouts/admin/footer.ejs') %>

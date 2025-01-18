@@ -1,6 +1,4 @@
 <%- include('../layouts/user/header.ejs') %>
-
-
     <style>
 .brand-slideshow {
   overflow: hidden;
@@ -318,7 +316,7 @@
                         <img src="/img/banner/rogbanner.png" class="d-block w-100" alt="Gaming Setup" />
                     </div>
                     <div class="carousel-item">
-                        <img src="/img/banner/rogbanner.png" class="d-block w-100" alt="Gaming Accessories" />
+                        <img src="/img/banner/amz.png" class="d-block w-100" alt="Gaming Accessories" />
                     </div>
                     <div class="carousel-item">
                         <img src="/img/banner/PS5banner.png" class="d-block w-100" alt="Gaming PC" />
@@ -339,14 +337,14 @@
         <div class="featured-products">
             <% topSellingProducts.forEach((product)=> { %>
                 <div class="featured-item">
-                    <a href="/productDetails/<%= product._id %>">
+                    <a class="text-decoration-none" href="/productDetails/<%= product._id %>">
                         <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>" />
                         <h3 class="text-white fs-5">
                             <%= product.productName %>
                         </h3>
-                        <p class="text-white fs-6"><span class="fw-bold text-muted">Price:</span> ₹<%= product.salePrice %>
+                        <p class="text-white fs-6"><span class="fw-bold text-warning">Price: </span>  ₹<%= product.salePrice %>
                         </p>
-                        <p class="text-white fs-6"><span class="fw-bold text-muted">Stock:</span>Stock left: <span class="fw-bold text-danger"><%= product.quantity %></span> 
+                        <p class="text-white fs-6"><span class="fw-bold text-warning">Stock:</span>Stock left: <span class="fw-bold text-danger"><%=  product.quantity %></span> 
                         </p>
                     </a>
                 </div>
@@ -459,57 +457,7 @@
     </section>
 
 
-    <section class="services" style="background-color: #11012b; padding: 40px 0">
-        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 20px">
-            <div class="services-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px">
-                <!-- Free Shipping -->
-                <div class="service-card" style="
-          background: #1a0340;
-          padding: 30px;
-          border-radius: 10px;
-          text-align: center;
-        ">
-                    <i class="fas fa-shipping-fast" style="font-size: 3rem; color: #4b0082; margin-bottom: 20px"></i>
-                    <h3 style="color: #fff; margin-bottom: 15px">FREE SHIPPING</h3>
-                    <p style="color: #f8f5f5">
-                        Enjoy hassle-free shopping with free shipping on every order! No
-                        matter what gaming gear, delivered straight to your doorstep without
-                        any extra cost.
-                    </p>
-                </div>
 
-                <!-- 100% Refund -->
-                <div class="service-card" style="
-          background: #1a0340;
-          padding: 30px;
-          border-radius: 10px;
-          text-align: center;
-        ">
-                    <i class="fas fa-undo" style="font-size: 3rem; color: #4b0082; margin-bottom: 20px"></i>
-                    <h3 style="color: #fff; margin-bottom: 15px">100% REFUND</h3>
-                    <p style="color: #f8f5f5">
-                        Shop with confidence! If you're not satisfied with your purchase, we
-                        offer a hassle-free refund within 30 days of purchase.
-                    </p>
-                </div>
-
-                <!-- Support -->
-                <div class="service-card" style="
-          background: #1a0340;
-          padding: 30px;
-          border-radius: 10px;
-          text-align: center;
-        ">
-                    <i class="fas fa-headset" style="font-size: 3rem; color: #4b0082; margin-bottom: 20px"></i>
-                    <h3 style="color: #fff; margin-bottom: 15px">SUPPORT 24/7</h3>
-                    <p style="color: #f8f5f5">
-                        We're here for you around the clock! Our dedicated support team is
-                        ready to assist you with any questions or concerns.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Featured Products  -->
     <section class="featured-products-grid" style="background-color: #000; padding: 60px 0">
@@ -552,7 +500,8 @@
     <section class="search-section" style="background-color: #11012b; padding: 40px 0">
         <div class="container" style="max-width: 600px; margin: 0 auto; padding: 0 20px">
             <div class="search-box" style="display: flex; gap: 10px">
-                <input type="text" placeholder="Search here..." style="
+                <form action="/users/shop" method="get" class="search-form">
+                <input type="text" name="searchWord" placeholder="Search here..." style="
           flex: 1;
           padding: 12px 20px;
           border: none;
@@ -567,89 +516,15 @@
           border: none;
           border-radius: 5px;
           cursor: pointer;
-        ">
+        " type="submit" > 
                     Search
                 </button>
+            </form>
             </div>
         </div>
     </section>
 
-    <!-- <script>
-        function addToCart(productId) {
-            fetch('/cart/addItem', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId, quantity: 1 })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire('Added!', 'The item has been added to your cart.', 'success');
-                    } else {
-                        Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
-                });
-        }
 
-        function addToFavorites(productId) {
-            fetch("/favorites/addItem", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ productId }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        Swal.fire(
-                            "Added!",
-                            "The item has been added to your favorites.",
-                            "success"
-                        );
-                    } else {
-                        Swal.fire(
-                            "Error!",
-                            "Failed to add the item to your favorites.",
-                            "error"
-                        );
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    Swal.fire(
-                        "Error!",
-                        "An error occurred while adding the item to your favorites.",
-                        "error"
-                    );
-                });
-        }
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll(".product-card").forEach((card) => {
-                const productId = card
-                    .querySelector("a")
-                    .getAttribute("href")
-                    .split("/")
-                    .pop();
-                card.querySelector(".add-to-cart").addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    addToCart(productId);
-                });
-                card.querySelector(".add-to-favorites").addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    addToFavorites(productId);
-                });
-                card.querySelector(".product-title").addEventListener("click", (e) => {
-                    e.stopPropagation();
-                });
-            });
-        });
-    </script> -->
-   
     <script>
         function addToCart(productId) {
             fetch('/cart/addItem', {

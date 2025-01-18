@@ -1,6 +1,7 @@
 const Brand = require('../../Models/brandModel');
 const Product = require('../../Models/productModel');
 
+//function for loading brands
 const loadBrands = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -29,7 +30,7 @@ const loadBrands = async (req, res) => {
         res.redirect('/pageError');
     }
 }
-
+//function for adding new brand
 const addNewBrand = async (req, res) => {
     try {
         // console.log(req.file);
@@ -58,7 +59,7 @@ const addNewBrand = async (req, res) => {
         res.redirect('/pageError');
     }
 }
-
+//function for blocking and unblocking brand
 const blockBrand = async (req, res) => {
     try {
         const brandId = req.query.id;
@@ -69,7 +70,7 @@ const blockBrand = async (req, res) => {
         res.json({ success: false });
     }
 };
-
+//function for blocking and unblocking brand
 const unBlockBrand = async (req, res) => {
     try {
         const brandId = req.query.id;
@@ -81,6 +82,8 @@ const unBlockBrand = async (req, res) => {
     }
 };
 
+
+//function for deleting and restoring brand
 const deleteBrand = async (req, res) => {
     try {
         const id = req.query.id;
@@ -98,7 +101,7 @@ const deleteBrand = async (req, res) => {
         res.status(500).redirect('/pageError');
     }
 }
-
+//function for deleting and restoring brand
 const restoreBrand = async (req, res) => {
     try {
         const id = req.query.id;

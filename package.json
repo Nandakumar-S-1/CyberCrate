@@ -11,7 +11,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/paypal-server-sdk": "^0.6.1",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
+    "chart.js": "^4.4.7",
     "connect-mongo": "^5.1.0",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",

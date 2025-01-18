@@ -4,75 +4,172 @@
 <main class="main-wrap">
     <header class="main-header navbar"></header>
     <section class="content-main">
+        <!-- Page Header -->
         <div class="content-header">
             <div>
-                <h2 class="content-title card-title">Sales Report</h2>
-                <p>Generate and view sales reports based on different criteria.</p>
+                <h2 class="content-title">Sales Report</h2>
+                <p class="text-muted">Generate, view, and download sales reports effortlessly.</p>
             </div>
         </div>
+
+        <!-- Filter and Action Section -->
         <div class="card mb-4">
             <header class="card-header">
-                <form id="reportForm" method="POST" action="/admin/salesPage" class="row gx-3">
+                <form id="reportForm" class="row gx-3 align-items-end">
                     <div class="col-lg-2 col-md-6">
-                        <select name="reportType" class="form-select">
-                            <option value="" disabled selected>Select report type</option>
+                        <label for="reportType" class="form-label">Report Type</label>
+                        <select id="reportType" name="reportType" class="form-select">
+                            <option value="" disabled selected>Select</option>
+                            <option value="daily">Daily</option>
                             <option value="weekly">Weekly</option>
                             <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly</option>
                             <option value="custom">Custom</option>
                         </select>
                     </div>
                     <div class="col-lg-2 col-md-6">
-                        <input type="date" name="startDate" class="form-control" placeholder="Start Date" />
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" />
                     </div>
                     <div class="col-lg-2 col-md-6">
-                        <input type="date" name="endDate" class="form-control" placeholder="End Date" />
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" />
                     </div>
-            
-                    <div class="col-lg-3 col-md-">
-                        <button type="submit" class="btn btn-primary">
-                            Generate Report
-                        </button>
+                    <div class="col-lg-3 col-md-6">
+                        <button type="submit" class="btn btn-primary w-100">Generate Report</button>
                     </div>
-                    <div class="d-flex col-lg-3 col-md- text-end">
-                        <button style="background-color: gray; align-content: center" class="btn btn-xs me-2" target="_blank">
+                    <div class="col-lg-3 d-flex justify-content-end">
+                        <a href="/admin/download-pdf" id="pdfDownload" class="btn btn-secondary me-2">
                             Download PDF
-                        </button>
-                        <a style="background-color: gray; align-content: center" class="btn btn-xs me-2" target="_blank">Download Excel</a>
+                        </a>
+                        <a href="/admin/download-excel" id="excelDownload" class="btn btn-secondary">
+                            Download Excel
+                        </a>
                     </div>
                 </form>
             </header>
+        </div>
+
+        <!-- Report Summary -->
+        <div class="card mb-4">
             <div class="card-body">
-                <h5>Report Summary:</h5>
-                <p>Total Sales: ₹<%=totalRevenue%></p>
-                <p>Total Discounts: ₹<%=totalDiscount%></p>
-                <p>Coupon Deductions: ₹0.00</p>
-                <p>Total Orders: <%=totalOrders%></p>
-                <div class="table-responsive">
-                    <p>No orders found for the selected date range.</p>
+                <h5 class="card-title">Report Summary</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Total Revenue:</strong> ₹<%= totalRevenue %></p>
+                        <p><strong>Total Discounts:</strong> ₹<%= totalDiscount %></p>
+                        <p><strong>Coupon Discounts:</strong> ₹<%= couponDiscount %></p>
+                    </div>
+                    <div class="col-md-6">
+
+                        <p><strong>Total Orders:</strong> <%= totalOrders %></p>
+
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Orders Table -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Order Details</h5>
+                <% if (orders.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Discount</th>
+                                    <th>Final Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orders.forEach(order => { %>
+                                    <tr>
+                                        <td><%= order._id %></td>
+                                        <td><%= order.user?.name || 'N/A' %></td>
+                                        <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                        <td><%= order.status %></td>
+                                        <td>₹<%= Math.floor(order.totalDiscount) %></td>
+                                        <td>₹<%= Math.floor(order.finalAmount) %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <p class="text-muted text-center">No orders found for the selected date range.</p>
+                <% } %>
+            </div>
+        </div>
     </section>
-    <div id="toast-container" aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 11">
-        <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div id="toast-body" class="toast-body">Success Message</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-        <div id="toast_error" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div id="toast-body-error" class="toast-body">Error Message</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
     <%- include('../layouts/admin/footer.ejs') %>
 </main>
 
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const reportForm = document.getElementById('reportForm');
+        const pdfDownload = document.getElementById('pdfDownload');
+        const excelDownload = document.getElementById('excelDownload');
+
+        reportForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const params = new URLSearchParams(formData);
+
+            try {
+                window.location.href = `/admin/filter-sales?${params.toString()}`;
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Report Generated',
+                    text: 'The sales report has been successfully generated.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while generating the sales report.',
+                });
+            }
+        });
+
+        function updateDownloadLinks() {
+            const startDate = document.querySelector('input[name="startDate"]').value;
+            const endDate = document.querySelector('input[name="endDate"]').value;
+
+            if (startDate && endDate) {
+                const params = `startDate=${startDate}&endDate=${endDate}`;
+                pdfDownload.href = `/admin/download-pdf?${params}`;
+                excelDownload.href = `/admin/download-excel?${params}`;
+            }
+        }
+
+        document.querySelector('input[name="startDate"]').addEventListener('change', updateDownloadLinks);
+        document.querySelector('input[name="endDate"]').addEventListener('change', updateDownloadLinks);
+    });
+</script>
 <style>
-    .main-wrap{
+    .main-wrap {
         margin-left: 300px;
+    }
+    .card-title {
+        font-weight: 600;
+        color: #333;
+    }
+    .form-label {
+        font-weight: 500;
+    }
+    .table th {
+        background-color: #f8f9fa;
+    }
+    .btn {
+        text-transform: uppercase;
     }
 </style>

@@ -4,23 +4,20 @@ const User = require('../../Models/userModel');
 const Order = require('../../Models/orderModel');
 const Cart = require('../../Models/cartModel');
 const Brand = require('../../Models/brandModel');
+const mongoose=require('mongoose')
 
-
-const getProoducts = async(req,res)=>{
-  try {
-
-    const {category , brand , }=req.query;
-
-  } catch (error) {
-    
-  }
-}
-
+//function to load product details
 const productDetails = async (req, res) => {
     try {
       const userId = req.session.user;
       const userData = userId ? await User.findById(userId) : null;
       const productId = req.params.id;
+
+      // Check if productId is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
+        // If not, redirect to the 404 error page
+        return res.render('users/404-error', { errorMessage: 'Product not found', errorCode: 404 });
+    }
   
       // const brandName = await Brand.findById(productId);
       const product = await Product.findById(productId).populate('category  brand');
@@ -47,58 +44,8 @@ const productDetails = async (req, res) => {
       res.status(500).send('Server error');
     }
   };
-  
-// const popularProducts = async (req, res) => {
-//   try {
-    
-//     const popularProducts = await Order.aggregate([
-//       {
-//         $unwind:'$orderedItems'
-//       },
-//       {
-//         $group:{
-//           _id:'$orderedItems.productId',
-//           totalOrders:{$sum:1}
-//         }
-//       },
-//       {
-//         $lookup:{
-//            from:'products',
-//            localField:'_id',
-//            foreignField:'_id',
-//            as:'productDetails' 
-//         }
-//       },
-//       {
-//         $unwind:'$productDetails'
-//       },
-//       {
-//         $sort:{totalOrders:-1}
-//       },
-//       {
-//         $limit:5
-//       },
-//       {
-//         $project:{
-//           _id:1,
-//           productName:'$productDetails.productName',
-//           productImage:'$productDetails.productImage',
-//           totalOrders:1
-//         }
-//       }
-//     ])
 
-//     res.render('users/popularProducts', {
-//       popularProducts
-//     })
-
-//   } catch (error) {
-//     console.error('Error loading popular products:', error);
-//     res.redirect('/pageError');
-//   }
-// }
-
-
+  //function to search products
 const searchProducts = async (req, res) => {
   try {
     const searchWord = req.query.searchWord || '';

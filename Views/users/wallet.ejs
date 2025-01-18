@@ -173,7 +173,7 @@
                                 <th class="border border-purple-300 px-4 py-2 text-right">Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <!-- <tbody>
                             <% wallet.walletHistory.reverse().forEach(transaction => { %>
                                 <tr class="border-t border-purple-300">
                                     <td class="border border-purple-300 px-4 py-2">
@@ -196,7 +196,41 @@
                                     </td>
                                 </tr>
                             <% }) %>
+                        </tbody> -->
+
+                        <tbody>
+                            <% if (wallet.walletHistory.length === 0) { %>
+                                <tr>
+                                    <td colspan="4" class="text-center text-gray-500 py-4">
+                                        No transactions yet.
+                                    </td>
+                                </tr>
+                            <% } else { %>
+                                <% wallet.walletHistory.reverse().forEach(transaction => { %>
+                                    <tr class="border-t border-purple-300">
+                                        <td class="border border-purple-300 px-4 py-2">
+                                            <%= new Date(transaction.date).toLocaleDateString() %>
+                                        </td>
+                                        <td class="border border-purple-300 px-4 py-2">
+                                            <span
+                                                class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                                <%= transaction.transactionType.toUpperCase() %>
+                                            </span>
+                                        </td>
+                                        <td class="border border-purple-300 px-4 py-2">
+                                            <%= transaction.description %>
+                                        </td>
+                                        <td class="border border-purple-300 px-4 py-2 text-right">
+                                            <span
+                                                class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                                <%= transaction.transactionType === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } %>
                         </tbody>
+                        
                     </table>
                 </div>
             </div>
@@ -209,6 +243,11 @@
         e.preventDefault();
         const amount = e.target.amount.value;
 
+
+        if (!amount || amount <= 0) {
+        alert('Please enter a valid amount greater than 0.');
+        return;
+    }
         try {
             const response = await fetch('/wallet/add-money', {
                 method: 'POST',
@@ -220,13 +259,14 @@
 
             const data = await response.json();
             if (data.success) {
+                alert('Money added successfully!');
                 window.location.reload();
             } else {
                 alert(data.message || 'Error adding money to wallet');
             }
-        } catch (error) {
-            alert('Error adding money to wallet');
-        }
+        }  catch (error) {
+        alert('An error occurred while adding money to the wallet. Please try again later.');
+    }
     });
 </script>
 
