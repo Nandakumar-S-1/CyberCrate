@@ -37,6 +37,214 @@
         }
     </style> -->
 <style>
+    /* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #181818;
+    color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.content-main {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.row {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Card styles */
+.card {
+    background-color: #242424;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #f5f5f5;
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    background-color: #333333;
+    padding: 15px;
+    border-bottom: 1px solid #444;
+    border-radius: 10px 10px 0 0;
+}
+
+.card-header h4 {
+    color: #00d1ff;
+    margin: 0;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Form elements */
+.form-label {
+    color: #00d1ff;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control {
+    background-color: #333333;
+    border: 1px solid #444;
+    color: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.form-control::placeholder {
+    color: #888;
+}
+
+.form-control:focus {
+    background-color: #3a3a3a;
+    border-color: #00d1ff;
+    box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
+    outline: none;
+}
+
+.form-select {
+    background-color: #333333;
+    border: 1px solid #444;
+    color: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 5px;
+    width: 100% !important;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #00d1ff;
+    border: none;
+    color: #181818;
+}
+
+.btn-primary:hover {
+    background-color: #00a1cc;
+}
+
+.btn-secondary {
+    background-color: #444;
+    border: none;
+    color: #f5f5f5;
+}
+
+.btn-secondary:hover {
+    background-color: #555;
+}
+
+/* Image upload section */
+.thumbnails-container {
+    padding: 1rem;
+    background-color: #333333;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    min-height: 100px;
+}
+
+.image-cropper {
+    background-color: #333333;
+    border-radius: 5px;
+    padding: 1rem;
+}
+
+#imgView1 {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}
+
+/* Publish button container */
+.publish-button-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.publish-button {
+    background-color: #00d1ff;
+    color: #181818;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.publish-button:hover {
+    background-color: #00a1cc;
+    transform: translateY(-1px);
+}
+
+/* Error messages */
+.error-message {
+    color: #ff4d4d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Content header */
+.content-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.content-title {
+    color: #00d1ff;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+/* Border styles */
+.border {
+    border: 1px solid #444 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .content-main {
+        padding: 1rem;
+    }
+    
+    .row {
+        flex-direction: column;
+    }
+    
+    .col-lg-6 {
+        width: 100%;
+    }
+
+    .publish-button-container {
+        flex-direction: column;
+    }
+}
+
+/* Additional spacing utilities */
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.75rem;
+}
+</style>
+<!-- <style>
     /* Global Styles */
 body {
     font-family: 'Roboto', sans-serif;
@@ -216,7 +424,7 @@ a.btn:hover {
     }
 }
 
-</style>
+</style> -->
 
     
     <section class="content-main">

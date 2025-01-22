@@ -1,122 +1,139 @@
 <%- include('../layouts/user/header.ejs') %>
 
-<style>
-    body {
-        background-color: #dacbf2;
-    }
-    .orders-page {
-        max-width: 1000px;
-        margin: 3rem auto;
-        padding: 20px;
-        font-family: Arial, sans-serif;
-        background-color: #cdbbe9;
-        border-radius: 10px;
-        border: 1px solid #21123b;
-        box-shadow: 0 14px 16px rgba(22, 26, 255, 0.1);
-    }
+    <style>
+        body {
+            background-color: #dacbf2;
+        }
 
-    .orders-header {
-        text-align: center;
-        font-size: 2rem;
-        margin-bottom: 30px;
-        color: #6e3bbb;
-    }
+        .orders-page {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #cdbbe9;
+            border-radius: 10px;
+            border: 1px solid #21123b;
+            box-shadow: 0 14px 16px rgba(22, 26, 255, 0.1);
+        }
 
-    .order-card {
-        display: flex;
-        align-items: flex-start;
-        background-color: #fff;
-        border: 1px solid #d0b4ff;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        padding: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+        .orders-header {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #6e3bbb;
+        }
 
-    .order-image {
-        flex-shrink: 0;
-        width: 150px;
-        height: 150px;
-        margin-right: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #f9f4ff;
-        border-radius: 10px;
-    }
+        .order-card {
+            display: flex;
+            align-items: flex-start;
+            background-color: #fff;
+            border: 1px solid #d0b4ff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    .order-image img {
-        max-width: 100%;
-        max-height: 100%;
-        border-radius: 5px;
-    }
+        .order-image {
+            flex-shrink: 0;
+            width: 150px;
+            height: 150px;
+            margin-right: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f4ff;
+            border-radius: 10px;
+        }
 
-    .order-details {
-        flex-grow: 1;
-    }
+        .order-image img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 5px;
+        }
 
-    .order-details h3 {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #3e0a77;
-        margin: 0;
-    }
+        .order-details {
+            flex-grow: 1;
+        }
 
-    .order-details p {
-        font-size: 0.9rem;
-        margin: 5px 0;
-        color: #6e3bbb;
-    }
+        .order-details h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #3e0a77;
+            margin: 0;
+        }
 
-    .actions {
-        margin-top: 10px;
-    }
+        .order-details p {
+            font-size: 0.9rem;
+            margin: 5px 0;
+            color: #6e3bbb;
+        }
 
-    .actions button {
-        background-color: #6e3bbb;
-        color: #fff;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-right: 10px;
-    }
+        .actions {
+            margin-top: 10px;
+        }
 
-    .actions button.cancel {
-        background-color: #c8aae9;
-    }
-</style>
+        .actions button {
+            background-color: #6e3bbb;
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
 
-<div class="orders-page">
-    <h1 class="orders-header">Your Orders</h1>
-    <% if (orders.length > 0) { %>
-        <% orders.forEach(order => { %>
-        <div class="order-card">
-            <div class="order-image">
-                <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>" alt="<%= order.orderedItems[0].product.productName %>">
-            </div>
-            <div class="order-details">
-                <h3><%= order.orderedItems[0].product.productName %></h3>
-                <p>Payment Method: <%= order.paymentMethod %></p>
+        .actions button.cancel {
+            background-color: #c8aae9;
+        }
+    </style>
 
-                <p>Status: 
-                    <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
-                        <%= order.status %>
-                    </span>
-                </p>
-                <div class="actions">
-                    <button onclick="viewOrder('<%= order.orderId %>')">View</button>
-                    <% if (order.status !== 'Delivered' && order.status !== 'Refund Completed') { %>
-                        <button onclick="cancelOrder('<%= order.orderId %>')" class="cancel">Cancel Order</button>
-                    <% } %>
+    <div class="orders-page">
+        <h1 class="orders-header">Your Orders</h1>
+        <% if (orders.length> 0) { %>
+            <% orders.forEach(order=> { %>
+                <div class="order-card">
+                    <div class="order-image">
+                        <img src="/img/products/<%= order.orderedItems[0].product.productImage[0] %>"
+                            alt="<%= order.orderedItems[0].product.productName %>">
+                    </div>
+                    <div class="order-details">
+                        <h3>
+                            <%= order.orderedItems[0].product.productName %>
+                        </h3>
+                        <p>Payment Method: <%= order.paymentMethod %>
+                        </p>
+
+                        <p>Status:
+                            <span class="order-status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                                <%= order.status %>
+                            </span>
+                        </p>
+                        <p>
+                            payment Status:
+                            <span class="order-status <%= order.paymentStatus.toLowerCase().replace(/\s+/g, '-') %>">
+                                <%= order.paymentStatus %>
+                            </span>
+                        </p>
+                        <div class="actions">
+                            <button onclick="viewOrder('<%= order.orderId %>')">View</button>
+                            <% if (order.status !=='Delivered' && order.status !=='Refund Completed' ) { %>
+                                <button onclick="cancelOrder('<%= order.orderId %>')" class="cancel">Cancel
+                                    Order</button>
+                                <% } %>
+                                <%if(order.paymentStatus=='Failed'){%>
+                                    <button onclick="retryPayment('<%= order.orderId %>', '<%= order.finalAmount %>', '<%= order.razorpayOrderId %>')" class="cancel">
+                                        Retry Payment
+                                    </button>
+                                <%}%>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <% }) %>
-    <% } else { %>
-        <p style="text-align: center; color: #130c1e; margin: 5rem;" >No orders found.</p>
-    <% } %>
-</div>
+                <% }) %>
+                    <% } else { %>
+                        <p style="text-align: center; color: #130c1e; margin: 5rem;">No orders found.</p>
+                        <% } %>
+    </div>
 
 
     <script> function updateStatus(orderId) {
@@ -157,19 +174,200 @@
         } 
     </script>
 
-    <script> function togglePaymentDetails(orderId) {
+    <script>
+        function togglePaymentDetails(orderId) {
             const details = document.getElementById(`payment-${orderId}`);
             if (details.style.display === 'none') {
+
                 details.style.display = 'block';
             } else {
                 details.style.display = 'none';
             }
         }
 
-    //     function viewOrder(orderId) {
-    //     document.getElementById("loading-spinner").style.display = "block";
-    //     window.location.href = `/profile/orderDetails/${orderId}`;
-    // }
+        // function retryPayment(orderId, finalAmount, razorpayOrderId) {
+        //     var razorpayIdKey = `<%=process.env.RAZORPAY_ID_KEY%>`;
+
+        //     if (!razorpayIdKey || !razorpayOrderId) {
+        //         Swal.fire({
+        //             title: 'Error',
+        //             text: 'Payment gateway details are missing. Please try again later',
+        //             icon: 'error',
+        //             timer: 2000,
+        //         })
+        //         return;
+        //     }
+        //     console.log("orderId",orderId);
+        //     console.log("finalAmount",finalAmount);
+        //     console.log("razorpayOrderId",orderId);
+        //     console.log("razorpayIdKey",razorpayIdKey);
+            
+            
+
+        //     var options = {
+        //         key: razorpayIdKey,
+        //         amount: Math.round(finalAmount * 100),
+        //         currency: 'INR',
+        //         name: 'CyberCrate',
+        //         description: 'Retry Order Payment',
+        //         order_id: razorpayOrderId,
+        //         handler: function (response) {
+        //             fetch('/retryPayment', {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json',
+        //                 },
+        //                 body: JSON.stringify({
+        //                     orderId: orderId,
+        //                     razorpay_order_id: response.razorpay_order_id,
+        //                     razorpay_payment_id: response.razorpay_payment_id,
+        //                     razorpay_signature: response.razorpay_signature,
+        //                 }),
+        //             })
+        //                 .then((res) => res.json())
+        //                 .then((data) => {
+        //                     if (data.status === 'success') {
+        //                         Swal.fire({
+        //                             title: 'Success',
+        //                             text: data.message,
+        //                             icon: 'success',
+        //                             timer: 3000
+        //                         }).then(() => {
+        //                             window.location.reload();
+        //                         });
+        //                     } else {
+        //                         Swal.fire({
+        //                             title: 'Error',
+        //                             text: data.message || 'Retry payment failed. Please try again.',
+        //                             icon: 'error',
+        //                             timer: 3000
+        //                         });
+        //                     }
+        //                 })
+        //                 .catch((error) => {
+        //                     console.error('Error during retry payment:', error);
+        //                     Swal.fire({
+        //                         title: 'Error',
+        //                         text: 'An error occurred during the retry payment process.',
+        //                         icon: 'error',
+        //                         timer: 3000
+        //                     });
+        //                 });
+        //         },
+        //         theme: {
+        //             color: '#3399cc',
+        //         },
+        //     };
+
+        //     var rzp1 = new Razorpay(options);
+        //     rzp1.open();
+
+        //     console.log("options",options);
+        //     console.log("rzp1",rzp1);
+        // }
+
+
+        function retryPayment(orderId, finalAmount) {
+    var razorpayIdKey = `<%= process.env.RAZORPAY_ID_KEY %>`;
+
+    fetch('/createRetryPaymentOrder', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId, finalAmount }),
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.razorpayOrderId || !razorpayIdKey) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Payment gateway details are missing. Please try again later',
+                    icon: 'error',
+                    timer: 3000,
+                });
+                return;
+            }
+
+            var options = {
+                key: razorpayIdKey,
+                amount: Math.round(finalAmount * 100),
+                currency: 'INR',
+                name: 'CyberCrate',
+                description: 'Retry Order Payment',
+                order_id: data.razorpayOrderId,
+                handler: function (response) {
+                    fetch('/retryPayment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            orderId,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                        }),
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: data.message,
+                                    icon: 'success',
+                                    timer: 3000,
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: data.message || 'Retry payment failed. Please try again.',
+                                    icon: 'error',
+                                    timer: 3000,
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error during retry payment:', error);
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'An error occurred during the retry payment process.',
+                                icon: 'error',
+                                timer: 3000,
+                            });
+                        });
+                },
+                theme: {
+                    color: '#3399cc',
+                },
+            };
+
+            try {
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            } catch (error) {
+                console.error('Error opening Razorpay UI:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to initiate payment. Please try again.',
+                    icon: 'error',
+                    timer: 3000,
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error creating Razorpay order:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'An error occurred while creating payment order.',
+                icon: 'error',
+                timer: 3000,
+            });
+        });
+}
+
 
         function viewOrder(orderId) {
             // window.location.href = `/orderDetails/${orderId}`;
@@ -199,7 +397,7 @@
                             text: data.message,
                             icon: 'success',
                             confirmButtonText: 'OK'
-                        }).then(()=>{
+                        }).then(() => {
                             location.reload()
                         })
                     }
@@ -217,6 +415,7 @@
 
         function returnOrder(orderId) {
 
-        } 
-</script>
+        }
+
+    </script>
     <%- include('../layouts/user/footer.ejs') %>

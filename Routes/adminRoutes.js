@@ -12,8 +12,6 @@ const couponController = require("../Controllers/admin/couponController");
 
 const upload = require("../Helpers/multer");
 
-
-
 // admin authentication routes
 router.get("/pageError", adminController.pageError);
 router.get("/login", adminController.loadAdminLogin);
@@ -150,7 +148,7 @@ router.get(
   "/orderList/viewOrder/:id",
   isAdminAuthenticated,
   adminOrderController.viewOrder
-)
+);
 
 //couponManagement routes
 router.get("/coupons", isAdminAuthenticated, couponController.loadCoupons);
@@ -176,7 +174,6 @@ router.get(
   couponController.deleteCoupon
 );
 
-
 //salesManagement routes
 router.get("/salesPage", isAdminAuthenticated, adminController.loadSalesPage);
 router.get(
@@ -194,13 +191,16 @@ router.get(
   isAdminAuthenticated,
   adminController.downloadPDFreport
 );
-
+router.get(
+  "/dashboard/filter",
+  isAdminAuthenticated,
+  adminController.filteredAdminDashboard
+);
 module.exports = router;
 
-
 // Catch-all route for undefined admin routes
-router.all('*', (req, res) => {
+router.all("*", (req, res) => {
   const errorMessage = "The page you are looking for doesn't exist.";
   const errorCode = 404; // You can change this if needed
-  res.render('admin/adminError', { errorMessage, errorCode });
+  res.render("admin/adminError", { errorMessage, errorCode });
 });

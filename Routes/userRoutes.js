@@ -53,7 +53,6 @@ router.get('/auth/google/callback',
 
 // product routes
 router.get('/productDetails/:id', userProductController.productDetails);
-
 router.get('/users/shop', shopController.loadShop);
 router.get('/users/shop/:category', shopController.loadShop);
 router.get('/users/shop/:category/:brand', shopController.loadShop);
@@ -103,6 +102,8 @@ router.post('/verifyPayment', isLogAuth, orderController.verifyPayment);
 // router.get('/orderDetails/:id', isLogAuth, orderController.orderDetails);
 router.get('/profile/orderDetails/:id', isLogAuth, orderController.orderDetails);
 router.get('/orders/:id/invoice',isLogAuth, orderController.generateInvoice)
+router.get('/orders/retry/:id',isLogAuth, orderController.retryPayment)
+router.post('/createRetryPaymentOrder',isLogAuth, orderController.createRetryPaymentOrder);
 
 // //payment routes
 // router.post('/payment', isLogAuth, paymentController.verifyPayment);

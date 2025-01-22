@@ -530,10 +530,11 @@
                             <% } %>
                                 <a href="/wishlist" class="icon-link">
                                     <i class="fas fa-heart"></i>
+                                    <span><%= locals.wishlistCount %></span>
                                 </a>
                                 <a href="/cart" class="icon-link">
                                     <i class="fas fa-shopping-cart"></i>
-                                    <span class="cart-count">0</span>
+                                    <span class="cart-count"><%= locals.cartCount %></span>
                                 </a>
                 </div>
 

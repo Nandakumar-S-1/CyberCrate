@@ -122,7 +122,9 @@ const loadCart = async (req, res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
-
+        const userCart=await Cart.findOne({userId:userId});
+        cartCount=userCart?userCart.items.length:0;
+        console.log(cartCount);
         // Populate cart items
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         let relatedProducts = [];
@@ -140,6 +142,7 @@ const loadCart = async (req, res) => {
                 message: 'Your cart is empty.',
                 relatedProducts,
                 user: userData,
+                cartCount
             });
         }
 
@@ -211,6 +214,7 @@ const loadCart = async (req, res) => {
             message: '',
             relatedProducts,
             user: userData,
+            cartCount
         });
     } catch (error) {
         console.error('Error loading cart:', error);
@@ -250,6 +254,10 @@ const addItemToCart = async (req, res) => {
             newQuantity += cart.items[productIndex].quantity;
             cart.items[productIndex].quantity = newQuantity;
             cart.items[productIndex].totalPrice = product.salePrice * newQuantity;
+            return res.status(200).json({ 
+                success: false, 
+                message: 'Product is already in your cart. Update quantity in the cart if needed.' 
+            });
         } else {
             cart.items.push({
                 productId,
@@ -274,6 +282,7 @@ const addItemToCart = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
 // Controller for removing an item from the cart
 const removeItemFromCart = async (req, res) => {
     const { productId } = req.body;

@@ -20,8 +20,6 @@ const pageError = async (req, res) => {
   res.render("admin/adminError", { errorMessage, errorCode });
 };
 
-
-
 // Function to hash a password securely using bcrypt
 const securePassword = async (password) => {
   try {
@@ -31,8 +29,6 @@ const securePassword = async (password) => {
     console.log("error while Securing password", error);
   }
 };
-
-
 
 // Function to load the admin login page if not logged in
 const loadAdminLogin = async (req, res) => {
@@ -49,8 +45,6 @@ const loadAdminLogin = async (req, res) => {
       .render("admin/adminLogin", { error: "Internal server error" });
   }
 };
-
-
 
 // Function to verify admin login requirements
 const verifyLogin = async (req, res) => {
@@ -75,8 +69,6 @@ const verifyLogin = async (req, res) => {
   }
 };
 
-
-
 // Function to handle admin logout and destroy the session
 const logout = async (req, res) => {
   try {
@@ -94,25 +86,9 @@ const logout = async (req, res) => {
   }
 };
 
-
 // Function to load the admin dashboard
 const loadDashboard = async (req, res) => {
   try {
-    // const bestSellingProducts = await Product.find()
-    //   .sort({ quantity: 1 })
-    //   .limit(5);
-
-    // const newCustomers = await User.find({ isAdmin: false })
-    //   .sort({ createdOn: -1 })
-    //   .limit(5);
-
-    // const recentOrders = await Order.find()
-    //   .populate("user address", "name email")
-    //   .populate("orderedItems.product", "productName productImage")
-    //   .sort({ createdAt: -1 })
-    //   .limit(5);
-
-    // console.log(recentOrders);
 
     const topProducts = await Product.aggregate([
       {
@@ -176,9 +152,8 @@ const loadDashboard = async (req, res) => {
       }
     ]);
 
-    console.log('topProducts',topProducts);
+    // console.log('topProducts',topProducts);
     
-
     const topBrands = await Order.aggregate([
       {
         $unwind: "$orderedItems"
@@ -248,8 +223,7 @@ const loadDashboard = async (req, res) => {
       }
     ]);
 
-  console.log('topBrands',topBrands);
-  
+
   const topCategories = await Order.aggregate([
     // Match only valid orders
     {
@@ -338,81 +312,6 @@ const loadDashboard = async (req, res) => {
       $limit: 10
     }
   ]);
-  console.log('topCategories',topCategories);
-  
-    // const topCategories = await Order.aggregate([
-
-    //   {
-    //     $match: {
-    //       status: "Delivered",
-    //       paymentStatus: "Completed"
-    //     }
-    //   },
-
-    //   {
-    //     $unwind: "$orderedItems"
-    //   },
-    //   // Lookup product details
-    //   {
-    //     $lookup: {
-    //       from: "products",
-    //       localField: "orderedItems.product",
-    //       foreignField: "_id",
-    //       as: "productDetails"
-    //     }
-    //   },
-
-    //   {
-    //     $unwind: "$productDetails"
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "categories",
-    //       localField: "productDetails.category",
-    //       foreignField: "_id",
-    //       as: "categoryDetails"
-    //     }
-    //   },
-    //   {
-    //     $unwind: "$categoryDetails"
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$categoryDetails._id",
-    //       categoryName: { $first: "$categoryDetails.name" },
-    //       totalOrders: { $sum: 1 },
-    //       totalQuantitySold: { $sum: "$orderedItems.quantity" },
-    //       totalRevenue: { 
-    //         $sum: { 
-    //           $multiply: ["$orderedItems.price", "$orderedItems.quantity"] 
-    //         }
-    //       }
-    //     }
-    //   },
-    //   {
-    //     $sort: {
-    //       totalQuantitySold: -1
-    //     }
-    //   },
-    //   {
-    //     $limit: 10
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       categoryName: 1,
-    //       totalOrders: 1,
-    //       totalQuantitySold: 1,
-    //       totalRevenue: 1,
-    //       averageOrderValue: {
-    //         $round: [
-    //           { $divide: ["$totalRevenue", "$totalOrders"] },
-    //           2
-    //         ]
-    //       }
-    //     }
-    //   }
-    // ]);
 
     const totalOrders = await Order.countDocuments();
     const activeOrders = await Order.countDocuments({
@@ -525,7 +424,42 @@ const loadDashboard = async (req, res) => {
   }
 };
 
+const filteredAdminDashboard = async (req,res)=>{
+  try {
+    
+    const {startDate,endDate}=req.query;
 
+    const start=new Date(startDate);
+    const end=new Date(endDate);
+    end.setHours(23,59,59,999) //entire dayss re included
+
+    const orderStats=await Order.aggregate([
+      {$match:{
+        createdAt:{$gt:start,$lte:end}
+      }},
+      {$group:{
+        _id:null,
+        completed:{$sum:{$cond:[{$eq:["$status","Completed"]},1,0]}},
+        active: { $sum: { $cond: [{ $eq: ["$status", "Active"] }, 1, 0] } },
+        cancelled: { $sum: { $cond: [{ $eq: ["$status", "Cancelled"] }, 1, 0] } },
+        returned: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } }
+      }}
+    ])
+
+    const topBrands=await Order.aggregate([
+      {$match:{createdAt:{$gte:start,$lte:end}}},
+      {$group:{_id:"$brandName",totalSales:{$sum:"$amount"}}},
+      {$sort:{totalSales:-1}}
+    ])
+
+    res.json({orderStats:orderStats[0],topBrands})
+
+  } catch (error) {
+    
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch filtered dashboard data" });
+  }
+}
 
 // Function to load the sales page
 const loadSalesPage=async(req,res)=>{
@@ -623,8 +557,6 @@ const loadSalesPage=async(req,res)=>{
     
   }
 }
-
-
 
 // Function to filter sales report based on date range
 const filterSalesReport = async (req, res) => {
@@ -800,8 +732,6 @@ const filterSalesReport = async (req, res) => {
     }
 };
 
-
-
 // Function to fetch orders by date range
 const ordersByDateRange = async (startDate, endDate) => {
   try {
@@ -832,7 +762,6 @@ const ordersByDateRange = async (startDate, endDate) => {
       throw error;
   }
 };
-
 
 // Excel Report
 const excelReportDownload = async (req, res) => {
@@ -889,8 +818,6 @@ const excelReportDownload = async (req, res) => {
     }
 };
 
-
-
 // PDF Report
 const downloadPDFreport = async (req, res) => {
   try {
@@ -941,9 +868,6 @@ const downloadPDFreport = async (req, res) => {
   }
 };
 
-
-
-
 module.exports = {
   pageError,
   loadAdminLogin,
@@ -956,7 +880,7 @@ module.exports = {
   excelReportDownload,
   downloadPDFreport,
   ordersByDateRange,
-  
+  filteredAdminDashboard
 };
 
 

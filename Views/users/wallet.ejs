@@ -1,273 +1,296 @@
 <%- include('../layouts/user/header.ejs') %>
 
-<style>
-    .wallet-page {
-        background-color: #f3e8ff; /* Light purple background */
-        min-height: 100vh;
-    }
+    <style>
+        .wallet-page {
+            background-color: #f3e8ff;
+            /* Light purple background */
+            min-height: 100vh;
+        }
 
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
 
-    .bg-white {
-        background-color: #ffffff;
-    }
+        .bg-white {
+            background-color: #ffffff;
+        }
 
-    .border-purple-300 {
-        border-color: #d8b4fe;
-    }
+        .border-purple-300 {
+            border-color: #d8b4fe;
+        }
 
-    .rounded-lg {
-        border-radius: 0.5rem;
-    }
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
 
-    .shadow-lg {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+        .shadow-lg {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    .p-6 {
-        padding: 1.5rem;
-    }
+        .p-6 {
+            padding: 1.5rem;
+        }
 
-    .mb-6 {
-        margin-bottom: 1.5rem;
-    }
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
 
-    .text-3xl {
-        font-size: 1.875rem;
-    }
+        .text-3xl {
+            font-size: 1.875rem;
+        }
 
-    .font-bold {
-        font-weight: 700;
-    }
+        .font-bold {
+            font-weight: 700;
+        }
 
-    .text-purple-900 {
-        color: #4c1d95; /* Dark purple */
-    }
+        .text-purple-900 {
+            color: #4c1d95;
+            /* Dark purple */
+        }
 
-    .text-lg {
-        font-size: 1.125rem;
-    }
+        .text-lg {
+            font-size: 1.125rem;
+        }
 
-    .bg-purple-50 {
-        background-color: #faf5ff;
-    }
+        .bg-purple-50 {
+            background-color: #faf5ff;
+        }
 
-    .text-purple-700 {
-        color: #6b21a8; /* Medium purple */
-    }
+        .text-purple-700 {
+            color: #6b21a8;
+            /* Medium purple */
+        }
 
-    .text-green-600 {
-        color: #16a34a; /* Green for balance */
-    }
+        .text-green-600 {
+            color: #16a34a;
+            /* Green for balance */
+        }
 
-    .flex {
-        display: flex;
-    }
+        .flex {
+            display: flex;
+        }
 
-    .gap-4 {
-        gap: 1rem;
-    }
+        .gap-4 {
+            gap: 1rem;
+        }
 
-    .border {
-        border-width: 1px;
-    }
+        .border {
+            border-width: 1px;
+        }
 
-    .px-3 {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-    }
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
 
-    .py-2 {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-    }
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
 
-    .w-48 {
-        width: 12rem;
-    }
+        .w-48 {
+            width: 12rem;
+        }
 
-    .bg-purple-600 {
-        background-color: #7c3aed;
-    }
+        .bg-purple-600 {
+            background-color: #7c3aed;
+        }
 
-    .text-white {
-        color: #ffffff;
-    }
+        .text-white {
+            color: #ffffff;
+        }
 
-    .hover\:bg-purple-700:hover {
-        background-color: #6d28d9;
-    }
+        .hover\:bg-purple-700:hover {
+            background-color: #6d28d9;
+        }
 
-    .transition {
-        transition: background-color 0.3s;
-    }
+        .transition {
+            transition: background-color 0.3s;
+        }
 
-    .overflow-x-auto {
-        overflow-x: auto;
-    }
+        .overflow-x-auto {
+            overflow-x: auto;
+        }
 
-    .w-full {
-        width: 100%;
-    }
+        .w-full {
+            width: 100%;
+        }
 
-    .border-collapse {
-        border-collapse: collapse;
-    }
+        .border-collapse {
+            border-collapse: collapse;
+        }
 
-    .text-left {
-        text-align: left;
-    }
+        .text-left {
+            text-align: left;
+        }
 
-    .text-right {
-        text-align: right;
-    }
+        .text-right {
+            text-align: right;
+        }
 
-    .border-t {
-        border-top-width: 1px;
-    }
+        .border-t {
+            border-top-width: 1px;
+        }
 
-    .px-4 {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-</style>
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    </style>
 
-<div class="wallet-page">
-    <div class="container">
-        <div class="bg-white border-2 border-purple-300 rounded-lg shadow-lg p-6 mb-6">
-            <h2 class="text-3xl font-bold text-purple-900 mb-4">My Wallet</h2>
+    <div class="wallet-page">
+        <div class="container">
+            <div class="bg-white border-2 border-purple-300 rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-3xl font-bold text-purple-900 mb-4">My Wallet</h2>
 
-            <!-- Wallet Balance -->
-            <div class="bg-purple-50 p-4 rounded-lg mb-6">
-                <p class="text-purple-700 text-lg">Available Balance</p>
-                <h3 class="text-4xl font-bold text-green-600">₹<%= wallet.balance.toFixed(2) %></h3>
-            </div>
+                <!-- Wallet Balance -->
+                <div class="bg-purple-50 p-4 rounded-lg mb-6">
+                    <p class="text-purple-700 text-lg">Available Balance</p>
+                    <h3 class="text-4xl font-bold text-green-600">₹<%= wallet.balance.toFixed(2) %>
+                    </h3>
+                </div>
 
-            <!-- Add Money Section -->
-            <div class="mb-6">
-                <h4 class="text-lg font-semibold text-purple-900 mb-3">Add Money to Wallet</h4>
-                <form id="addMoneyForm" class="flex gap-4">
-                    <input type="number" name="amount" min="1" step="1"
-                        class="border border-purple-300 rounded-lg px-3 py-2 w-48" placeholder="Enter amount" required>
-                    <button type="submit"
-                        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
-                        Add Money
-                    </button>
-                </form>
-            </div>
+                <!-- Add Money Section -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-purple-900 mb-3">Add Money to Wallet</h4>
+                    <form id="addMoneyForm" class="flex gap-4">
+                        <input type="number" name="amount" min="1" step="1"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                            class="border border-purple-300 rounded-lg px-3 py-2 w-48" placeholder="Enter amount"
+                            required>
+                        <button type="submit"
+                            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                            Add Money
+                        </button>
+                    </form>
+                </div>
 
-            <!-- Transaction History -->
-            <div>
-                <h4 class="text-lg font-semibold text-purple-900 mb-3">Transaction History</h4>
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse border border-purple-300">
-                        <thead class="bg-purple-50">
-                            <tr>
-                                <th class="border border-purple-300 px-4 py-2 text-left">Date</th>
-                                <th class="border border-purple-300 px-4 py-2 text-left">Type</th>
-                                <th class="border border-purple-300 px-4 py-2 text-left">Description</th>
-                                <th class="border border-purple-300 px-4 py-2 text-right">Amount</th>
-                            </tr>
-                        </thead>
-                        <!-- <tbody>
-                            <% wallet.walletHistory.reverse().forEach(transaction => { %>
-                                <tr class="border-t border-purple-300">
-                                    <td class="border border-purple-300 px-4 py-2">
-                                        <%= new Date(transaction.date).toLocaleDateString() %>
-                                    </td>
-                                    <td class="border border-purple-300 px-4 py-2">
-                                        <span
-                                            class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
-                                            <%= transaction.transactionType.toUpperCase() %>
-                                        </span>
-                                    </td>
-                                    <td class="border border-purple-300 px-4 py-2">
-                                        <%= transaction.description %>
-                                    </td>
-                                    <td class="border border-purple-300 px-4 py-2 text-right">
-                                        <span
-                                            class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
-                                            <%= transaction.transactionType === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
-                                        </span>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        </tbody> -->
 
-                        <tbody>
-                            <% if (wallet.walletHistory.length === 0) { %>
+                <!-- Transaction History -->
+                <div>
+                    <h4 class="text-lg font-semibold text-purple-900 mb-3">Transaction History</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-purple-300">
+                            <thead class="bg-purple-50">
                                 <tr>
-                                    <td colspan="4" class="text-center text-gray-500 py-4">
-                                        No transactions yet.
-                                    </td>
+                                    <th class="border border-purple-300 px-4 py-2 text-left">Date</th>
+                                    <th class="border border-purple-300 px-4 py-2 text-left">Type</th>
+                                    <th class="border border-purple-300 px-4 py-2 text-left">Description</th>
+                                    <th class="border border-purple-300 px-4 py-2 text-right">Amount</th>
                                 </tr>
-                            <% } else { %>
-                                <% wallet.walletHistory.reverse().forEach(transaction => { %>
-                                    <tr class="border-t border-purple-300">
-                                        <td class="border border-purple-300 px-4 py-2">
-                                            <%= new Date(transaction.date).toLocaleDateString() %>
-                                        </td>
-                                        <td class="border border-purple-300 px-4 py-2">
-                                            <span
-                                                class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
-                                                <%= transaction.transactionType.toUpperCase() %>
-                                            </span>
-                                        </td>
-                                        <td class="border border-purple-300 px-4 py-2">
-                                            <%= transaction.description %>
-                                        </td>
-                                        <td class="border border-purple-300 px-4 py-2 text-right">
-                                            <span
-                                                class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
-                                                <%= transaction.transactionType === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
-                                            </span>
+                            </thead>
+                            <tbody>
+                                <% if (wallet.walletHistory.length===0) { %>
+                                    <tr>
+                                        <td colspan="4" class="text-center text-gray-500 py-4">
+                                            No transactions yet.
                                         </td>
                                     </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                        
-                    </table>
+                                    <% } else { %>
+                                        <% wallet.walletHistory.reverse().forEach(transaction=> { %>
+                                            <tr class="border-t border-purple-300">
+                                                <td class="border border-purple-300 px-4 py-2">
+                                                    <%= new Date(transaction.date).toLocaleDateString() %>
+                                                </td>
+                                                <td class="border border-purple-300 px-4 py-2">
+                                                    <span
+                                                        class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                                        <%= transaction.transactionType.toUpperCase() %>
+                                                    </span>
+                                                </td>
+                                                <td class="border border-purple-300 px-4 py-2">
+                                                    <%= transaction.description %>
+                                                </td>
+                                                <td class="border border-purple-300 px-4 py-2 text-right">
+                                                    <span
+                                                        class="<%= transaction.transactionType === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                                        <%= transaction.transactionType==='credit' ? '+' : '-' %>₹<%=
+                                                                transaction.amount.toFixed(2) %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                                <% } %>
+                            </tbody>
+
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.getElementById('addMoneyForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const amount = e.target.amount.value;
+    <script>
+document.getElementById('addMoneyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const amount = e.target.amount.value;
 
-
-        if (!amount || amount <= 0) {
-        alert('Please enter a valid amount greater than 0.');
+    if (!amount || amount <= 0) {
+        Toastify({
+            text: "Please enter a valid amount greater than 0.",
+            duration: 3000,
+            gravity: "top", // Position: 'top' or 'bottom'
+            position: "center", // Position: 'left', 'center', or 'right'
+            backgroundColor: "#FF6F61", // Toast background color
+        }).showToast();
         return;
     }
-        try {
-            const response = await fetch('/wallet/add-money', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ amount })
-            });
+    try {
+        const response = await fetch('/wallet/add-money', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount }),
+        });
 
-            const data = await response.json();
-            if (data.success) {
-                alert('Money added successfully!');
+        const data = await response.json();
+        if (data.success) {
+            Toastify({
+                text: "Money added successfully!",
+                duration: 3000,
+                gravity: "top",
+                position: "center",
+                backgroundColor: "#4CAF50", // Green for success
+            }).showToast();
+            setTimeout(() => {
                 window.location.reload();
-            } else {
-                alert(data.message || 'Error adding money to wallet');
-            }
-        }  catch (error) {
-        alert('An error occurred while adding money to the wallet. Please try again later.');
+            }, 3000); // Optional delay before reload
+        } else {
+            Toastify({
+                text: data.message || "Error adding money to wallet.",
+                duration: 3000,
+                gravity: "top",
+                position: "center",
+                backgroundColor: "#FF6F61", // Red for error
+            }).showToast();
+        }
+    } catch (error) {
+        Toastify({
+            text: "An error occurred while adding money. Please try again later.",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "#FF6F61", // Red for error
+        }).showToast();
     }
-    });
-</script>
+});
 
-<%- include('../layouts/user/footer.ejs') %>
+
+        document.querySelector('input[name="amount"]').addEventListener('input', function () {
+            if (this.value && isNaN(this.value)) {
+                alert('Only numeric values are allowed!');
+                this.value = this.value.replace(/[^0-9]/g, '');
+            }
+        });
+
+    </script>
+
+    <%- include('../layouts/user/footer.ejs') %>
+
+    <!-- Include Toastify CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<!-- Include Toastify JS -->
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

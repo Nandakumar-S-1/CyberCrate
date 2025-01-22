@@ -100,7 +100,7 @@
     </div>
 </div>
 
-<style>
+<!-- <style>
     .categories-container {
         padding: 20px;
         margin-left: 250px;
@@ -222,7 +222,7 @@
         height: 100vh;
         overflow-y: auto;
     }
-</style>
+</style> -->
 
 <script>
     function toggleListing(categoryId, isChecked) {
@@ -322,3 +322,224 @@
 </script> -->
 
 <%- include('../layouts/admin/footer.ejs') %>
+<style>
+    /* Categories Container */
+.categories-container {
+    padding: 2rem;
+    background-color: #181818;
+    min-height: 100vh;
+    margin-left: 260px;
+}
+
+/* Header Section */
+.categories-header {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #242424;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.categories-header h2 {
+    color: #00d1ff;
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+/* Table Styles */
+.categories-table {
+    background-color: #242424;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #f5f5f5;
+}
+
+thead {
+    background-color: #333333;
+}
+
+th {
+    color: #00d1ff;
+    font-weight: 600;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid #444;
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid #444;
+}
+
+tbody tr:hover {
+    background-color: #2a2a2a;
+}
+
+/* Status Text Colors */
+.text-success {
+    color: #00ff7f !important;
+}
+
+.text-danger {
+    color: #ff4d4d !important;
+}
+
+/* Switch Toggle Styles */
+.form-check.form-switch {
+    padding-left: 2.5rem;
+}
+
+.form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    margin-left: -2.5rem;
+    background-color: #666;
+    border-color: #444;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #00ff7f;
+    border-color: #00ff7f;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 209, 255, 0.25);
+}
+
+/* Add Category Card */
+.card {
+    background-color: #242424;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 2rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    color: #00d1ff;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Form Elements */
+.form-label {
+    color: #f5f5f5;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control {
+    background-color: #333333;
+    border: 1px solid #444;
+    color: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background-color: #3a3a3a;
+    border-color: #00d1ff;
+    box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
+    outline: none;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #00d1ff;
+    border: none;
+    color: #181818;
+}
+
+.btn-primary:hover {
+    background-color: #00a1cc;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Pagination Styles */
+.pagination-container {
+    margin: 2rem 0;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.page-link {
+    background-color: #333333;
+    color: #f5f5f5;
+    border: 1px solid #444;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.page-link.active {
+    background-color: #00d1ff;
+    color: #181818;
+    border-color: #00d1ff;
+}
+
+.page-link:hover {
+    background-color: #444;
+}
+
+/* Error Messages */
+.error-message {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Icons */
+.fa-solid {
+    margin-right: 0.25rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .categories-container {
+        padding: 1rem;
+    }
+
+    .categories-table {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 800px;
+    }
+
+    .card {
+        margin: 1rem;
+    }
+}
+</style>

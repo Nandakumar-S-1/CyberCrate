@@ -1,56 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup & Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-        rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,800" rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
         * {
             box-sizing: border-box;
         }
+
         body {
             align-items: center;
             display: flex;
             justify-content: center;
             flex-direction: column;
-            background: cadetblue;
+            background-color: #180a3a;
             font-family: 'Montserrat', sans-serif;
             min-height: 100%;
             margin: 5%;
         }
+
         .container {
             position: relative;
             width: 1000px;
             max-width: 100%;
             min-height: 550px;
-            background: white;
+            background: rgb(0, 0, 0);
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
-                        0 10px 10px rgba(0, 0, 0, 0.562);
+            box-shadow: 0 14px 28px rgba(103, 95, 95, 0.25),
+                0 10px 10px rgba(239, 240, 239, 0.562);
         }
-        .sign-up, .sign-in {
+
+        .sign-up,
+        .sign-in {
             position: absolute;
             top: 0;
             left: 0;
             height: 100%;
             transition: all 0.6s ease-in-out;
         }
+
         .sign-up {
             width: 50%;
             opacity: 0;
             z-index: 1;
         }
+
         .sign-in {
             width: 50%;
             z-index: 2;
         }
+
         form {
             background-color: bisque;
             display: flex;
@@ -63,22 +71,35 @@
             border-radius: 10px;
             gap: 10px;
         }
+
         h1 {
-            color: #333;
+            color: #ffffff;
             font-size: 24px;
             margin-bottom: 5px;
         }
+
         p {
-            color: #555;
+            color: #ffffff;
             font-size: 14px;
             margin: 5px 0;
         }
+
+        .overBtn {
+            color: bisque;
+
+        }
+
+        .overBtn:hover {
+            color: #3b1c89;
+        }
+
         .input-container {
             position: relative;
             width: 100%;
-            margin: 5px 0;
+            /* margin: 1px 0; */
             max-width: 250px;
         }
+
         .input-field {
             background-color: #eee;
             padding: 8px 30px 8px 10px;
@@ -87,11 +108,14 @@
             border: none;
             outline: none;
             font-size: 13px;
+            border: 1px dotted #311278;
         }
+
         .input-field:focus {
             background-color: #fff;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
+
         .toggle-password {
             position: absolute;
             right: 15px;
@@ -101,16 +125,18 @@
             color: #555;
             z-index: 10;
         }
+
         a {
             color: #333;
             font-size: 14px;
             text-decoration: none;
             margin: 15px 0;
         }
+
         button {
             margin: 10px 0;
             padding: 10px 40px;
-            background-color: #ff4b2b;
+            background-color: #180a3a;
             color: white;
             border: none;
             border-radius: 20px;
@@ -118,21 +144,27 @@
             cursor: pointer;
             text-transform: uppercase;
         }
+
         button:active {
             transform: scale(0.90);
         }
-        #signin, #signup {
+
+        #signin,
+        #signup {
             background-color: transparent;
             border: 2px solid #fff;
         }
+
         .container.right-panel-active .sign-in {
             transform: translateX(100%);
         }
+
         .container.right-panel-active .sign-up {
             transform: translateX(100%);
             opacity: 1;
             z-index: 5;
         }
+
         .overlay-container {
             position: absolute;
             top: 0;
@@ -143,24 +175,29 @@
             transition: transform 0.6s ease-in-out;
             z-index: 100;
         }
+
         .container.right-panel-active .overlay-container {
             transform: translateX(-100%);
         }
+
         .overlay {
             position: relative;
             color: #fff;
-            background-color: #ff4b2b;
+            background-color: #180a3a;
             left: -100%;
             height: 100%;
             width: 200%;
-            background: linear-gradient(to right, #ff4b2b, red);
+            background: linear-gradient(to right, #150b09, rgb(5, 6, 32));
             transform: translateX(0);
             transition: transform 0.6s ease-in-out;
         }
+
         .container.right-panel-active .overlay {
             transform: translateX(50%);
         }
-        .overlay-left, .overlay-right {
+
+        .overlay-left,
+        .overlay-right {
             position: absolute;
             display: flex;
             align-items: center;
@@ -174,19 +211,24 @@
             transform: translateX(0);
             transition: transform 0.6s ease-in-out;
         }
+
         .overlay-left {
             transform: translateX(-20%);
         }
+
         .overlay-right {
             right: 0;
             transform: translateX(0);
         }
+
         .container.right-panel-active .overlay-left {
             transform: translateX(0%);
         }
+
         .social-container {
-            margin:  20px 0;
+            margin: 20px 0;
         }
+
         .social-container a {
             height: 40px;
             width: 40px;
@@ -197,39 +239,10 @@
             border: 1px solid blueviolet;
             border-radius: 20px;
         }
-        .error-message {
-            color: red;
-            font-size: 12px;
-            margin-top: -10px;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .sign-up h1, .sign-up p {
-            color: #333;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
-        }
-        .sign-up button {
-            background-color: #ff4b2b;
-            color: white;
-            border: 2px solid #ff4b2b;
-        }
-        .sign-up button:hover {
-            background-color: #ff3c1b;
-            border-color: #ff3c1b;
-        }
-        .mobile-toggle {
-            display: none;
-            text-align: center;
-            margin-top: 15px;
-        }
-        .mobile-toggle p {
-            margin: 5px 0;
-            color: #666;
-        }
+
         .toggle-btn {
             background: none;
             border: none;
-            color: #ff4b2b;
             font-weight: bold;
             cursor: pointer;
             padding: 5px 10px;
@@ -237,18 +250,62 @@
             text-transform: none;
             margin: 0;
         }
+
+        .error-message {
+            color: #180a3a;
+            font-size: 12px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .sign-up h1,
+        .sign-up p {
+            color: #333;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .sign-up button,
+        .sign-in button {
+
+            background-color: white;
+            color: #311278;
+
+            border: 2px solid #180a3a;
+        }
+
+        .sign-up button:hover,
+        .sign-in button {
+            background-color: #311278;
+            border-color: #180a3a;
+            color: white;
+        }
+
+        .mobile-toggle {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .mobile-toggle p {
+            margin: 5px 0;
+            color: #666;
+        }
+
         .toggle-btn:hover {
             text-decoration: underline;
         }
-        .forgotPassword{
+
+        .forgotPassword {
 
             color: blueviolet;
             text-decoration: none;
         }
-        .forgotPassword:hover{
-            color:rgb(46, 46, 185);
+
+        .forgotPassword:hover {
+            color: rgb(46, 46, 185);
             text-decoration: underline;
-            
+
         }
 
         @media (max-width: 768px) {
@@ -257,35 +314,45 @@
                 width: 90%;
                 margin: 20px auto;
             }
-            .sign-up, .sign-in {
+
+            .sign-up,
+            .sign-in {
                 width: 100%;
                 padding: 15px;
             }
+
             .input-container {
                 max-width: 100%;
                 width: 90%;
             }
+
             form {
                 padding: 20px 15px;
             }
+
             h1 {
                 font-size: 20px;
             }
+
             p {
                 font-size: 12px;
                 margin: 5px 0;
             }
+
             button {
                 padding: 8px 30px;
                 font-size: 12px;
             }
+
             .social-container {
                 margin: 10px 0;
             }
+
             .social-container a {
                 height: 35px;
                 width: 35px;
             }
+
             .overlay-container {
                 display: none;
             }
@@ -299,53 +366,66 @@
                 position: relative;
                 overflow: visible;
             }
-            .sign-up, .sign-in {
+
+            .sign-up,
+            .sign-in {
                 position: static;
                 width: 100%;
                 opacity: 1;
                 transform: none;
             }
+
             .sign-up {
                 display: none;
             }
+
             .container.right-panel-active .sign-up {
                 display: block;
             }
+
             .container.right-panel-active .sign-in {
                 display: none;
             }
+
             form {
                 padding: 15px 10px;
                 height: auto;
             }
+
             .input-container {
                 width: 95%;
             }
+
             h1 {
                 font-size: 18px;
             }
+
             .social-container a {
                 height: 30px;
                 width: 30px;
             }
+
             .mobile-toggle {
                 display: block;
                 margin-top: 20px;
                 border-top: 1px solid #eee;
                 padding-top: 15px;
             }
+
             .toggle-btn {
                 display: inline-block;
-                background: #ff4b2b;
+                /* background: #ff4b2b; */
                 color: white;
                 padding: 8px 20px;
                 border-radius: 20px;
                 margin-top: 5px;
             }
+
             .toggle-btn:hover {
-                background: #ff3c1b;
+                /* background: #ff3c1b; */
                 text-decoration: none;
             }
+
             .overlay-container {
                 display: none;
             }
@@ -353,10 +433,11 @@
     </style>
 
 </head>
+
 <body>
     <div class="container" id="main">
         <!-- Sign Up Form -->
-        <div class="sign-up">
+        <!-- <div class="sign-up">
             <form action="/signup" method="POST" id="signup-form">
                 <h1>Create Account</h1>
                 <div class="social-container">
@@ -401,54 +482,124 @@
                     <button type="button" class="toggle-btn" onclick="toggleForms()">Sign In</button>
                 </div>
             </form>
+        </div> -->
+        <!-- Sign Up Form -->
+        <div class="sign-up">
+            <form action="/signup" method="POST" id="signup-form">
+                <h1 class="mt-3" style="color: #ff4b2b; font-weight: 700;">Create Account</h1>
+                <div class="input-container">
+                    <input type="text" id="name" name="name" class="input-field" placeholder="Full Name">
+                </div>
+                <span id="signup-fullname-error" class="error-message"></span>
+                <div class="input-container">
+                    <input type="email" id="email" name="email" class="input-field" placeholder="Email">
+                </div>
+                <span id="signup-email-error" class="error-message"></span>
+                <div class="input-container">
+                    <input type="text" id="phone" name="phone" class="input-field" placeholder="Phone Number">
+                </div>
+                <span id="signup-phone-error" class="error-message"></span>
+                <div class="input-container">
+                    <input type="password" id="password" name="password" class="input-field" placeholder="Password">
+                    <span class="toggle-password" onclick="togglePasswordVisibility('password', this)">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <span id="signup-password-error" class="error-message"></span>
+                <div class="input-container">
+                    <input type="password" id="confirm-password" name="cPassword" class="input-field"
+                        placeholder="Confirm Password">
+                    <span class="toggle-password" onclick="togglePasswordVisibility('confirm-password', this)">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <span id="signup-cpassword-error" class="error-message"></span>
+
+                <!-- Referral Code Input -->
+                <div class="input-container">
+                    <input type="text" id="referral-code" name="referalCode" class="input-field"
+                        placeholder="Referral Code (Optional)">
+                </div>
+                <span id="signup-referral-error" class="error-message"></span>
+
+                <% if(locals.message && message.length> 0 && (!locals.activeForm || locals.activeForm === 'signup')) {
+                    %>
+                    <span class="alert alert-danger text-center">
+                        <%= message %>
+                    </span>
+                    <% } %>
+
+                        <button type="submit" class="btn">Sign Up</button>
+                        <div class="mobile-toggle">
+                            <p>Already have an account?</p>
+                            <button type="button" class="toggle-btn" onclick="toggleForms()">Sign In</button>
+                        </div>
+                        <div class="social-container">
+                            <a href="/auth/google" class="social"><i class="fab fa-google-plus-g"></i></a>
+                        </div>
+            </form>
         </div>
+
 
         <!-- Sign In Form -->
         <div class="sign-in">
             <form action="/signin" method="POST" id="signin-form">
-                <h1>Sign in</h1>
                 <div class="social-container">
-                    <a href="#" class="social"><i class="fab fa-facebook"></i></a>
+                    <h1 style="color: #ff4b2b; font-weight: 700;">Sign in</h1>
                     <a href="/auth/google" class="social"><i class="fab fa-google-plus-g"></i></a>
                 </div>
-                <p>or use Your email for registration</p>
                 <div class="input-container">
                     <input type="email" id="signin-email" name="email" class="input-field" placeholder="Email">
                 </div>
                 <span id="signin-email-error" class="error-message"></span>
                 <div class="input-container">
-                    <input type="password" id="signin-password" name="password" class="input-field" placeholder="Password">
+                    <input type="password" id="signin-password" name="password" class="input-field"
+                        placeholder="Password">
                     <span class="toggle-password" onclick="togglePasswordVisibility('signin-password', this)">
                         <i class="fas fa-eye"></i>
                     </span>
                 </div>
                 <span id="signin-password-error" class="error-message"></span>
                 <% if(locals.message && message.length>0 && (!locals.activeForm || locals.activeForm === 'signin')){%>
-                    <div class="alert alert-danger text-center" >
+                    <div class="alert alert-danger text-center">
                         <%= message %>
                     </div>
-                <%}%>
-                <a href="/users/forgotPassword" class="forgotPassword">Forgot your password?</a>
-                <button type="submit" class="btn btn-outline-danger">Sign In</button>
-                <div class="mobile-toggle">
-                    <p>Don't have an account?</p>
-                    <button type="button" class="toggle-btn" onclick="toggleForms()">Sign Up</button>
-                </div>
+                    <%}%>
+                        <a href="/users/forgotPassword" class="forgotPassword">Forgot your password?</a>
+                        <button type="submit" class="btn btn-outline-danger">Sign In</button>
+                        <div class="mobile-toggle">
+                            <p>Don't have an account?</p>
+                            <button type="button" class="toggle-btn" onclick="toggleForms()">Sign Up</button>
+                        </div>
+
             </form>
         </div>
-
         <!-- Overlay -->
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-left">
+                    <div>
+                        <img style="max-width: 18rem; height: auto;"
+                            src="/img/banner/6d5af96332e7eb4eefe2b85e54d3a582.jpg" alt="logo">
+                    </div>
                     <h1>Welcome Back!</h1>
                     <p>To keep connected with us, please login with your personal info</p>
-                    <button id="signin" class="btn" onclick="toggleForms()">Sign In</button>
+                    <button id="signin" class="btn overBtn" onclick="toggleForms()">Sign In</button>
+                    <div>
+                        <img style="max-width: 5rem; height: auto;" src="/img/cyber.png" alt="">
+                    </div>
                 </div>
                 <div class="overlay-right">
+                    <div>
+                        <img style="max-width: 18rem; height: auto;"
+                            src="/img/banner/8261d4f6401da8f98407e175cde46ad5.jpg" alt="logo">
+                    </div>
                     <h1>Hi, Friend!</h1>
                     <p>Enter your personal details and start your journey with us</p>
-                    <button id="signup" class="btn" onclick="toggleForms()">Sign Up</button>
+                    <button id="signup" class="btn overBtn" onclick="toggleForms()">Sign Up</button>
+                    <div>
+                        <img style="max-width: 5rem; height: auto;" src="/img/cyber.png" alt="">
+                    </div>
                 </div>
             </div>
         </div>
@@ -465,11 +616,11 @@
                 element.innerHTML = '<i class="fas fa-eye"></i>';
             }
         }
-    
+
         function toggleForms() {
             document.getElementById('main').classList.toggle('right-panel-active');
         }
-    
+
         // Sign up form validation
         document.getElementById('signup-form').addEventListener('submit', function (e) {
             let errors = 0;
@@ -525,7 +676,7 @@
                 const isLengthValid = password.length >= 8;
 
                 if (!(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar && isLengthValid)) {
-                    
+
                     let errorMsg = 'Password must contain:';
                     if (!isLengthValid) errorMsg += ' at least 8 characters,';
                     if (!hasUpperCase) errorMsg += ' an uppercase letter,';
@@ -582,9 +733,35 @@
             }
         });
     </script>
-    
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script>
+        document.getElementById("signup-form").addEventListener("submit", function (e) {
+            const referralCode = document.getElementById("referral-code").value.trim();
+            const referralError = document.getElementById("signup-referral-error");
+
+            // Clear previous errors
+            referralError.textContent = "";
+
+            // Check if referral code is not empty
+            if (referralCode !== "") {
+                if (referralCode.length !== 6) {
+                    e.preventDefault(); 
+                    referralError.textContent = "Referral code must be 6 characters long.";
+                    return;
+                }
+
+                const alphanumericRegex = /^[a-zA-Z0-9]*$/;
+                if (!alphanumericRegex.test(referralCode)) {
+                    e.preventDefault();
+                    referralError.textContent = "Referral code can only contain letters and numbers.";
+                    return;
+                }
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
+
 </html>

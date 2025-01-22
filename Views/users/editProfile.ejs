@@ -46,7 +46,63 @@
             </div>
         </div>
     </div>
-    <script> function validateForm() { const fullNameInput = document.getElementById('fullName'); const phoneInput = document.getElementById('phone'); const fullNameValue = fullNameInput.value.trim(); const phoneValue = phoneInput.value.trim(); if (fullNameValue === '') { Swal.fire('Error!', 'Full Name is required.', 'error'); return false; } const phonePattern = /^\d{10}$/; if (!phonePattern.test(phoneValue)) { Swal.fire('Error!', 'Please enter a valid 10-digit phone number.', 'error'); return false; } return true; } document.getElementById('profileForm').addEventListener('submit', function (event) { event.preventDefault(); if (validateForm()) { const formData = new FormData(this); fetch('/editProfile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fullName: formData.get('fullName'), phone: formData.get('phone') }) }).then(response => response.json()).then(data => { if (data.success) { Swal.fire('Success!', data.message, 'success').then(() => { location.reload(); }); } else { Swal.fire('Error!', data.message, 'error'); } }).catch(error => { console.error('Error:', error); Swal.fire('Error!', 'An error occurred while updating your profile.', 'error'); }); } }); </script>
+    <script>
+        function validateForm() {
+            const fullNameInput = document.getElementById('fullName');
+            const phoneInput = document.getElementById('phone');
+            const fullNameValue = fullNameInput.value.trim();
+            const phoneValue = phoneInput.value.trim();
+            if (fullNameValue === '') {
+                Swal.fire('Error!',
+                    'Full Name is required.',
+                    'error'); return false;
+            }
+            const phonePattern = /^\d{10}$/;
+            if (!phonePattern.test(phoneValue)) {
+                Swal.fire(
+                    'Error!',
+                    'Please enter a valid 10-digit phone number.',
+                    'error'
+                );
+                return false;
+            }
+            return true;
+        }
+        document.getElementById('profileForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            if (validateForm()) {
+                const formData = new FormData(this);
+                fetch('/editProfile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fullName: formData.get('fullName'),
+                        phone: formData.get('phone')
+                    })
+                })
+                    .then(response => response.json()).then(data => {
+                        if (data.success) {
+                            Swal.fire('Success!',
+                                data.message, 'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error!',
+                                data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error!',
+                            'An error occurred while updating your profile.',
+                            'error');
+                    });
+            }
+        }); 
+    </script>
     <%- include('../layouts/user/footer.ejs') %>
 
         <style>

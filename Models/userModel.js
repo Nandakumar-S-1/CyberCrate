@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { ref } = require('pdfkit');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -57,6 +58,16 @@ const userSchema = new Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    referalCode:{
+        type:String,
+        unique:true,
+        required:false
+    },
+    referedBy:{
+        type:Schema.Types.ObjectId,
+        ref:'User',
+        required:false
     }
 }, { timestamps: true });
 

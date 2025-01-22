@@ -1,6 +1,6 @@
 <%- include('../layouts/admin/header.ejs') %>
     <%- include('../layouts/admin/sidebar.ejs', {currentPage: 'products' }) %>
-        <div class="products-container">
+            <div class="products-container">
             <div class="products-header">
                 <div class="header-left">
                     <h2>All Products</h2>
@@ -52,7 +52,7 @@
                             <p class="category">
                                 <%= product.category ? product.category.name : 'No Category' %>
                             </p>
-                            <p class="price fw-bold fw-dark fs-3 text-dark">₹ <%= product.salePrice %>
+                            <p class="price fw-bold fw-dark fs-3 text-dark">₹ <%= parseInt(product.salePrice) %>
                             </p>
                             <div class="sideControl">
                                 <p class="price fw-bold fw-dark fs-5 text-muted text-decoration-line-through">₹ <%=
@@ -129,6 +129,7 @@
                 </ul>
             </div>
         </div>
+    </div>
 
 
         <style>

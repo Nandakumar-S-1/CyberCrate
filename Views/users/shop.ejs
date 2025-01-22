@@ -9,7 +9,8 @@
             margin: 0;
             padding: 0;
         }
-        .p-name{
+
+        .p-name {
             font-weight: 600;
             font-size: 2rem;
         }
@@ -218,6 +219,7 @@
                             <label>
                                 <input type="checkbox" name="categories" value="<%= category._id %>"
                                     <%=selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
+
                                 <%= category.name %>
                             </label>
                             <% }); %>
@@ -307,7 +309,7 @@
                         </p>
 
                         <!-- <p>You Save: ₹<%= product.discountAmount %> on this product</p> -->
-                        
+
                         <p>Stocks left: <%= product.quantity %>
                         </p>
                         <div class="product-buttons">
@@ -414,7 +416,81 @@
         });
     </script>
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    // Expand categories
+    document.getElementById('more-categories').addEventListener('click', function () {
+        document.getElementById('all-categories').style.display = 'block';
+        this.style.display = 'none'; // Hide the "more" button
+    });
+
+    // Expand brands
+    document.getElementById('more-brands').addEventListener('click', function () {
+        document.getElementById('all-brands').style.display = 'block';
+        this.style.display = 'none'; // Hide the "more" button
+    });
+
+    // Handle form submission
+    document.getElementById('filter-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const form = document.getElementById('filter-form');
+        const formData = new FormData(form);
+
+        // Convert form data to query string
+        const params = new URLSearchParams();
+        for (const [key, value] of formData.entries()) {
+            if (Array.isArray(params.getAll(key))) {
+                params.append(key, value);
+            } else {
+                params.set(key, value);
+            }
+        }
+
+        // Update browser URL
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({}, '', newUrl);
+
+        // Fetch filtered products
+        fetch(`/users/shop?${params.toString()}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch products');
+                return response.json();
+            })
+            .then(data => {
+                const productsContainer = document.querySelector('.products');
+                productsContainer.innerHTML = ''; // Clear previous products
+
+                data.products.forEach(product => {
+                    const productCard = `
+                        <div class="product-card">
+                            <a href="/productDetails/${product._id}">
+                                <img src="/img/products/${product.productImage[0]}" alt="${product.productName}">
+                                <h2>${product.productName}</h2>
+                            </a>
+                            <p>₹${product.salePrice}</p>
+                            <div class="product-buttons">
+                                <button class="icon-btn" onclick="addToCart('${product._id}')">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                                <button class="icon-btn" onclick="addToFavorites('${product._id}')">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                    productsContainer.insertAdjacentHTML('beforeend', productCard);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const productsContainer = document.querySelector('.products');
+                productsContainer.innerHTML = `<p class="error-message">Failed to load products. Please try again later.</p>`;
+            });
+    });
+});
+
+</script>
+    <!-- <script>
         document.getElementById('more-categories').addEventListener('click', function () {
             document.getElementById('all-categories').style.display = 'block';
         });
@@ -463,7 +539,7 @@
                 })
                 .catch(error => console.error('Error:', error));
         });
-    </script>
+    </script> -->
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

@@ -143,7 +143,7 @@
                                                     <div class="card-body align-items-center"
                                                         style="margin-bottom: 20px;">
                                                         <img src="" alt="" id="imgView1">
-                                                        <input class="form-control" type="file" name="productImage"
+                                                        <input class="form-control" type="file" name="images"
                                                             id="input1" accept="image/png, image/jpeg, image/jpg"
                                                             onchange="viewImage1(event), viewImage(event, 1)">
                                                         <div id="images-error" class="error-message"></div>
@@ -158,7 +158,7 @@
                                                         <div class="card-body align-items-center"
                                                             style="margin-bottom: 20px;">
                                                             <img src="" alt="" id="imgView2">
-                                                            <input class="form-control" type="file" name="productImage"
+                                                            <input class="form-control" type="file" name="images"
                                                                 id="input2" accept="image/png, image/jpeg, image/jpg"
                                                                 onchange="viewImage2(event), viewImage(event, 2)">
                                                         </div>
@@ -173,7 +173,7 @@
                                                         <div class="card-body align-items-center"
                                                             style="margin-bottom: 20px;">
                                                             <img src="" alt="" id="imgView3">
-                                                            <input class="form-control" type="file" name="productImage"
+                                                            <input class="form-control" type="file" name="images"
                                                                 id="input3" accept="image/png, image/jpeg, image/jpg"
                                                                 onchange="viewImage3(event), viewImage(event, 3)">
                                                         </div>
@@ -187,7 +187,7 @@
                                                 </div>
                             </div>
                             <div>
-                                <button class="btn btn-md rounded font-sm hover-up" id="updatebtn" type="submit"
+                                <button class="btn btn-md rounded font-sm hover-up btn-primary" id="updatebtn" type="submit"
                                     onclick="validateAndSubmit()">Update Product</button>
                             </div>
                         </form>
@@ -198,250 +198,6 @@
     </section>
 
 
-    <!-- <script>
-            
-                function validateAndSubmit() {
-                    if (validateForm()) {
-                        document.forms[0].submit();
-                    }
-                }
-            
-            
-            
-            
-                function validateForm() {
-                    let imageDatas = false
-                    console.log("validate form");
-                    clearErrorMessages();
-                    const name = document.getElementsByName('productName')[0].value;
-                    const description = document.getElementsByName('descriptionData')[0].value;
-                    const brand = document.getElementsByName('brand')[0].value;
-                    const price = document.getElementsByName('regularPrice')[0].value;
-                    const saleprice = document.getElementsByName('salePrice')[0].value;
-                    const category = document.getElementsByName('category')[0].value;
-                    const images = document.getElementById('input1')
-                    const quantity = document.getElementsByName('quantity')
-                    imageDatas = document.getElementById("imageDatas")?.value;
-            
-                    let isValid = true;
-                    if (name.trim() === "") {
-                        displayErrorMessage('productName-error', 'Please enter a product name.');
-                        isValid = false;
-                    }
-            
-                    if (description === '') {
-                        displayErrorMessage('description-error', 'Please enter a product description.');
-                        isValid = false;
-                    }
-            
-            
-                    if (parseInt(quantity) < 0) {
-                        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                        isValid = false;
-                    }
-            
-            
-                    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-                        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-                        isValid = false;
-                    }
-                    if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-                        isValid = false;
-                    }
-            
-                    if (color.trim() === "") {
-                        displayErrorMessage('color-error', 'Please enter a color.');
-                        isValid = false;
-                    }
-                    if (!imageDatas && images.files.length === 0) {
-                        displayErrorMessage("images-error", 'Please select an image.');
-                        isValid = false;
-                    }
-                    return isValid;
-                }
-            
-                function displayErrorMessage(elementId, message) {
-                    var errorElement = document.getElementById(elementId);
-                    errorElement.innerText = message;
-                    errorElement.style.display = "block";
-                }
-            
-            
-                function clearErrorMessages() {
-                    const errorElements = document.getElementsByClassName('error-message');
-                    Array.from(errorElements).forEach(element => {
-                        element.innerText = '';
-                    });
-                    const errorMessage = document.getElementById('errorMessage');
-            
-            
-                }
-            
-            
-            
-            
-                function viewImage1(event) {
-                    document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0])
-                }
-            
-            
-                function viewImage2(event) {
-                    document.getElementById('imgView2').src = URL.createObjectURL(event.target.files[0])
-                }
-            
-            
-                function viewImage3(event) {
-                    document.getElementById('imgView3').src = URL.createObjectURL(event.target.files[0])
-                }
-            
-            
-                function viewImage(event, index) {
-            let input = event.target;
-            let reader = new FileReader();
-            reader.onload = function () {
-                let dataURL = reader.result;
-                let image = document.getElementById('imgView' + index);
-                image.src = dataURL;
-                let cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    guides: true,
-                    background: false,
-                    autoCropArea: 1,
-                    zoomable: true,
-                    crop(event) {
-                        const canvasData = cropper.getCanvasData();
-                        cropper.setCanvasData({
-                            left: 0,
-                            top: 0,
-                            width: canvasData.width,
-                            height: canvasData.height,
-                        });
-                    }
-                });
-                let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
-                cropperContainer.style.display = 'block';
-                let saveButton = document.querySelector('#saveButton' + index);
-                saveButton.addEventListener('click', async function () {
-                    let croppedCanvas = cropper.getCroppedCanvas({
-                        width: 300,  
-                        height: 300  
-                    });
-                    let croppedImage = document.getElementById("croppedImg" + index);
-                    croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
-                    let timestamp = new Date().getTime();
-                    let fileName = `cropped-img-${timestamp}-${index}.png`;
-                    await croppedCanvas.toBlob(blob => {
-                        let input = document.getElementById('input' + index);
-                        let imgFile = new File([blob], fileName, blob);
-                        const fileList = new DataTransfer();
-                        fileList.items.add(imgFile);
-                        input.files = fileList.files;
-                    });
-                    cropperContainer.style.display = 'none';
-                });
-            };
-            reader.readAsDataURL(input.files[0]);
-            }
-            
-            
-            
-            
-                const selectedImages = [];
-                document.getElementById("imageInput").addEventListener("change", handleFileSelect);
-            
-            
-                function handleFileSelect(event) {
-                    const addedImagesContainer = document.getElementById("addedImagesContainer");
-                    addedImagesContainer.innerHTML = "";
-                    const files = event.target.files;
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        selectedImages.push(file);
-                        const thumbnail = document.createElement("div");
-                        thumbnail.classList.add("thumbnail");
-                        const img = document.createElement("img");
-                        img.src = URL.createObjectURL(file);
-                        img.alt = "thumbnail";
-                        img.style.width = "50px";
-                        img.style.height = "auto";
-                        const removeIcon = document.createElement("span");
-                        removeIcon.classList.add("remove-icon");
-                        removeIcon.innerHTML = "&times;";
-                        removeIcon.addEventListener("click", function () {
-                            const index = selectedImages.indexOf(file);
-                            if (index !== -1) {
-                                selectedImages.splice(index, 1);
-                            }
-                            thumbnail.remove();
-                        });
-                        thumbnail.appendChild(img);
-                        thumbnail.appendChild(removeIcon);
-                        addedImagesContainer.appendChild(thumbnail);
-                    }
-                };
-            
-                function deleteSingleImage(imageId, productId) {
-                $.ajax({
-                    url: `/admin/deleteImage`,
-                    method: 'POST',
-                    data: {
-                        imageName: imageId,
-                        productId: productId
-                    },
-                    success: function(response) {
-                        if (response.status === true) {
-                            window.location.reload();
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                        alert('An error occurred while deleting the image.');
-                    }
-                });
-            }
-            
-            
-            
-                // function deleteSingleImage(imageName, productId) {
-                //     fetch('/admin/deleteSingleImage', { 
-                //         method: 'POST', 
-                //         headers: {
-                //             'Content-Type': 'application/json' 
-                //         }, 
-                //         body: JSON.stringify({ imageName, productId })
-                //     }) .then(response => response.json()) 
-                //     .then(data => { 
-                //         if (data.status) { 
-                //             alert('Image deleted successfully'); 
-                //             location.reload();  
-                //         } else { 
-                //             alert('Failed to delete image'); 
-                //         } 
-                //     }) 
-                //     .catch(error => { 
-                //         console.error('Error:', error); 
-                //         alert('An error occurred'); 
-                //     }); 
-                // }
-            
-                // function deleteSingleImage(imageId,productId) {
-                //     $.ajax({
-                //         url:`/admin/deleteImage`,
-                //         method:'post',
-                //         data:{
-                //             imageName:imageId,
-                //             projectName:productId
-                //         },
-                //         success:((response)=>{
-                //             if(response.status===true){
-                //                 window.location.reload();
-                //             }
-                //         })
-                //     })
-                // }
-            </script> -->
     <script>
         function validateAndSubmit() {
             if (validateForm()) {
@@ -593,8 +349,6 @@
         }
     </script>
 
-
-
     <script> 
     function deleteOffer(productId) { 
         Swal.fire({ 
@@ -622,159 +376,176 @@
                 }); 
             } 
             
-        </script>
+    </script>
 
-    <!-- <script>
-        function validateAndSubmit() {
-            if (validateForm()) {
-                document.forms[0].submit();
-            }
-        }
 
-        function validateForm() {
-            let imageDatas = false;
-            clearErrorMessages();
-            const name = document.getElementsByName('productName')[0].value;
-            const description = document.getElementsByName('descriptionData')[0].value;
-            const brand = document.getElementsByName('brand')[0].value;
-            const price = document.getElementsByName('regularPrice')[0].value;
-            const saleprice = document.getElementsByName('salePrice')[0].value;
-            const category = document.getElementsByName('category')[0].value;
-            const images = document.getElementById('input1');
-            const quantity = document.getElementsByName('quantity')[0].value;
-            imageDatas = document.getElementById("imageDatas")?.value;
+<style>
+    /* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #181818;
+    color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
 
-            let isValid = true;
-            if (name.trim() === "") {
-                displayErrorMessage('productName-error', 'Please enter a product name.');
-                isValid = false;
-            }
+.content-main {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
 
-            if (description === '') {
-                displayErrorMessage('description-error', 'Please enter a product description.');
-                isValid = false;
-            }
+.row {
+    width: 100%;
+    max-width: 1200px;
+}
 
-            if (parseInt(quantity) < 0) {
-                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                isValid = false;
-            }
+/* Card styles */
+.card {
+    background-color: #242424;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #f5f5f5;
+    margin-bottom: 2rem;
+}
 
-            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-                displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-                isValid = false;
-            }
-            if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-                isValid = false;
-            }
+.card-header {
+    background-color: #333333;
+    padding: 15px;
+    border-bottom: 1px solid #444;
+    border-radius: 10px 10px 0 0;
+}
 
-            if (!imageDatas && images.files.length === 0) {
-                displayErrorMessage("images-error", 'Please select an image.');
-                isValid = false;
-            }
-            return isValid;
-        }
+.card-body {
+    padding: 1.5rem;
+}
 
-        function displayErrorMessage(elementId, message) {
-            var errorElement = document.getElementById(elementId);
-            errorElement.innerText = message;
-            errorElement.style.display = "block";
-        }
+/* Form elements */
+.form-label {
+    color: #00d1ff;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
 
-        function clearErrorMessages() {
-            const errorElements = document.getElementsByClassName('error-message');
-            Array.from(errorElements).forEach(element => {
-                element.innerText = '';
-            });
-        }
+.form-control {
+    background-color: #333333;
+    border: 1px solid #444;
+    color: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
 
-        function viewImage1(event) {
-            document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0]);
-        }
+.form-control:focus {
+    background-color: #3a3a3a;
+    border-color: #00d1ff;
+    box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
+    outline: none;
+}
 
-        function viewImage2(event) {
-            document.getElementById('imgView2').src = URL.createObjectURL(event.target.files[0]);
-        }
+.form-select {
+    background-color: #333333;
+    border: 1px solid #444;
+    color: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 5px;
+}
 
-        function viewImage3(event) {
-            document.getElementById('imgView3').src = URL.createObjectURL(event.target.files[0]);
-        }
+/* Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
 
-        function viewImage(event, index) {
-            let input = event.target;
-            let reader = new FileReader();
-            reader.onload = function () {
-                let dataURL = reader.result;
-                let image = document.getElementById('imgView' + index);
-                image.src = dataURL;
-                let cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    guides: true,
-                    background: false,
-                    autoCropArea: 1,
-                    zoomable: true,
-                    crop(event) {
-                        const canvasData = cropper.getCanvasData();
-                        cropper.setCanvasData({
-                            left: 0,
-                            top: 0,
-                            width: canvasData.width,
-                            height: canvasData.height,
-                        });
-                    }
-                });
-                let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
-                cropperContainer.style.display = 'block';
-                let saveButton = document.querySelector('#saveButton' + index);
-                saveButton.addEventListener('click', async function () {
-                    let croppedCanvas = cropper.getCroppedCanvas({
-                        width: 300,
-                        height: 300
-                    });
-                    let croppedImage = document.getElementById("croppedImg" + index);
-                    croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
-                    let timestamp = new Date().getTime();
-                    let fileName = `cropped-img-${timestamp}-${index}.png`;
-                    await croppedCanvas.toBlob(blob => {
-                        let input = document.getElementById('input' + index);
-                        let imgFile = new File([blob], fileName, { type: 'image/jpeg' });
-                        const fileList = new DataTransfer();
-                        fileList.items.add(imgFile);
-                        input.files = fileList.files;
-                    });
-                    cropperContainer.style.display = 'none';
-                });
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+.btn-primary {
+    background-color: #00d1ff;
+    border: none;
+    color: #181818;
+}
 
-        function deleteSingleImage(imageId, productId) {
-            $.ajax({
-                url: `/admin/deleteImage`,
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    imageName: imageId,
-                    productId: productId
-                }),
-                success: (response) => {
-                    if (response.status === true) {
-                        window.location.reload();
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error while deleting image:', error);
-                    alert('An error occurred while deleting the image.');
-                }
-            });
-        }
+.btn-primary:hover {
+    background-color: #00a1cc;
+}
 
-    </script> -->
+.btn-secondary {
+    background-color: #444;
+    border: none;
+    color: #f5f5f5;
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+.btn-secondary:hover {
+    background-color: #555;
+}
+
+/* Image preview */
+.rounded {
+    border-radius: 5px;
+    border: 2px solid #444;
+}
+
+/* Error messages */
+.error-message {
+    color: #ff4d4d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.content-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.content-title {
+    color: #00d1ff;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.image-cropper {
+    background-color: #333333;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+#imgView1, #imgView2, #imgView3 {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 992px) {
+    .content-main {
+        padding: 1rem;
+    }
+    
+    .row {
+        flex-direction: column;
+    }
+    
+    .col-lg-6 {
+        width: 100%;
+    }
+}
+</style>
+
+
+
 
     <%- include('../layouts/admin/footer.ejs') %>
+
+    
+
+
+
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>

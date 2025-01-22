@@ -1,45 +1,54 @@
 <%- include('../layouts/user/header.ejs') %>
     <style>
-.brand-slideshow {
-  overflow: hidden;
-  padding: 20px 0;
-  background-color: #f9f9f9;
-}
+        .brand-slideshow {
+            overflow: hidden;
+            padding: 20px 0;
+            background-color: #f9f9f9;
+        }
 
-.brand-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 100%;
-}
+        .brand-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+        }
 
-.brand-track {
-  display: flex;
-  width: 200%; /* Increase width to accommodate duplicates */
-  animation: scroll 20s linear infinite;
-}
+        .brand-track {
+            display: flex;
+            width: 200%;
+            /* Increase width to accommodate duplicates */
+            animation: scroll 20s linear infinite;
+        }
 
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); } /* Scroll halfway since we duplicated */
-}
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
 
-.brand-item {
-  flex: none;
-  width: calc(100% / 16); /* Adjust width based on number of items */
-  margin: 0 15px;
-}
+            100% {
+                transform: translateX(-50%);
+            }
 
-.brand-item img {
-  height: 50px;
-  transition: transform 0.3s;
-  display: block;
-}
+            /* Scroll halfway since we duplicated */
+        }
 
-.brand-item:hover img {
-  transform: scale(1.1);
-}
+        .brand-item {
+            flex: none;
+            width: calc(100% / 16);
+            /* Adjust width based on number of items */
+            margin: 0 15px;
+        }
+
+        .brand-item img {
+            height: 50px;
+            transition: transform 0.3s;
+            display: block;
+        }
+
+        .brand-item:hover img {
+            transform: scale(1.1);
+        }
 
 
         /* Top Info Bar */
@@ -342,9 +351,13 @@
                         <h3 class="text-white fs-5">
                             <%= product.productName %>
                         </h3>
-                        <p class="text-white fs-6"><span class="fw-bold text-warning">Price: </span>  ₹<%= product.salePrice %>
+                        <p class="text-white fs-6"><span class="fw-bold text-warning">Price: </span> ₹<%=
+                                product.salePrice %>
                         </p>
-                        <p class="text-white fs-6"><span class="fw-bold text-warning">Stock:</span>Stock left: <span class="fw-bold text-danger"><%=  product.quantity %></span> 
+                        <p class="text-white fs-6"><span class="fw-bold text-warning">Stock:</span>Stock left: <span
+                                class="fw-bold text-danger">
+                                <%= product.quantity %>
+                            </span>
                         </p>
                     </a>
                 </div>
@@ -407,12 +420,12 @@
     <section class="brand-slideshow">
         <div class="brand-container">
             <div class="brand-track">
-                <% brands.forEach((brand)=> { %> <div class="brand-item"> <a href="/shop?brand=<%= brand._id %>"> 
-                    <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
+                <% brands.forEach((brand)=> { %> <div class="brand-item"> <a href="/shop?brand=<%= brand._id %>">
+                            <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
                     <% }); %>
                         <% brands.forEach((brand)=> { %> <!-- Duplicate items -->
-                            <div class="brand-item"> <a href="/shop?brand=<%= brand._id %>"> 
-                                <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
+                            <div class="brand-item"> <a href="/shop?brand=<%= brand._id %>">
+                                    <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
                             <% }); %>
             </div>
         </div>
@@ -456,52 +469,36 @@
         </div>
     </section>
 
-
-
-
-    <!-- Featured Products  -->
+    <!-- Featured Products -->
     <section class="featured-products-grid" style="background-color: #000; padding: 60px 0">
         <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 20px">
             <h2 style="color: #4b0082; text-align: center; margin-bottom: 40px">
                 FEATURED PRODUCTS
             </h2>
             <div class="products-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px">
-                <div class="product-item" style="background: #1a0340; padding: 20px; border-radius: 10px">
-                    <img src="/img/monitor1.jpg" alt="Gaming Monitor"
-                        style="width: 100%; border-radius: 5px; margin-bottom: 15px" />
-                    <div class="rating" style="color: gold; margin-bottom: 10px">★★★★☆</div>
-                    <h3 style="color: #fff; margin-bottom: 10px">
-                        HP Ultra-Detailed Gaming 32"
-                    </h3>
-                    <p style="color: #ff0844">₹22,999</p>
-                </div>
-
-                <div class="product-item" style="background: #1a0340; padding: 20px; border-radius: 10px">
-                    <img src="/img/monitor2.jpg" alt="Gaming Monitor"
-                        style="width: 100%; border-radius: 5px; margin-bottom: 15px" />
-                    <div class="rating" style="color: gold; margin-bottom: 10px">★★★★★</div>
-                    <h3 style="color: #fff; margin-bottom: 10px">
-                        Samsung 27-inch QHD Monitor
-                    </h3>
-                    <p style="color: #ff0844">₹24,999</p>
-                </div>
-
-                <div class="product-item" style="background: #1a0340; padding: 20px; border-radius: 10px">
-                    <img src="/img/pc1.jpg" alt="Gaming PC"
-                        style="width: 100%; border-radius: 5px; margin-bottom: 15px" />
-                    <div class="rating" style="color: gold; margin-bottom: 10px">★★★★☆</div>
-                    <h3 style="color: #fff; margin-bottom: 10px">Custom Gaming PC</h3>
-                    <p style="color: #ff0844">₹89,999</p>
-                </div>
+                <% featured.forEach(product=> { %>
+                    <div class="product-item" style="background: #1a0340; padding: 20px; border-radius: 10px">
+                        <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>" style="max-width: 400px; display: flex; justify-content: center; align-items: center;" />
+                        <!-- Static Rating -->
+                        <div class="rating" style="color: gold; margin-bottom: 10px">★★★★☆</div>
+                        <h3 style="color: #fff; margin-bottom: 10px">
+                            <%= product.productName %>
+                        </h3>
+                        <p style="color: #ff0844">₹<%= product.salePrice.toLocaleString() %>
+                        </p>
+                        
+                    </div>
+                    <% }) %>
             </div>
         </div>
     </section>
+
 
     <section class="search-section" style="background-color: #11012b; padding: 40px 0">
         <div class="container" style="max-width: 600px; margin: 0 auto; padding: 0 20px">
             <div class="search-box" style="display: flex; gap: 10px">
                 <form action="/users/shop" method="get" class="search-form">
-                <input type="text" name="searchWord" placeholder="Search here..." style="
+                    <input type="text" name="searchWord" placeholder="Search here..." style="
           flex: 1;
           padding: 12px 20px;
           border: none;
@@ -509,17 +506,17 @@
           background: #1a0340;
           color: #fff;
         " />
-                <button style="
+                    <button style="
           padding: 12px 30px;
           background: #4b0082;
           color: #fff;
           border: none;
           border-radius: 5px;
           cursor: pointer;
-        " type="submit" > 
-                    Search
-                </button>
-            </form>
+        " type="submit">
+                        Search
+                    </button>
+                </form>
             </div>
         </div>
     </section>
@@ -534,20 +531,20 @@
                 },
                 body: JSON.stringify({ productId, quantity: 1 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Added!', 'The item has been added to your cart.', 'success');
-                } else {
-                    Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Added!', 'The item has been added to your cart.', 'success');
+                    } else {
+                        Swal.fire('Error!', 'Failed to add the item to your cart.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
+                });
         }
-    
+
         function addToFavorites(productId) {
             fetch('/wishlist/addItem', {  // Corrected endpoint
                 method: 'POST',
@@ -556,20 +553,20 @@
                 },
                 body: JSON.stringify({ productId })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Added!', 'The item has been added to your wishlist.', 'success');
-                } else {
-                    Swal.fire('Error!', 'Failed to add the item to your wishlist.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error!', 'An error occurred while adding the item to your wishlist.', 'error');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Added!', 'The item has been added to your wishlist.', 'success');
+                    } else {
+                        Swal.fire('Error!', 'Failed to add the item to your wishlist.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'An error occurred while adding the item to your wishlist.', 'error');
+                });
         }
-    
+
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".product-card").forEach((card) => {
                 const productId = card.querySelector("a").getAttribute("href").split("/").pop();

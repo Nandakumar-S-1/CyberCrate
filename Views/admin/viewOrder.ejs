@@ -158,11 +158,11 @@
                                 <h3>
                                     <%= item.product.productName %>
                                 </h3>
-                                <p class="price">Price: ₹<%= item.price %>
+                                <p class="price">Price: ₹<%= parseInt(item.price) %>
                                 </p>
                                 <p class="quantity">Quantity: <%= item.quantity %>
                                 </p>
-                                <p class="total-summary">Total: ₹<%= item.quantity * item.price %>
+                                <p class="total-summary">Total: ₹<%= parseInt(item.quantity * item.price) %>
                                 </p>
                             </div>
                             <% }) %>
@@ -172,7 +172,7 @@
                 <!-- Payment Summary -->
                 <div class="payment-summary">
                     <h2>Payment Summary</h2>
-                    <p><strong>Subtotal:</strong> ₹<%= order.subTotal %>
+                    <p><strong>Subtotal:</strong> ₹<%= parseInt(order.subTotal) %>
                     </p>
                     <p><strong>Discount:</strong> ₹<%= order.discount %>
                     </p>
@@ -180,7 +180,7 @@
                     </p>
                     <p><strong>Coupon Discount:</strong> ₹<%= order.couponDiscount || 0 %>
                     </p>
-                    <p><strong>Total Amount:</strong> ₹<%= order.finalAmount %>
+                    <p><strong>Total Amount:</strong> ₹<%= parseInt(order.finalAmount) %>
                     </p>
                 </div>
             </div>

@@ -1,8 +1,36 @@
 <%- include('../layouts/admin/header.ejs') %>
     <%- include('../layouts/admin/sidebar.ejs') %>
 
-        <div class="dashboard-container">
+    <script>
+        // Pass the data from backend to frontend
+        window.dashboardData = {
+            topBrands: <%- JSON.stringify(topBrands) %>,
+            topCategories: <%- JSON.stringify(topCategories) %>,
+            orderStats: {
+                total: <%= totalOrders %>,
+                active: <%= activeOrders %>,
+                cancelled: <%= cancelledOrders %>,
+                completed: <%= completedOrders %>,
+                returned: <%= returnedOrders %>
+            },
+            revenueStats: {
+                total: <%= totalRevenue %>,
+                discount: <%= totalDiscount %>,
+                couponDiscount: <%= couponDiscount %>
+            }
+        };
+    </script>
 
+        <div class="dashboard-container">
+                <div class="date-filter">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+    
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+    
+        <button id="applyFilter">Apply Filter</button>
+    </div>
             <div class="dashboard-header">
                 <div class="header-title">
                     <h2>Dashboard</h2>
@@ -188,8 +216,21 @@
                         <div class="card-header">
                             <h2 class="card-title">Top Brands by Sales</h2>
                         </div>
-                        <div class="card-body">
-                            <canvas id="brandSalesChart" style="height: 400px;"></canvas>
+                        <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+                            <canvas id="adminChart"></canvas>
+                        </div>
+                        
+                        <div class="filter-container">
+                            <!-- <select id="timeFilter">
+                                <option value="all">All Time</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select> -->
+                        </div>
+                        
+                        <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+                            <canvas id="brandSalesChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -301,7 +342,6 @@
                                     <th>Items Sold</th>
                                     <th>Total Revenue</th>
                                     <th>Avg Order Value</th>
-                                    <th>Performance</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -323,18 +363,7 @@
                                         </td>
                                         <td>₹<%= category.averageOrderValue.toLocaleString() %>
                                         </td>
-                                        <td>
-                                            <div class="progress">
-                                                <% const percentage=(category.totalQuantitySold /
-                                                    topCategories[0].totalQuantitySold * 100).toFixed(1) %>
-                                                    <div class="progress-bar bg-success" role="progressbar"
-                                                        style="width: <%= percentage %>%"
-                                                        aria-valuenow="<%= percentage %>" aria-valuemin="0"
-                                                        aria-valuemax="100">
-                                                        <%= percentage %>%
-                                                    </div>
-                                            </div>
-                                        </td>
+                                        
                                     </tr>
                                     <% }); %>
                             </tbody>
@@ -388,179 +417,8 @@
                 </div>
             </div>
         </div>
-
-
-        <!-- Add DataTables initialization -->
-        <!-- <script>
-                $(document).ready(function () {
-                    $('#topCategoriesTable').DataTable({
-                        order: [[3, 'desc']], // Sort by Items Sold by default
-                        pageLength: 10,
-                        dom: 'Bfrtip',
-                        buttons: [
-                            'copy', 'csv', 'excel', 'pdf', 'print'
-                        ]
-                    });
-                });
-            </script> -->
+        </div>
         
-        <!-- <script>
-            // Pass the topBrands data from the backend
-            const brandData = `<%- JSON.stringify(topBrands) %>`;
-
-            // Extracting data for the pie chart
-            const brandNames = brandData.map(brand => brand.brandName);
-            const salesData = brandData.map(brand => brand.totalSales);
-
-            // Generate dynamic colors
-            const generateColors = count => {
-                const colors = [];
-                for (let i = 0; i < count; i++) {
-                    colors.push(`hsl(${(i * 360) / count}, 70%, 60%)`);
-                }
-                return colors;
-            };
-            const colors = generateColors(brandData.length);
-
-            const ctx = document.getElementById('brandSalesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: brandNames,
-                    datasets: [{
-                        data: salesData,
-                        backgroundColor: colors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right' },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    const value = context.raw;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${context.label}: $${value.toLocaleString()} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        </script> -->
-
-
-        <script>
-            // Parse the `topBrands` data from the backend
-            const brandData = JSON.parse('<%- JSON.stringify(topBrands) %>');
-        
-            // Extracting data for the pie chart
-            const brandNames = brandData.map(brand => brand.brandName);
-            const salesData = brandData.map(brand => brand.totalSales);
-        
-            // Generate dynamic colors
-            const generateColors = count => {
-                const colors = [];
-                for (let i = 0; i < count; i++) {
-                    colors.push(`hsl(${(i * 360) / count}, 70%, 60%)`);
-                }
-                return colors;
-            };
-            const colors = generateColors(brandData.length);
-        
-            const ctx = document.getElementById('brandSalesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: brandNames,
-                    datasets: [{
-                        data: salesData,
-                        backgroundColor: colors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right' },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    const value = context.raw;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${context.label}: ₹${value.toLocaleString()} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        </script>
-        
-
-        <script>
-            // Initialize the chart
-            const ctx = document.getElementById('adminChart').getContext('2d');
-            let adminChart;
-
-            // Function to update chart data
-            async function updateChart(timeFilter) {
-                try {
-                    const response = await fetch(`/api/dashboard-data?filter=${timeFilter}`);
-                    const data = await response.json();
-
-                    if (adminChart) {
-                        adminChart.destroy();
-                    }
-
-                    adminChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.labels,
-                            datasets: [
-                                {
-                                    label: 'Sales',
-                                    data: data.sales,
-                                    borderColor: 'rgb(75, 192, 192)',
-                                    tension: 0.1
-                                },
-                                {
-                                    label: 'Orders',
-                                    data: data.orders,
-                                    borderColor: 'rgb(153, 102, 255)',
-                                    tension: 0.1
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            }
-
-            // Event listener for filter changes
-            document.getElementById('timeFilter').addEventListener('change', (e) => {
-                updateChart(e.target.value);
-            });
-
-            // Initial load
-            updateChart('monthly');
-        </script>
-
         <script>
             function updateClock() {
                 const now = new Date();
@@ -583,6 +441,319 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+            <script>
+                // dashboard.js
+
+// Format currency in Indian Rupees
+const formatCurrency = (value) => {
+    return '₹' + value.toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+    });
+};
+
+// Initialize Brand Sales Pie Chart
+function initializeBrandSalesChart(brandData) {
+    const ctx = document.getElementById('brandSalesChart').getContext('2d');
+    const brandNames = brandData.map(brand => brand.brandName);
+    const salesData = brandData.map(brand => brand.totalSales);
+    
+    const colors = brandNames.map((_, index) => 
+        `hsl(${(index * 360) / brandNames.length}, 70%, 60%)`
+    );
+
+    return new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: brandNames,
+            datasets: [{
+                data: salesData,
+                backgroundColor: colors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    position: 'right',
+                    labels: {
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${formatCurrency(value)} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize Admin Dashboard Line Chart
+function initializeAdminChart(orderStats) {
+    const ctx = document.getElementById('adminChart').getContext('2d');
+    
+    // Prepare initial data
+    const labels = ['Completed', 'Active', 'Cancelled', 'Returned'];
+    const data = [
+        orderStats.completed,
+        orderStats.active,
+        orderStats.cancelled,
+        orderStats.returned
+    ];
+
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Orders',
+                data: data,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)',  // Completed
+                    'rgba(54, 162, 235, 0.6)',  // Active
+                    'rgba(255, 99, 132, 0.6)',  // Cancelled
+                    'rgba(255, 206, 86, 0.6)'   // Returned
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Orders'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const value = context.raw;
+                            return `${label}: ${value}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize everything when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if dashboard data exists
+    if (window.dashboardData) {
+        // Initialize brand sales chart
+        if (window.dashboardData.topBrands) {
+            initializeBrandSalesChart(window.dashboardData.topBrands);
+        }
+
+        // Initialize admin chart with order statistics
+        if (window.dashboardData.orderStats) {
+            initializeAdminChart(window.dashboardData.orderStats);
+        }
+    } else {
+        console.error('Dashboard data not found');
+    }
+});
+            </script>
+<!-- <script>
+    // dashboard.js
+
+// Function to format currency
+const formatCurrency = (value) => {
+    return '₹' + value.toLocaleString('en-IN');
+};
+
+// Function to generate colors for the pie chart
+const generateColors = (count) => {
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+        colors.push(`hsl(${(i * 360) / count}, 70%, 60%)`);
+    }
+    return colors;
+};
+
+// Initialize Brand Sales Pie Chart
+function initializeBrandSalesChart(brandData) {
+    const ctx = document.getElementById('brandSalesChart').getContext('2d');
+    const brandNames = brandData.map(brand => brand.brandName);
+    const salesData = brandData.map(brand => brand.totalSales);
+    const colors = generateColors(brandData.length);
+
+    return new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: brandNames,
+            datasets: [{
+                data: salesData,
+                backgroundColor: colors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    position: 'right',
+                    labels: {
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${formatCurrency(value)} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize Admin Dashboard Line Chart
+function initializeAdminChart() {
+    const ctx = document.getElementById('adminChart').getContext('2d');
+    return new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Sales',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
+                    yAxisID: 'y-sales'
+                },
+                {
+                    label: 'Orders',
+                    data: [],
+                    borderColor: 'rgb(153, 102, 255)',
+                    tension: 0.1,
+                    yAxisID: 'y-orders'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                'y-sales': {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Sales (₹)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return formatCurrency(value);
+                        }
+                    }
+                },
+                'y-orders': {
+                    type: 'linear',
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Number of Orders'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label;
+                            const value = context.raw;
+                            if (label === 'Sales') {
+                                return `${label}: ${formatCurrency(value)}`;
+                            }
+                            return `${label}: ${value}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Function to update admin chart data
+async function updateAdminChartData(chart, timeFilter) {
+    try {
+        const response = await fetch(`/api/dashboard-data?filter=${timeFilter}`);
+        const data = await response.json();
+        
+        chart.data.labels = data.labels;
+        chart.data.datasets[0].data = data.sales;
+        chart.data.datasets[1].data = data.orders;
+        chart.update();
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+    }
+}
+
+// Initialize everything when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    let adminChart;
+
+    // Initialize brand sales chart if element exists
+    const brandSalesElement = document.getElementById('brandSalesChart');
+    if (brandSalesElement && window.topBrands) {
+        initializeBrandSalesChart(window.topBrands);
+    }
+
+    // Initialize admin chart if element exists
+    const adminChartElement = document.getElementById('adminChart');
+    if (adminChartElement) {
+        adminChart = initializeAdminChart();
+        // Initial load with monthly data
+        updateAdminChartData(adminChart, 'monthly');
+    }
+
+    // Set up time filter event listener
+    const timeFilter = document.getElementById('timeFilter');
+    if (timeFilter && adminChart) {
+        timeFilter.addEventListener('change', (e) => {
+            updateAdminChartData(adminChart, e.target.value);
+        });
+    }
+});
+</script> -->
             <style>
                 .chart-container {
     width: 100%;
@@ -855,6 +1026,29 @@ select {
                 .stat-card:nth-child(4) .stat-icon i {
                     color: #e74c3c;
                 }
+                .date-filter {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-filter label {
+    font-weight: bold;
+}
+
+.date-filter button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.date-filter button:hover {
+    background-color: #0056b3;
+}
 
                 /* Animation for Loading */
                 @keyframes fadeIn {
@@ -1164,3 +1358,35 @@ select {
                     }
                 }
             </style> -->
+
+
+            <script>
+                document.getElementById('applyFilter').addEventListener('click', async () => {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (!startDate || !endDate) {
+        alert("Please select both start and end dates.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/dashboard/filter?startDate=${startDate}&endDate=${endDate}`);
+        if (!response.ok) throw new Error("Failed to fetch filtered data");
+
+        const filteredData = await response.json();
+
+        // Update charts with the new data
+        if (filteredData.topBrands) {
+            initializeBrandSalesChart(filteredData.topBrands); // Reinitialize brand sales chart
+        }
+        if (filteredData.orderStats) {
+            initializeAdminChart(filteredData.orderStats); // Reinitialize admin chart
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Failed to fetch and update dashboard data.");
+    }
+});
+
+            </script>
