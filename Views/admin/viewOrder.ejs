@@ -151,10 +151,10 @@
                 <!-- Ordered Products -->
                 <div class="product-info">
                     <h2>Ordered Products</h2>
-                    <div class="product-cards">
+                    <div class="product-cards d-flex">
                         <% order.orderedItems.forEach(item=> { %>
                             <div class="product-card">
-                                <img src="<%= item.product.productImage %>" alt="<%= item.product.productName %>">
+                                <img style="max-width: 100px; height: auto;" src="/img/products/<%= item.product.productImage[0] %>" alt="<%= item.product.productName %> ">
                                 <h3>
                                     <%= item.product.productName %>
                                 </h3>

@@ -3,432 +3,218 @@
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
     </head>
-
-    <!-- <style>
-        .error-message {
-            color: red;
+    <style>
+        /* Base styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefefe;
+            color: #f5f5f5;
+            margin: 0;
+            padding: 0;
         }
 
-        .thumbnails-container {
+        .content-main {
+            padding: 2rem;
             display: flex;
-            overflow-x: auto;
+            justify-content: center;
         }
 
-        .thumbnail {
-            margin-right: 10px;
+        .row {
+            width: 100%;
+            max-width: 1200px;
         }
 
+        /* Card styles */
+        .card {
+            background-color: #242424;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: #f5f5f5;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: #333333;
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-header h4 {
+            color: #00d1ff;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form elements */
+        .form-label {
+            color: #00d1ff;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            background-color: #333333;
+            border: 1px solid #444;
+            color: #f5f5f5;
+            padding: 0.75rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control::placeholder {
+            color: #888;
+        }
+
+        .form-control:focus {
+            background-color: #3a3a3a;
+            border-color: #00d1ff;
+            box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
+            outline: none;
+        }
+
+        .form-select {
+            background-color: #333333;
+            border: 1px solid #444;
+            color: #f5f5f5;
+            padding: 0.75rem;
+            border-radius: 5px;
+            width: 100% !important;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #00d1ff;
+            border: none;
+            color: #181818;
+        }
+
+        .btn-primary:hover {
+            background-color: #00a1cc;
+        }
+
+        .btn-secondary {
+            background-color: #444;
+            border: none;
+            color: #f5f5f5;
+        }
+
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+
+        /* Image upload section */
+        .thumbnails-container {
+            padding: 1rem;
+            background-color: #333333;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            min-height: 100px;
+        }
+
+        .image-cropper {
+            background-color: #333333;
+            border-radius: 5px;
+            padding: 1rem;
+        }
+
+        #imgView1 {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+
+        /* Publish button container */
         .publish-button-container {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
         .publish-button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background-color: #007bff;
+            background-color: #00d1ff;
+            color: #181818;
             border: none;
+            padding: 0.75rem 2rem;
             border-radius: 5px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
-    </style> -->
-<style>
-    /* Base styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #181818;
-    color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-}
 
-.content-main {
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-}
+        .publish-button:hover {
+            background-color: #00a1cc;
+            transform: translateY(-1px);
+        }
 
-.row {
-    width: 100%;
-    max-width: 1200px;
-}
+        /* Error messages */
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
 
-/* Card styles */
-.card {
-    background-color: #242424;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: #f5f5f5;
-    margin-bottom: 2rem;
-}
+        /* Content header */
+        .content-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
 
-.card-header {
-    background-color: #333333;
-    padding: 15px;
-    border-bottom: 1px solid #444;
-    border-radius: 10px 10px 0 0;
-}
+        .content-title {
+            color: #00d1ff;
+            font-size: 2rem;
+            font-weight: 600;
+        }
 
-.card-header h4 {
-    color: #00d1ff;
-    margin: 0;
-}
+        /* Border styles */
+        .border {
+            border: 1px solid #444 !important;
+        }
 
-.card-body {
-    padding: 1.5rem;
-}
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .content-main {
+                padding: 1rem;
+            }
 
-/* Form elements */
-.form-label {
-    color: #00d1ff;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
+            .row {
+                flex-direction: column;
+            }
 
-.form-control {
-    background-color: #333333;
-    border: 1px solid #444;
-    color: #f5f5f5;
-    padding: 0.75rem;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
+            .col-lg-6 {
+                width: 100%;
+            }
 
-.form-control::placeholder {
-    color: #888;
-}
+            .publish-button-container {
+                flex-direction: column;
+            }
+        }
 
-.form-control:focus {
-    background-color: #3a3a3a;
-    border-color: #00d1ff;
-    box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
-    outline: none;
-}
+        /* Additional spacing utilities */
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
 
-.form-select {
-    background-color: #333333;
-    border: 1px solid #444;
-    color: #f5f5f5;
-    padding: 0.75rem;
-    border-radius: 5px;
-    width: 100% !important;
-}
+        .mb-2 {
+            margin-bottom: 0.75rem;
+        }
+    </style>
 
-/* Buttons */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
 
-.btn-primary {
-    background-color: #00d1ff;
-    border: none;
-    color: #181818;
-}
-
-.btn-primary:hover {
-    background-color: #00a1cc;
-}
-
-.btn-secondary {
-    background-color: #444;
-    border: none;
-    color: #f5f5f5;
-}
-
-.btn-secondary:hover {
-    background-color: #555;
-}
-
-/* Image upload section */
-.thumbnails-container {
-    padding: 1rem;
-    background-color: #333333;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-    min-height: 100px;
-}
-
-.image-cropper {
-    background-color: #333333;
-    border-radius: 5px;
-    padding: 1rem;
-}
-
-#imgView1 {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 1rem;
-    border-radius: 5px;
-}
-
-/* Publish button container */
-.publish-button-container {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.publish-button {
-    background-color: #00d1ff;
-    color: #181818;
-    border: none;
-    padding: 0.75rem 2rem;
-    border-radius: 5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.publish-button:hover {
-    background-color: #00a1cc;
-    transform: translateY(-1px);
-}
-
-/* Error messages */
-.error-message {
-    color: #ff4d4d;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Content header */
-.content-header {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.content-title {
-    color: #00d1ff;
-    font-size: 2rem;
-    font-weight: 600;
-}
-
-/* Border styles */
-.border {
-    border: 1px solid #444 !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .content-main {
-        padding: 1rem;
-    }
-    
-    .row {
-        flex-direction: column;
-    }
-    
-    .col-lg-6 {
-        width: 100%;
-    }
-
-    .publish-button-container {
-        flex-direction: column;
-    }
-}
-
-/* Additional spacing utilities */
-.mb-4 {
-    margin-bottom: 1.5rem;
-}
-
-.mb-2 {
-    margin-bottom: 0.75rem;
-}
-</style>
-<!-- <style>
-    /* Global Styles */
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f4f4f4;
-    color: #333333;
-    margin: 0;
-    padding: 0;
-}
-
-/* Main Section */
-.content-main {
-    padding: 2rem;
-    background-color: #f7f7f7;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin: 2rem auto;
-    max-width: 1200px;
-}
-
-/* Header */
-.content-header {
-    border-bottom: 2px solid #e0e0e0;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-}
-
-.content-title {
-    font-size: 1.8rem;
-    color: #2c3e50;
-    font-weight: 700;
-}
-
-/* Form Styles */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.form-label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.form-control {
-    padding: 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
-    background-color: #ffffff;
-    color: #333333;
-    transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
-    outline: none;
-}
-
-/* Error Messages */
-.error-message {
-    font-size: 0.85rem;
-    color: #e74c3c;
-    margin-top: 0.3rem;
-}
-
-/* Card Styles */
-.card {
-    background-color: #ffffff;
-    border: 1px solid #dcdcdc;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    padding: 1rem;
-    background-color: #f4f4f4;
-    border-bottom: 1px solid #dcdcdc;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #34495e;
-}
-
-/* Buttons */
-button,
-.publish-button {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #ffffff;
-    background-color: #3498db;
-    border: none;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-}
-
-button:hover,
-.publish-button:hover {
-    background-color: #217dbb;
-}
-
-a.btn {
-    text-decoration: none;
-    text-align: center;
-    display: inline-block;
-    color: #ffffff;
-    padding: 0.8rem 1.5rem;
-    background-color: #3498db;
-    border-radius: 6px;
-}
-
-a.btn:hover {
-    background-color: #217dbb;
-}
-
-/* Select Dropdown */
-.form-select {
-    padding: 0.8rem;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
-    font-size: 1rem;
-    background-color: #ffffff;
-    color: #333333;
-    transition: border-color 0.3s ease;
-}
-
-.form-select:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
-    outline: none;
-}
-
-/* Thumbnail Container */
-.thumbnails-container {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-}
-
-.card-body img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-/* Row Layout */
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.col-lg-6,
-.col-lg-4 {
-    flex: 1;
-    min-width: calc(50% - 1rem);
-}
-
-/* Publish Button Container */
-.publish-button-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    .col-lg-6,
-    .col-lg-4 {
-        min-width: 100%;
-    }
-}
-
-</style> -->
-
-    
-    <section class="content-main">
-        <div class="row">
+    <section class="content-main ">
+        <div class="row ms-5">
             <div class="col-9">
                 <div class="content-header">
                     <h2 class="content-title">Add New Product</h2>
@@ -518,8 +304,7 @@ a.btn:hover {
                                 </div>
                             </div>
 
-                            <!-- image
-                            <div class="card mb-2">
+                            <!-- <div class="card mb-2">
                                 <div class="card-header">
                                     <h4>Choose images</h4>
                                 </div>
@@ -531,9 +316,7 @@ a.btn:hover {
                                     <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                         <img src="" alt="" id="imgView1">
                                         <input class="form-control" type="file" name="images" id="input1"
-                                            accept="image/png, image/jpeg, image/jpg"
-                                            onchange="viewImage1(event), viewImage(event, 1)">
-                                        <div id="images-error" class="error-message"></div>
+                                            accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 1)">
                                     </div>
                                     <div class="image-cropper d-flex align-items-center"
                                         style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
@@ -541,60 +324,49 @@ a.btn:hover {
                                         <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
                                     </div>
                                 </div>
-
-                                <div class="row">
-                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                        <img src="" alt="" id="imgView2">
-                                        <input class="form-control" type="file" name="images" id="input2"
-                                            accept="image/png, image/jpeg, image/jpg"
-                                            onchange="viewImage2(event),viewImage(event, 2)">
-                                    </div>
-                                    <div class="image-cropper d-flex align-items-center"
-                                        style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                        <img src="" id="croppedImg2" alt="">
-                                        <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                        <img src="" alt="" id="imgView3">
-                                        <input class="form-control" type="file" name="images" id="input3"
-                                            accept="image/png, image/jpeg, image/jpg"
-                                            onchange="viewImage3(event),viewImage(event, 3)">
-                                    </div>
-                                    <div class="image-cropper d-flex align-items-center"
-                                        style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                        <img src="" id="croppedImg3" alt="">
-                                        <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
-                                    </div>
-                                </div>
-
                             </div> -->
 
                             <div class="card mb-2">
                                 <div class="card-header">
-                                    <h4>Choose images</h4>
+                                  <h4>Choose images</h4>
                                 </div>
                                 <div class="border row">
-                                    <div id="addedImagesContainer" class="thumbnails-container"></div>
+                                  <div id="addedImagesContainer" class="thumbnails-container"></div>
                                 </div>
-                            
+                              
                                 <div class="row">
-                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                        <img src="" alt="" id="imgView1">
-                                        <input class="form-control" type="file" name="images" id="input1"
-                                            accept="image/png, image/jpeg, image/jpg"
-                                            onchange="viewImage(event, 1)">
-                                    </div>
-                                    <div class="image-cropper d-flex align-items-center"
-                                        style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                        <img src="" id="croppedImg1" alt="">
-                                        <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
-                                    </div>
+                                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                    <img src="" alt="" id="imgView1">
+                                    <input class="form-control" type="file" name="images" id="input1" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 1)">
+                                  </div>
+                                  <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                    <img src="" id="croppedImg1" alt="">
+                                    <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
+                                  </div>
                                 </div>
-                            </div>
-                            
+                              
+                                <div class="row">
+                                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                    <img src="" alt="" id="imgView2">
+                                    <input class="form-control" type="file" name="images" id="input2" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 2)">
+                                  </div>
+                                  <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                    <img src="" id="croppedImg2" alt="">
+                                    <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
+                                  </div>
+                                </div>
+                              
+                                <div class="row">
+                                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                    <img src="" alt="" id="imgView3">
+                                    <input class="form-control" type="file" name="images" id="input3" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 3)">
+                                  </div>
+                                  <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                    <img src="" id="croppedImg3" alt="">
+                                    <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
+                                  </div>
+                                </div>
+                              </div>
                             <div class="publish-button-container">
                                 <button class="publish-button" type="submit"
                                     onclick="validateAndSubmit()">Publish</button>
@@ -610,15 +382,11 @@ a.btn:hover {
 
 
     <script>
-
         function validateAndSubmit() {
             if (validateForm()) {
                 document.forms[0].submit();
             }
         }
-
-
-
 
         function validateForm() {
             let imageDatas = false
@@ -706,104 +474,54 @@ a.btn:hover {
             document.getElementById('imgView3').src = URL.createObjectURL(event.target.files[0])
         }
 
-
-        // function viewImage(event, index) {
-        //     let input = event.target;
-        //     let reader = new FileReader();
-        //     reader.onload = function () {
-        //         let dataURL = reader.result;
-        //         let image = document.getElementById('imgView' + index);
-        //         image.src = dataURL;
-        //         let cropper = new Cropper(image, {
-        //             aspectRatio: 1,
-        //             viewMode: 1,
-        //             guides: true,
-        //             background: false,
-        //             autoCropArea: 1,
-        //             zoomable: true,
-        //             crop(event) {
-        //                 const canvasData = cropper.getCanvasData();
-        //                 cropper.setCanvasData({
-        //                     left: 0,
-        //                     top: 0,
-        //                     width: canvasData.width,
-        //                     height: canvasData.height,
-        //                 });
-        //             }
-        //         });
-        //         let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
-        //         cropperContainer.style.display = 'block';
-        //         let saveButton = document.querySelector('#saveButton' + index);
-        //         saveButton.addEventListener('click', async function () {
-        //             let croppedCanvas = cropper.getCroppedCanvas({
-        //                 width: 300,
-        //                 height: 500
-        //             });
-        //             let croppedImage = document.getElementById("croppedImg" + index);
-        //             croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
-        //             let timestamp = new Date().getTime();
-        //             let fileName = `cropped-img-${timestamp}-${index}.png`;
-        //             await croppedCanvas.toBlob(blob => {
-        //                 let input = document.getElementById('input' + index);
-        //                 let imgFile = new File([blob], fileName, blob);
-        //                 const fileList = new DataTransfer();
-        //                 fileList.items.add(imgFile);
-        //                 input.files = fileList.files;
-        //             });
-        //             cropperContainer.style.display = 'none';
-        //         });
-        //     };
-        //     reader.readAsDataURL(input.files[0]);
-        // }
-        
         function viewImage(event, index) {
-    let input = event.target;
-    let reader = new FileReader();
-    reader.onload = function () {
-        let dataURL = reader.result;
-        let image = document.getElementById('imgView' + index);
-        image.src = dataURL;
-        let cropper = new Cropper(image, {
-            aspectRatio: 1,
-            viewMode: 1,
-            guides: true,
-            background: false,
-            autoCropArea: 1,
-            zoomable: true,
-            crop(event) {
-                const canvasData = cropper.getCanvasData();
-                cropper.setCanvasData({
-                    left: 0,
-                    top: 0,
-                    width: canvasData.width,
-                    height: canvasData.height,
+            let input = event.target;
+            let reader = new FileReader();
+            reader.onload = function () {
+                let dataURL = reader.result;
+                let image = document.getElementById('imgView' + index);
+                image.src = dataURL;
+                let cropper = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    guides: true,
+                    background: false,
+                    autoCropArea: 1,
+                    zoomable: true,
+                    crop(event) {
+                        const canvasData = cropper.getCanvasData();
+                        cropper.setCanvasData({
+                            left: 0,
+                            top: 0,
+                            width: canvasData.width,
+                            height: canvasData.height,
+                        });
+                    }
                 });
-            }
-        });
-        let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
-        cropperContainer.style.display = 'block';
-        let saveButton = document.querySelector('#saveButton' + index);
-        saveButton.addEventListener('click', async function () {
-            let croppedCanvas = cropper.getCroppedCanvas({
-                width: 300,
-                height: 500
-            });
-            let croppedImage = document.getElementById("croppedImg" + index);
-            croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
-            let timestamp = new Date().getTime();
-            let fileName = `cropped-img-${timestamp}-${index}.png`;
-            await croppedCanvas.toBlob(blob => {
-                let input = document.getElementById('input' + index);
-                let imgFile = new File([blob], fileName, blob);
-                const fileList = new DataTransfer();
-                fileList.items.add(imgFile);
-                input.files = fileList.files;
-            });
-            cropperContainer.style.display = 'none';
-        });
-    };
-    reader.readAsDataURL(input.files[0]);
-}
+                let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
+                cropperContainer.style.display = 'block';
+                let saveButton = document.querySelector('#saveButton' + index);
+                saveButton.addEventListener('click', async function () {
+                    let croppedCanvas = cropper.getCroppedCanvas({
+                        width: 300,
+                        height: 500
+                    });
+                    let croppedImage = document.getElementById("croppedImg" + index);
+                    croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
+                    let timestamp = new Date().getTime();
+                    let fileName = `cropped-img-${timestamp}-${index}.png`;
+                    await croppedCanvas.toBlob(blob => {
+                        let input = document.getElementById('input' + index);
+                        let imgFile = new File([blob], fileName, blob);
+                        const fileList = new DataTransfer();
+                        fileList.items.add(imgFile);
+                        input.files = fileList.files;
+                    });
+                    cropperContainer.style.display = 'none';
+                });
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
 
 
         const selectedImages = [];
@@ -842,21 +560,21 @@ a.btn:hover {
 
 
         function deleteOffer(productId) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "This will remove the offer from the product.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-        
-            window.location.href = '/admin/products/deleteOffer/' + productId;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will remove the offer from the product.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    window.location.href = '/admin/products/deleteOffer/' + productId;
+                }
+            });
         }
-    });
-}
 
 
     </script>

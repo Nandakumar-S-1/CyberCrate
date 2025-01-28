@@ -1,0 +1,55 @@
+<%- include('../layouts/user/header.ejs') %>
+
+<div class="about">
+    <h2 class="about-heading">
+        <span style="color: red;">Welcome</span> <span style="color: blueviolet;">to</span> <span style="color: limegreen;">CyberCrate</span>
+    </h2>
+    <div class="about-container">
+        <img src="/img/cyber.png" alt="CyberCrate Logo">
+        <h5>
+            At CyberCrate, we bring you the ultimate online destination for gaming enthusiasts and tech lovers.
+            Whether you're building a high-performance gaming rig, upgrading your setup, or hunting for the latest
+            consoles and accessories, we've got you covered. Our mission is simple: to deliver premium gaming
+            products and cutting-edge technology to your doorstep, ensuring an unparalleled shopping experience.
+        </h5>
+    </div>
+</div>
+
+<%- include('../layouts/user/footer.ejs') %>
+
+<style>
+    .about {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: rgb(7, 13, 44);
+        padding: 2rem;
+    }
+
+    .about-heading {
+        color: whitesmoke;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 700;
+    }
+
+    .about-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        max-width: 80%;
+    }
+
+    .about-container img {
+        max-width: 20rem;
+        margin: 5rem 6rem 7rem 0;
+    }
+
+    .about-container h5 {
+        color: whitesmoke;
+        font-size: 1rem;
+        line-height: 1.5;
+        max-width: 40rem;
+    }
+</style>

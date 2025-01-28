@@ -1,46 +1,47 @@
 <div class="sidebar">
     <div class="logo">
-        <h2>Cyber Crate</h2>
+        <img src="/img/cyber.png" alt="" style="max-width: 5rem; margin-left: 3.7rem;">
+        <h2><span style="color: red;">Cyber</span><span style="color: rgb(20, 0, 203);">-</span><span style="color: rgb(21, 188, 21);">Crate</span></h2>
     </div>
     <nav class="sidebar-nav">
-        <a href="/admin/dashboard" class="nav-item <%= currentPage === 'dashboard' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/dashboard" class="nav-item <%= currentPage === 'dashboard' ? 'active' : '' %> ">
             <i class="fas fa-tachometer-alt"></i>
             Dashboard
         </a>
-        <a href="/admin/products" class="nav-item <%= currentPage === 'products' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/products" class="nav-item <%= currentPage === 'products' ? 'active' : '' %>">
             <i class="fas fa-box"></i>
             Products
         </a>
-        <a href="/admin/orderList" class="nav-item <%= currentPage === 'orderList' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/orderList" class="nav-item <%= currentPage === 'orderList' ? 'active' : '' %>">
             <i class="fas fa-list"></i>
             Order Lists
         </a>
-        <a href="/admin/users" class="nav-item <%= currentPage === 'users' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/users" class="nav-item <%= currentPage === 'users' ? 'active' : '' %>">
             <i class="fas fa-users"></i>
             Users
         </a>
-        <a href="/admin/salesPage" class="nav-item <%= currentPage === 'salesPage' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/salesPage" class="nav-item <%= currentPage === 'salesPage' ? 'active' : '' %>">
             <i class="fas fa-chart-bar"></i>
             Sales Report
         </a>
-        <a href="/admin/coupons" class="nav-item <%= currentPage === 'coupons' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/coupons" class="nav-item <%= currentPage === 'coupons' ? 'active' : '' %>">
             <i class="fas fa-ticket-alt"></i>
             Coupons
         </a>
-        <a href="/admin/categories" class="nav-item <%= currentPage === 'categories' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/categories" class="nav-item <%= currentPage === 'categories' ? 'active' : '' %>">
             <i class="fas fa-tags"></i>
             categories
         </a>
-        <a href="/admin/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
             <i class="fas fa-images"></i>
             Brands
         </a>
-        <a href="/admin/banners" class="nav-item <%= currentPage === 'banners' ? 'active' : '' %>">
+        <a style="text-decoration: none;" href="/admin/banners" class="nav-item <%= currentPage === 'banners' ? 'active' : '' %>">
             <i class="fas fa-images"></i>
             Banners
         </a>
-        <div class="bottom-nav">
-            <a href="/admin/logout" class="nav-item">
+        <div class="bottom-nav" >
+            <a style="text-decoration: none;" href="/admin/logout" class="nav-item">
                 <i class="fas fa-sign-out-alt"></i>
                 Logout
             </a>
@@ -68,9 +69,10 @@
     }
 
     .logo h2 {
-        margin: 0;
-        color: #4070f4;
+        margin-left: 2rem;
+        color: #000000;
         font-size: 24px;
+        font-weight: 900;
     }
 
     .sidebar-nav {
@@ -107,6 +109,7 @@
         width: 20px;
         margin-right: 10px;
         font-size: 18px;
+        
     }
 
     .bottom-nav {

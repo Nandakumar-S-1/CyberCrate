@@ -121,11 +121,18 @@
                                 <button onclick="cancelOrder('<%= order.orderId %>')" class="cancel">Cancel
                                     Order</button>
                                 <% } %>
-                                <%if(order.paymentStatus=='Failed'){%>
-                                    <button onclick="retryPayment('<%= order.orderId %>', '<%= order.finalAmount %>', '<%= order.razorpayOrderId %>')" class="cancel">
-                                        Retry Payment
-                                    </button>
-                                <%}%>
+                                <!-- && new Date(order.deliveryDate)<=7*24*60*60*1000 -->
+                                    <%if(order.status =='Delivered'){%>
+                                        <button onclick="returnRequest('<%=order.orderId%>')"
+                                            class="return">Return</button>
+                                        <%} %>
+                                    <%if(order.paymentStatus=='Failed'){%>
+                                                <button
+                                                    onclick="retryPayment('<%= order.orderId %>', '<%= order.finalAmount %>', '<%= order.razorpayOrderId %>')"
+                                                    class="cancel">
+                                                    Retry Payment
+                                                </button>
+                                    <%}%>
                         </div>
                     </div>
                 </div>
@@ -185,188 +192,106 @@
             }
         }
 
-        // function retryPayment(orderId, finalAmount, razorpayOrderId) {
-        //     var razorpayIdKey = `<%=process.env.RAZORPAY_ID_KEY%>`;
-
-        //     if (!razorpayIdKey || !razorpayOrderId) {
-        //         Swal.fire({
-        //             title: 'Error',
-        //             text: 'Payment gateway details are missing. Please try again later',
-        //             icon: 'error',
-        //             timer: 2000,
-        //         })
-        //         return;
-        //     }
-        //     console.log("orderId",orderId);
-        //     console.log("finalAmount",finalAmount);
-        //     console.log("razorpayOrderId",orderId);
-        //     console.log("razorpayIdKey",razorpayIdKey);
-            
-            
-
-        //     var options = {
-        //         key: razorpayIdKey,
-        //         amount: Math.round(finalAmount * 100),
-        //         currency: 'INR',
-        //         name: 'CyberCrate',
-        //         description: 'Retry Order Payment',
-        //         order_id: razorpayOrderId,
-        //         handler: function (response) {
-        //             fetch('/retryPayment', {
-        //                 method: 'POST',
-        //                 headers: {
-        //                     'Content-Type': 'application/json',
-        //                 },
-        //                 body: JSON.stringify({
-        //                     orderId: orderId,
-        //                     razorpay_order_id: response.razorpay_order_id,
-        //                     razorpay_payment_id: response.razorpay_payment_id,
-        //                     razorpay_signature: response.razorpay_signature,
-        //                 }),
-        //             })
-        //                 .then((res) => res.json())
-        //                 .then((data) => {
-        //                     if (data.status === 'success') {
-        //                         Swal.fire({
-        //                             title: 'Success',
-        //                             text: data.message,
-        //                             icon: 'success',
-        //                             timer: 3000
-        //                         }).then(() => {
-        //                             window.location.reload();
-        //                         });
-        //                     } else {
-        //                         Swal.fire({
-        //                             title: 'Error',
-        //                             text: data.message || 'Retry payment failed. Please try again.',
-        //                             icon: 'error',
-        //                             timer: 3000
-        //                         });
-        //                     }
-        //                 })
-        //                 .catch((error) => {
-        //                     console.error('Error during retry payment:', error);
-        //                     Swal.fire({
-        //                         title: 'Error',
-        //                         text: 'An error occurred during the retry payment process.',
-        //                         icon: 'error',
-        //                         timer: 3000
-        //                     });
-        //                 });
-        //         },
-        //         theme: {
-        //             color: '#3399cc',
-        //         },
-        //     };
-
-        //     var rzp1 = new Razorpay(options);
-        //     rzp1.open();
-
-        //     console.log("options",options);
-        //     console.log("rzp1",rzp1);
-        // }
-
-
         function retryPayment(orderId, finalAmount) {
-    var razorpayIdKey = `<%= process.env.RAZORPAY_ID_KEY %>`;
+            var razorpayIdKey = `<%= process.env.RAZORPAY_ID_KEY %>`;
 
-    fetch('/createRetryPaymentOrder', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderId, finalAmount }),
-    })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.razorpayOrderId || !razorpayIdKey) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Payment gateway details are missing. Please try again later',
-                    icon: 'error',
-                    timer: 3000,
-                });
-                return;
-            }
-
-            var options = {
-                key: razorpayIdKey,
-                amount: Math.round(finalAmount * 100),
-                currency: 'INR',
-                name: 'CyberCrate',
-                description: 'Retry Order Payment',
-                order_id: data.razorpayOrderId,
-                handler: function (response) {
-                    fetch('/retryPayment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            orderId,
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                        }),
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.status === 'success') {
-                                Swal.fire({
-                                    title: 'Success',
-                                    text: data.message,
-                                    icon: 'success',
-                                    timer: 3000,
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Error',
-                                    text: data.message || 'Retry payment failed. Please try again.',
-                                    icon: 'error',
-                                    timer: 3000,
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error during retry payment:', error);
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'An error occurred during the retry payment process.',
-                                icon: 'error',
-                                timer: 3000,
-                            });
+            fetch('/createRetryPaymentOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId, finalAmount }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.razorpayOrderId || !razorpayIdKey) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Payment gateway details are missing. Please try again later',
+                            icon: 'error',
+                            timer: 3000,
                         });
-                },
-                theme: {
-                    color: '#3399cc',
-                },
-            };
+                        return;
+                    }
 
-            try {
-                var rzp1 = new Razorpay(options);
-                rzp1.open();
-            } catch (error) {
-                console.error('Error opening Razorpay UI:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Failed to initiate payment. Please try again.',
-                    icon: 'error',
-                    timer: 3000,
+                    var options = {
+                        key: razorpayIdKey,
+                        amount: Math.round(finalAmount * 100),
+                        currency: 'INR',
+                        name: 'CyberCrate',
+                        description: 'Retry Order Payment',
+                        order_id: data.razorpayOrderId,
+                        handler: function (response) {
+                            fetch('/retryPayment', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    orderId,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                }),
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        Swal.fire({
+                                            title: 'Success',
+                                            text: data.message,
+                                            icon: 'success',
+                                            timer: 3000,
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: data.message || 'Retry payment failed. Please try again.',
+                                            icon: 'error',
+                                            timer: 3000,
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error during retry payment:', error);
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: 'An error occurred during the retry payment process.',
+                                        icon: 'error',
+                                        timer: 3000,
+                                    });
+                                });
+                        },
+                        theme: {
+                            color: '#3399cc',
+                        },
+                    };
+
+                    try {
+                        var rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    } catch (error) {
+                        console.error('Error opening Razorpay UI:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to initiate payment. Please try again.',
+                            icon: 'error',
+                            timer: 3000,
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error creating Razorpay order:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while creating payment order.',
+                        icon: 'error',
+                        timer: 3000,
+                    });
                 });
-            }
-        })
-        .catch(error => {
-            console.error('Error creating Razorpay order:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'An error occurred while creating payment order.',
-                icon: 'error',
-                timer: 3000,
-            });
-        });
-}
+        }
 
 
         function viewOrder(orderId) {
@@ -413,9 +338,37 @@
                 });
         }
 
-        function returnOrder(orderId) {
-
+        async function returnRequest(orderId) {
+            try {
+                const response = await fetch(`/orders/${orderId}/return`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Return request submitted successfully!', 'success');
+                    location.reload();
+                } else {
+                    showToast(result.message || 'Failed to submit return request.', 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting return request:', error);
+                showToast('Something went wrong. Please try again later.', 'error');
+            }
         }
 
-    </script>
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.classList.add('toast', `toast--${type}`);
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+    </script> 
+
     <%- include('../layouts/user/footer.ejs') %>

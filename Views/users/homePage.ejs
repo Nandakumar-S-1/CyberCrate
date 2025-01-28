@@ -354,7 +354,7 @@
                         <p class="text-white fs-6"><span class="fw-bold text-warning">Price: </span> ₹<%=
                                 product.salePrice %>
                         </p>
-                        <p class="text-white fs-6"><span class="fw-bold text-warning">Stock:</span>Stock left: <span
+                        <p class="text-white fs-6"><span class="fw-bold text-warning"></span>Stock left: <span
                                 class="fw-bold text-danger">
                                 <%= product.quantity %>
                             </span>
@@ -422,11 +422,12 @@
             <div class="brand-track">
                 <% brands.forEach((brand)=> { %> <div class="brand-item"> <a href="/shop?brand=<%= brand._id %>">
                             <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
-                    <% }); %>
-                        <% brands.forEach((brand)=> { %> <!-- Duplicate items -->
-                            <div class="brand-item"> <a href="/shop?brand=<%= brand._id %>">
-                                    <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
-                            <% }); %>
+                <% }); %>
+                <% brands.forEach((brand)=> { %>
+                    <div class="brand-item brand-icon " onclick="filterByBrand('<%= brand._id %>')">
+                        <a href="/shop?brand=<%= brand._id %>">
+                    <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
+                <% }); %>
             </div>
         </div>
     </section>
@@ -544,28 +545,35 @@
                     Swal.fire('Error!', 'An error occurred while adding the item to your cart.', 'error');
                 });
         }
-
         function addToFavorites(productId) {
-            fetch('/wishlist/addItem', {  // Corrected endpoint
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire('Added!', 'The item has been added to your wishlist.', 'success');
-                    } else {
-                        Swal.fire('Error!', 'Failed to add the item to your wishlist.', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error!', 'An error occurred while adding the item to your wishlist.', 'error');
-                });
-        }
+    const wishListBtn = document.querySelector(`.add-to-favorites[onclick="addToFavorites('${productId}')"]`);
+
+    if (wishListBtn.classList.contains('in-wishlist')) {
+        Swal.fire('Info', 'This item is already in your wishlist.', 'info');
+        return;
+    }
+
+    fetch('/wishlist/addItem', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productId })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                wishListBtn.classList.add('in-wishlist');
+                Swal.fire('Added!', 'The item has been added to your wishlist.', 'success');
+            } else {
+                Swal.fire('Error!', 'Failed to add the item to your wishlist.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error!', 'An error occurred while adding the item to your wishlist.', 'error');
+        });
+}
 
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".product-card").forEach((card) => {
@@ -595,6 +603,10 @@
         brandTrack.addEventListener('mouseout', () => {
             brandTrack.style.animationPlayState = 'running';
         });
+        function filterByBrand(brandId) {
+
+    window.location.href = `/home?brand=${brandId}`;
+  }
     </script>
 
 

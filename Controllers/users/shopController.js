@@ -23,10 +23,6 @@ const loadShop = async (req, res) => {
 
     const userCart = await Cart.findOne({ userId: userId });
     cartCount = userCart ? userCart.items.length : 0;
-    // console.log(cartCount);
-    // const userWish=await Wishlist.findOne({userId:userId});
-    // wishlistCount=userWish?userWish.items.length:0;
-    // console.log(wishlistCount);
 
     const page = parseInt(req.query.page) || 1;
     const limit = 9;
@@ -45,14 +41,31 @@ const loadShop = async (req, res) => {
       : req.query.brands
       ? [req.query.brands]
       : [];
+
+    const listedCategories = await Category.find({ isListed: true });
+    const listedCategoryIds = listedCategories.map((category) =>
+      category._id.toString()
+    );
+
+    const activeBrands = await Brand.find({
+      isBlocked: false,
+      isDeleted: false,
+    }).select("_id");
+    const activeBrandIds = activeBrands.map((brand) => brand._id.toString());
+
     let query = {
       salePrice: { $gte: minPrice, $lte: maxPrice },
       isBlocked: false,
+      brand: { $in: activeBrandIds }, 
     };
     let sortCriteria = {};
 
+    query.category = { $in: listedCategoryIds };
+
     if (selectedCategories.length > 0) {
-      query.category = { $in: selectedCategories };
+      query.category = {
+        $in: selectedCategories.filter((id) => listedCategoryIds.includes(id)),
+      };
     }
     if (selectedBrands.length > 0) {
       query.brand = { $in: selectedBrands };
@@ -92,7 +105,7 @@ const loadShop = async (req, res) => {
       // product.discountAmount = (product.realPrice - product.salePrice).toFixed(2);
     });
 
-    const discountAmount = (products.realPrice - products.salePrice).toFixed(2);
+    const discountAmount = parseInt(products.realPrice - products.salePrice);
 
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
@@ -122,13 +135,12 @@ const loadShop = async (req, res) => {
       _id: { $in: bestSellers.map((product) => product._id) },
     });
 
-    //fetch users wishlist
+    // In your loadShop controller function
     const userWishlist = userId
       ? await Wishlist.findOne({ userId: userId })
       : null;
-    // const wishListProducts=userWishlist? userWishlist.products:[];
     const wishListProducts = userWishlist
-      ? userWishlist.products.map((item) => item.productId)
+      ? userWishlist.products.map((item) => item.productId.toString()) // Convert ObjectId to string
       : [];
 
     res.render("users/shop", {

@@ -1,14 +1,14 @@
 <%- include('../layouts/admin/header.ejs') %>
 <%- include('../layouts/admin/sidebar.ejs', {currentPage: 'categories'}) %>
 
-<div class="categories-container">
-    <div class="categories-header">
-        <h2>Category</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Categories</h2>
     </div>
 
-    <div class="categories-table">
-        <table>
-            <thead>
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
                 <tr>
                     <th>S.No</th>
                     <th>Category Name</th>
@@ -28,17 +28,16 @@
                             <td><%= category.description %></td>
                             <td><%= category.categoryOffer %>%</td>
                             <td>
-                                <span class="<%= category.isListed ? 'text-success' : 'text-danger' %> fw-bold">
+                                <span class="fw-bold <%= category.isListed ? 'text-success' : 'text-danger' %>">
                                     <%= category.isListed ? 'Listed' : 'Unlisted' %>
                                 </span>
                             </td>
                             <td>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input listing-toggle <%= category.isListed ? 'bg-success' : 'bg-danger' %>" 
-                                            type="checkbox" role="switch" 
-                                            id="listing_<%= category._id %>" 
-                                            <%= category.isListed ? 'checked' : '' %>
-                                            onchange="toggleListing('<%= category._id %>', this.checked)">
+                                    <input class="form-check-input" type="checkbox" role="switch" 
+                                           id="listing_<%= category._id %>" 
+                                           <%= category.isListed ? 'checked' : '' %>
+                                           onchange="toggleListing('<%= category._id %>', this.checked)">
                                 </div>
                             </td>
                             <td>
@@ -50,179 +49,72 @@
                     <% }) %>
                 <% } else { %>
                     <tr>
-                        <td colspan="6" class="text-center">No categories found</td>
+                        <td colspan="7" class="text-center">No categories found</td>
                     </tr>
                 <% } %>
             </tbody>
         </table>
     </div>
 
-    <div class="pagination-container">
-        <% if (totalPages > 1) { %>
-            <div class="pagination">
+    <% if (totalPages > 1) { %>
+        <nav>
+            <ul class="pagination justify-content-center">
                 <% for(let i = 1; i <= totalPages; i++) { %>
-                    <a href="?page=<%= i %>" class="page-link <%= page == i ? 'active' : '' %>"><%= i %></a>
+                    <li class="page-item <%= page == i ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    </li>
                 <% } %>
-            </div>
-        <% } %>
-    </div>
+            </ul>
+        </nav>
+    <% } %>
 
-    <div class="card mt-4">
+    <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Add New Category</h5>
+            <h5 class="card-title text-primary">Add New Category</h5>
             <form id="addCategoryForm" action="/admin/categories" method="POST">
                 <div class="mb-3">
                     <label for="categoryName" class="form-label">Category Name</label>
                     <input type="text" class="form-control" id="categoryName" name="name">
-                    <div id="name-error" class="error-message text-danger" style="display: none;"></div>
+                    <div id="name-error" class="invalid-feedback"></div>
                 </div>
                 <div class="mb-3">
                     <label for="descriptionId" class="form-label">Description</label>
                     <input type="text" class="form-control" id="descriptionId" name="description">
-                    <div id="description-error" class="error-message text-danger" style="display: none;"></div>
+                    <div id="description-error" class="invalid-feedback"></div>
                 </div>
                 <div class="mb-3">
-                    <label for="categoryOffer" class="form-label">Category Offer</label>
-                    <input type="text" class="form-control" id="categoryOffer" name="categoryOffer" min="0" max="100">
-                    <div id="categoryOffer-error" class="error-message text-danger" style="display: none;"></div>
+                    <label for="categoryOffer" class="form-label">Category Offer (%)</label>
+                    <input type="number" class="form-control" id="categoryOffer" name="categoryOffer" min="0" max="100">
+                    <div id="categoryOffer-error" class="invalid-feedback"></div>
                 </div>
-                <div class="mb-3">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="isListed" name="isListed" checked>
-                        <label class="form-check-label" for="isListed">List Category</label>
-                    </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="isListed" name="isListed" checked>
+                    <label class="form-check-label" for="isListed">List Category</label>
                 </div>
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-primary">Add Category</button>
-                </div>
+                <button type="submit" class="btn btn-primary">Add Category</button>
             </form>
         </div>
     </div>
 </div>
 
-<!-- <style>
-    .categories-container {
-        padding: 20px;
-        margin-left: 250px;
-        background: #f8f9fa;
-        min-height: 100vh;
-        overflow-y: auto;
-    }
 
-    .categories-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
 
-    .categories-header h2 {
-        color: #333;
-        font-size: 24px;
+<style>
+    .container{
+        margin-left: 18rem;
     }
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .pagination .page-link {
+        color: #0d6efd;
+    }
+    .pagination .page-link:hover {
+        color: #0056b3;
+    }
+</style>
 
-    .categories-table {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        overflow: hidden;
-        margin-bottom: 20px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    th {
-        background: #4070f4;
-        color: white;
-        padding: 15px;
-        text-align: left;
-        font-weight: 500;
-    }
-
-    td {
-        padding: 15px;
-        border-bottom: 1px solid #eee;
-        vertical-align: middle;
-    }
-
-    tr:last-child td {
-        border-bottom: none;
-    }
-
-    .pagination-container {
-        display: flex;
-        justify-content: center;
-        margin: 20px 0;
-    }
-
-    .pagination {
-        display: flex;
-        gap: 5px;
-    }
-
-    .page-link {
-        padding: 8px 12px;
-        border: 1px solid #dee2e6;
-        color: #4070f4;
-        text-decoration: none;
-        border-radius: 4px;
-    }
-
-    .page-link.active {
-        background: #4070f4;
-        color: white;
-        border-color: #4070f4;
-    }
-
-    .btn-primary {
-        background: #4070f4;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        background: #2952c8;
-    }
-
-    /* Toggle button colors */
-    .form-check-input.listing-toggle:checked {
-        border-color: #198754 !important;
-    }
-    
-    .form-check-input.listing-toggle:not(:checked) {
-        border-color: #dc3545 !important;
-    }
-
-    .form-check-input.listing-toggle:focus {
-        box-shadow: none !important;
-    }
-
-    /* Add Category Card */
-    .card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        border: none;
-    }
-
-    .card-title {
-        color: #333;
-        font-size: 18px;
-        margin-bottom: 20px;
-    }
-
-    /* Fix scrollbar */
-    body {
-        overflow: hidden;
-    }
-
-    .main-content {
-        height: 100vh;
-        overflow-y: auto;
-    }
-</style> -->
 
 <script>
     function toggleListing(categoryId, isChecked) {
@@ -317,229 +209,4 @@
         document.getElementById('addCategoryForm').addEventListener('submit',handleFormSubmit);
 </script>
 
-<!-- <script>
-    document.getElementById('addCategoryForm').addEventListener('submit', handleFormSubmit);
-</script> -->
-
 <%- include('../layouts/admin/footer.ejs') %>
-<style>
-    /* Categories Container */
-.categories-container {
-    padding: 2rem;
-    background-color: #181818;
-    min-height: 100vh;
-    margin-left: 260px;
-}
-
-/* Header Section */
-.categories-header {
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background-color: #242424;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.categories-header h2 {
-    color: #00d1ff;
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 600;
-}
-
-/* Table Styles */
-.categories-table {
-    background-color: #242424;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    margin-bottom: 2rem;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: #f5f5f5;
-}
-
-thead {
-    background-color: #333333;
-}
-
-th {
-    color: #00d1ff;
-    font-weight: 600;
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 2px solid #444;
-}
-
-td {
-    padding: 1rem;
-    border-bottom: 1px solid #444;
-}
-
-tbody tr:hover {
-    background-color: #2a2a2a;
-}
-
-/* Status Text Colors */
-.text-success {
-    color: #00ff7f !important;
-}
-
-.text-danger {
-    color: #ff4d4d !important;
-}
-
-/* Switch Toggle Styles */
-.form-check.form-switch {
-    padding-left: 2.5rem;
-}
-
-.form-check-input {
-    width: 3rem;
-    height: 1.5rem;
-    margin-left: -2.5rem;
-    background-color: #666;
-    border-color: #444;
-    cursor: pointer;
-}
-
-.form-check-input:checked {
-    background-color: #00ff7f;
-    border-color: #00ff7f;
-}
-
-.form-check-input:focus {
-    box-shadow: 0 0 0 0.2rem rgba(0, 209, 255, 0.25);
-}
-
-/* Add Category Card */
-.card {
-    background-color: #242424;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-top: 2rem;
-}
-
-.card-body {
-    padding: 1.5rem;
-}
-
-.card-title {
-    color: #00d1ff;
-    margin-bottom: 1.5rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-/* Form Elements */
-.form-label {
-    color: #f5f5f5;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.form-control {
-    background-color: #333333;
-    border: 1px solid #444;
-    color: #f5f5f5;
-    padding: 0.75rem;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    background-color: #3a3a3a;
-    border-color: #00d1ff;
-    box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
-    outline: none;
-}
-
-/* Button Styles */
-.btn {
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-primary {
-    background-color: #00d1ff;
-    border: none;
-    color: #181818;
-}
-
-.btn-primary:hover {
-    background-color: #00a1cc;
-}
-
-.btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-
-/* Pagination Styles */
-.pagination-container {
-    margin: 2rem 0;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.page-link {
-    background-color: #333333;
-    color: #f5f5f5;
-    border: 1px solid #444;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.page-link.active {
-    background-color: #00d1ff;
-    color: #181818;
-    border-color: #00d1ff;
-}
-
-.page-link:hover {
-    background-color: #444;
-}
-
-/* Error Messages */
-.error-message {
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Icons */
-.fa-solid {
-    margin-right: 0.25rem;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 992px) {
-    .categories-container {
-        padding: 1rem;
-    }
-
-    .categories-table {
-        overflow-x: auto;
-    }
-
-    table {
-        min-width: 800px;
-    }
-
-    .card {
-        margin: 1rem;
-    }
-}
-</style>

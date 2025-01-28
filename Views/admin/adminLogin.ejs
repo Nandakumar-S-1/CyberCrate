@@ -1,15 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - CyberCrate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/adminLogin.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* adminLogin.css */
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0e0d0f;
+            /* Dark background */
+            color: #87CEEB;
+            /* Bright sky blue text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #07062e;
+            /* Slightly lighter dark background for contrast */
+            border-radius: 10px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header img {
+            margin-bottom: 1rem;
+        }
+
+        .login-header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: #87CEEB;
+        }
+
+        .login-header p {
+            font-size: 0.9rem;
+            color: #B0C4DE;
+            /* Softer shade for the subheading text */
+        }
+
+        .error-message {
+            background-color: #B22222;
+            /* Red for error */
+            color: white;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #87CEEB;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 5px;
+            border: none;
+            background-color: #2A2A2A;
+            /* Dark input background */
+            color: #87CEEB;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #708090;
+            /* Dimmer placeholder text */
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            color: #87CEEB;
+            cursor: pointer;
+        }
+
+        .login-button {
+            width: 100%;
+            background-color: #4682B4;
+            /* Button background color */
+            color: white;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover {
+            background-color: #5A9BD6;
+        }
+
+        .login-button:disabled {
+            background-color: #2A2A2A;
+            cursor: not-allowed;
+        }
+
+        .login-button i {
+            font-size: 1rem;
+        }
+    </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-header">
+            <img src="/img/cyber.png" style="max-width:4rem">
             <h1>CyberCrate Admin</h1>
             <p>Enter your credentials to access the admin panel</p>
         </div>
@@ -18,47 +157,41 @@
             <div class="error-message show">
                 <%= error %>
             </div>
-        <% } %>
+            <% } %>
 
-        <form action="/admin/login" method="POST" id="loginForm">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <div class="input-wrapper">
-                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    <i class="fas fa-envelope"></i>
-                </div>
-            </div>
+                <form action="/admin/login" method="POST" id="loginForm">
+                    <div class="form-group">
+                        <label for="email" style="color: #87CEEB;">Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="input-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                    <i class="fas fa-lock password-toggle"></i>
-                </div>
-            </div>
+                    <div class="form-group">
+                        <label for="password" style="color: #87CEEB;">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" name="password" placeholder="Enter your password"
+                                required>
+                            <i class="fas fa-lock password-toggle"></i>
+                        </div>
+                    </div>
 
-            <div class="remember-forgot">
-                <label class="remember-me">
-                    <input type="checkbox" name="remember">
-                    Remember me
-                </label>
-                <a href="/admin/forgot-password" class="forgot-password">Forgot password?</a>
-            </div>
 
-            <button type="submit" class="login-button">
-                <span>Sign In</span>
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </form>
+                    <button type="submit" class="login-button">
+                        <span>Sign In</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Password visibility toggle
             const passwordToggle = document.querySelector('.password-toggle');
             const passwordInput = document.getElementById('password');
 
-            passwordToggle.addEventListener('click', function() {
+            passwordToggle.addEventListener('click', function () {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
                 this.classList.toggle('fa-lock');
@@ -67,7 +200,7 @@
 
             // Form submission
             const loginForm = document.getElementById('loginForm');
-            loginForm.addEventListener('submit', function(e) {
+            loginForm.addEventListener('submit', function (e) {
                 const button = this.querySelector('button[type="submit"]');
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
@@ -75,4 +208,5 @@
         });
     </script>
 </body>
+
 </html>

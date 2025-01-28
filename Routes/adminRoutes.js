@@ -20,6 +20,7 @@ router.get("/logout", adminController.logout);
 
 // adminpanel routes
 router.get("/dashboard", isAdminAuthenticated, adminController.loadDashboard);
+
 // userManagement Routes
 router.get("/users", isAdminAuthenticated, customerController.loadUsers);
 router.get(
@@ -181,6 +182,7 @@ router.get(
   isAdminAuthenticated,
   adminController.filterSalesReport
 );
+
 router.get(
   "/download-excel",
   isAdminAuthenticated,
@@ -191,11 +193,8 @@ router.get(
   isAdminAuthenticated,
   adminController.downloadPDFreport
 );
-router.get(
-  "/dashboard/filter",
-  isAdminAuthenticated,
-  adminController.filteredAdminDashboard
-);
+router.get("/filter-dashboard", adminController.filterDashboardData);
+
 module.exports = router;
 
 // Catch-all route for undefined admin routes

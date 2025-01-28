@@ -81,6 +81,7 @@
         }
 
         .product-card {
+            position: relative;
             background-color: #fff;
             border: 2px solid #d0b4ff;
             border-radius: 10px;
@@ -204,6 +205,27 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .discount-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: rgb(44, 33, 145); /* Bright red color */
+    color: rgb(255, 8, 8);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transform: rotate(5deg);
+}
+
+.discount-badge span {
+    display: block;
+    text-align: center;
+    line-height: 1;
+}
     </style>
 
 
@@ -313,17 +335,17 @@
                         <p>Stocks left: <%= product.quantity %>
                         </p>
                         <div class="product-buttons">
-                            <div class="discount-circle">
-                                <p class="m-0" style="color: #8f1717;">
-                                    <%= product.discountPercentage %>%
-                                </p>
+                            <%if(product.discountPercentage && product.discountPercentage > 0){%>
+                            <div class="discount-badge">
+                                <span><%= product.discountPercentage %>% OFF</span>
                             </div>
+                            <%}%>
                             <button class="icon-btn" onclick="addToCart('<%= product._id %>')">
                                 <i class="fas fa-shopping-cart discount-circle"></i>
                             </button>
                             <button
                                 class="icon-btn add-to-favorites <%= wishListProducts.includes(product._id.toString()) ? 'in-wishlist' : '' %>"
-                                onclick="addToFavorites('<%= product._id %>')">
+                                onclick="addToFavorites('<%= product._id %>')" data-product-id="<%= product._id %>">
                                 <i class="fas fa-heart discount-circle"></i>
                             </button>
                             <!-- <button class="icon-btn " onclick="addToFavorites('<%= product._id %>')">
@@ -416,53 +438,53 @@
         });
     </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-    // Expand categories
-    document.getElementById('more-categories').addEventListener('click', function () {
-        document.getElementById('all-categories').style.display = 'block';
-        this.style.display = 'none'; // Hide the "more" button
-    });
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Expand categories
+            document.getElementById('more-categories').addEventListener('click', function () {
+                document.getElementById('all-categories').style.display = 'block';
+                this.style.display = 'none'; // Hide the "more" button
+            });
 
-    // Expand brands
-    document.getElementById('more-brands').addEventListener('click', function () {
-        document.getElementById('all-brands').style.display = 'block';
-        this.style.display = 'none'; // Hide the "more" button
-    });
+            // Expand brands
+            document.getElementById('more-brands').addEventListener('click', function () {
+                document.getElementById('all-brands').style.display = 'block';
+                this.style.display = 'none'; // Hide the "more" button
+            });
 
-    // Handle form submission
-    document.getElementById('filter-form').addEventListener('submit', function (event) {
-        event.preventDefault();
+            // Handle form submission
+            document.getElementById('filter-form').addEventListener('submit', function (event) {
+                event.preventDefault();
 
-        const form = document.getElementById('filter-form');
-        const formData = new FormData(form);
+                const form = document.getElementById('filter-form');
+                const formData = new FormData(form);
 
-        // Convert form data to query string
-        const params = new URLSearchParams();
-        for (const [key, value] of formData.entries()) {
-            if (Array.isArray(params.getAll(key))) {
-                params.append(key, value);
-            } else {
-                params.set(key, value);
-            }
-        }
+                // Convert form data to query string
+                const params = new URLSearchParams();
+                for (const [key, value] of formData.entries()) {
+                    if (Array.isArray(params.getAll(key))) {
+                        params.append(key, value);
+                    } else {
+                        params.set(key, value);
+                    }
+                }
 
-        // Update browser URL
-        const newUrl = `${window.location.pathname}?${params.toString()}`;
-        window.history.pushState({}, '', newUrl);
+                // Update browser URL
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.history.pushState({}, '', newUrl);
 
-        // Fetch filtered products
-        fetch(`/users/shop?${params.toString()}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to fetch products');
-                return response.json();
-            })
-            .then(data => {
-                const productsContainer = document.querySelector('.products');
-                productsContainer.innerHTML = ''; // Clear previous products
+                // Fetch filtered products
+                fetch(`/users/shop?${params.toString()}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to fetch products');
+                        return response.json();
+                    })
+                    .then(data => {
+                        const productsContainer = document.querySelector('.products');
+                        productsContainer.innerHTML = ''; // Clear previous products
 
-                data.products.forEach(product => {
-                    const productCard = `
+                        data.products.forEach(product => {
+                            const productCard = `
                         <div class="product-card">
                             <a href="/productDetails/${product._id}">
                                 <img src="/img/products/${product.productImage[0]}" alt="${product.productName}">
@@ -478,74 +500,29 @@
                                 </button>
                             </div>
                         </div>`;
-                    productsContainer.insertAdjacentHTML('beforeend', productCard);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const productsContainer = document.querySelector('.products');
-                productsContainer.innerHTML = `<p class="error-message">Failed to load products. Please try again later.</p>`;
-            });
-    });
-});
-
-</script>
-    <!-- <script>
-        document.getElementById('more-categories').addEventListener('click', function () {
-            document.getElementById('all-categories').style.display = 'block';
-        });
-
-        document.getElementById('more-brands').addEventListener('click', function () {
-            document.getElementById('all-brands').style.display = 'block';
-        });
-
-        document.getElementById('filter-form').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const form = document.getElementById('filter-form');
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
-            fetch('/shop/filter', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json())
-                .then(data => {
-
-                    const productsContainer = document.querySelector('.products');
-                    productsContainer.innerHTML = '';
-                    data.products.forEach(product => {
-                        const productCard = `
-            <div class="product-card">
-              <a href="/productDetails/${product._id}">
-                <img src="/img/products/${product.productImage[0]}" alt="${product.productName}">
-                <h2>${product.productName}</h2>
-              </a>
-              <p>₹${product.salePrice}</p>
-              <div class="product-buttons">
-                <button class="icon-btn" onclick="addToCart('${product._id}')">
-                  <i class="fas fa-shopping-cart"></i>
-                </button>
-                <button class="icon-btn" onclick="addToFavorites('${product._id}')">
-                    <i class="fas fa-heart"></i>
-                </button></div>
-            </div>`;
-                        productsContainer.insertAdjacentHTML('beforeend', productCard);
+                            productsContainer.insertAdjacentHTML('beforeend', productCard);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const productsContainer = document.querySelector('.products');
+                        productsContainer.innerHTML = `<p class="error-message">Failed to load products. Please try again later.</p>`;
                     });
-
-                })
-                .catch(error => console.error('Error:', error));
+            });
         });
-    </script> -->
+
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
+            const currentMinPrice = parseInt(document.getElementById('min-price-input').value) || 5000;
+            const currentMaxPrice = parseInt(document.getElementById('max-price-input').value) || 500000;
+
+
             const priceSlider = document.getElementById('price-slider');
             noUiSlider.create(priceSlider, {
-                start: [5000, 500000],
+                start: [currentMinPrice, currentMaxPrice],
                 connect: true,
                 step: 1000,
                 range: {

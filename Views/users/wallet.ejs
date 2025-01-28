@@ -253,18 +253,18 @@ document.getElementById('addMoneyForm').addEventListener('submit', async (e) => 
                 duration: 3000,
                 gravity: "top",
                 position: "center",
-                backgroundColor: "#4CAF50", // Green for success
+                backgroundColor: "#4CAF50",
             }).showToast();
             setTimeout(() => {
                 window.location.reload();
-            }, 3000); // Optional delay before reload
+            }, 1000); 
         } else {
             Toastify({
                 text: data.message || "Error adding money to wallet.",
                 duration: 3000,
                 gravity: "top",
                 position: "center",
-                backgroundColor: "#FF6F61", // Red for error
+                backgroundColor: "#FF6F61",
             }).showToast();
         }
     } catch (error) {
@@ -273,7 +273,7 @@ document.getElementById('addMoneyForm').addEventListener('submit', async (e) => 
             duration: 3000,
             gravity: "top",
             position: "center",
-            backgroundColor: "#FF6F61", // Red for error
+            backgroundColor: "#FF6F61", 
         }).showToast();
     }
 });

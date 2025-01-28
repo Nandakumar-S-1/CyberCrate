@@ -45,7 +45,7 @@ const productDetails = async (req, res) => {
     }
   };
 
-  //function to search products
+//function to search products
 const searchProducts = async (req, res) => {
   try {
     const searchWord = req.query.searchWord || '';

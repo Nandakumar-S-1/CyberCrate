@@ -61,13 +61,16 @@ const userSchema = new Schema({
     },
     referalCode:{
         type:String,
-        unique:true,
         required:false
     },
     referedBy:{
         type:Schema.Types.ObjectId,
         ref:'User',
         required:false
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
 }, { timestamps: true });
 

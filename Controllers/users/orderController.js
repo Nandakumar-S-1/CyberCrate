@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require("uuid");
 const { walletPayment, walletRefund } = require("./walletController")
 const Razorpay = require("razorpay");
 const PDFDocument = require('pdfkit');
+const { default: mongoose } = require("mongoose");
 
 //function to get checkout page
 const getCheckoutPage = async (req, res) => {
@@ -415,6 +416,7 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+
 //function to get user orders
 const getUserOrders = async (req, res) => {
   try {
@@ -435,6 +437,7 @@ const getUserOrders = async (req, res) => {
     res.status(500).send({ message: "Error getting user orders" });
   }
 };
+
 
 //function to select address
 const selectAddress = async (req, res) => {
@@ -492,7 +495,6 @@ const orderDetails = async (req, res) => {
   }
 }
 
-// Controller function to generate and download invoice
 const generateInvoice = async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -514,23 +516,19 @@ const generateInvoice = async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.orderId}.pdf`);
     doc.pipe(res);
 
-    // Add company logo/header
     doc.fontSize(20).text('CyberCrate', { align: 'center' });
     doc.moveDown();
     doc.fontSize(16).text('Tax Invoice/Bill of Supply', { align: 'center' });
     doc.moveDown();
 
-    // Add a line separator
     doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
     doc.moveDown();
 
-    // Order and Customer Details section
     doc.fontSize(12);
     doc.text(`Invoice Date: ${new Date(order.createdAt).toLocaleDateString()}`);
     doc.text(`Order ID: ${order.orderId}`);
     doc.moveDown();
 
-    // Billing Address
     doc.fontSize(14).text('Billing Address:', { underline: true });
     doc.fontSize(12);
     doc.text(order.address.name);
@@ -540,11 +538,9 @@ const generateInvoice = async (req, res) => {
     doc.text(`Phone: ${order.address.phone}`);
     doc.moveDown();
 
-    // Order Items Table
     doc.fontSize(14).text('Order Items:', { underline: true });
     doc.moveDown();
 
-    // Table headers
     const tableTop = doc.y;
     doc.fontSize(12);
     doc.text('Item', 50, tableTop);
@@ -552,52 +548,46 @@ const generateInvoice = async (req, res) => {
     doc.text('Price', 400, tableTop);
     doc.text('Total', 500, tableTop);
 
-    // Add a line below headers
     doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
 
-    // Table contents
     let yPosition = doc.y + 15;
     order.orderedItems.forEach(item => {
       doc.text(item.product.productName, 50, yPosition);
       doc.text(item.quantity.toString(), 300, yPosition);
-      // doc.text(`₹${item.price / item.quantity}`, 400, yPosition);
-      doc.text(`₹${(item.price / item.quantity).toFixed(2)}`, 400, yPosition);
-
-      doc.text(`₹${item.price}`, 500, yPosition);
+      doc.text(`₹${parseInt(item.price / item.quantity)}`, 400, yPosition);
+      doc.text(`₹${parseInt(item.price)}`, 500, yPosition);
       yPosition += 20;
     });
 
-    // Add a line above summary
     doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
     yPosition += 20;
 
-    // Order Summary
     doc.fontSize(12);
     doc.text('Subtotal:', 400, yPosition);
-    doc.text(`₹${order.totalPrice}`, 500, yPosition);
+    doc.text(`₹${parseInt(order.totalPrice)}`, 500, yPosition);
     yPosition += 20;
 
     if (order.deliveryCharge) {
       doc.text('Shipping:', 400, yPosition);
-      doc.text(`₹${order.deliveryCharge}`, 500, yPosition);
+      doc.text(`₹${parseInt(order.deliveryCharge)}`, 500, yPosition);
       yPosition += 20;
     }
 
     if (order.discount) {
       doc.text('Discount:', 400, yPosition);
-      doc.text(`-₹${order.discount}`, 500, yPosition);
+      doc.text(`-₹${parseInt(order.discount)}`, 500, yPosition);
       yPosition += 20;
     }
 
     if (order.couponDiscount) {
       doc.text('Coupon Discount:', 400, yPosition);
-      doc.text(`-₹${order.couponDiscount}`, 500, yPosition);
+      doc.text(`-₹${parseInt(order.couponDiscount)}`, 500, yPosition);
       yPosition += 20;
     }
 
     doc.fontSize(14);
     doc.text('Total Amount:', 400, yPosition);
-    doc.text(`₹${order.finalAmount}`, 500, yPosition);
+    doc.text(`₹${parseInt(order.finalAmount)}`, 500, yPosition);
 
     doc.fontSize(10);
     const bottomPosition = doc.page.height - 50;
@@ -610,51 +600,6 @@ const generateInvoice = async (req, res) => {
   }
 };
 
-// const retryPayment = async (req, res) => {
-//   try {
-//     const {id: orderId } = req.params;
-//     const order=await Order.findOne({orderId}).populate("orderedItems.product");
-
-//     if(!order){
-//       return res.status(404).send({success:false, message: "Order not found" });
-//     }
-
-//     if(order.paymentStatus!=='Failed'){
-//       return res.status(400).send({success:false, message: "Payment is not failed" });
-//     }
-
-//     const finalAmount=order.finalAmount * 100 ;
-
-//     const options = {
-//       amount: finalAmount,
-//       currency: "INR",
-//       receipt: order.orderId,
-//       payment_capture: 1,
-//     };
-
-//     const razorpayOrder = await razorpay.orders.create(options);
-
-
-//     // req.session.pendingOrder = {
-//     //   orderData: order,
-//     //   razorpayOrderId: razorpayOrder.id
-//     // }
-
-//     req.session.pendingOrder = {
-//       orderData:{
-//         ...order.toObject(),
-//         razorpayOrderId: razorpayOrder.id
-//       }
-//     }
-
-//     return res.redirect(`/checkout/razorpay?orderId=${razorpayOrder.id}`);
-
-//   } catch (error) {
-//     console.error('Error retrying payment:', error.message);
-//     res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// }
-
 const createRetryPaymentOrder = async (req, res) => {
   try {
       const { orderId, finalAmount } = req.body;
@@ -666,6 +611,13 @@ const createRetryPaymentOrder = async (req, res) => {
               message: "Order not found" 
           });
       }
+
+      if (!finalAmount || finalAmount <= 0) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Invalid amount" 
+        });
+    }
 
       // Create new Razorpay order
       const options = {
@@ -695,81 +647,16 @@ const createRetryPaymentOrder = async (req, res) => {
   }
 };
 
-
-// const retryPayment = async (req, res) => {
-//   try {
-//     const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-//     const order = await Order.findOne({ orderId }).populate("orderedItems.product");
-//     if (!order) {
-//       return res.status(404).json({ 
-//         status: 'failed', 
-//         message: "Order not found" 
-//       });
-//     }
-
-//     if (order.paymentStatus !== "Failed") {
-//       return res.status(400).json({ 
-//         status: 'failed', 
-//         message: "Payment is not failed" 
-//       });
-//     }
-
-//     const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
-//     const data = `${razorpay_order_id}|${razorpay_payment_id}`;
-//     hmac.update(data);
-//     const generated_signature = hmac.digest("hex");
-
-//     if (generated_signature !== razorpay_signature) {
-//       return res.status(400).json({ 
-//         status: 'failed', 
-//         message: 'Payment verification failed' 
-//       });
-//     }
-
-//     // Update order status
-//     order.paymentId = razorpay_payment_id;
-//     order.razorpayOrderId = razorpay_order_id;
-//     order.status = 'Processing';
-//     order.paymentStatus = 'Paid';
-//     await order.save();
-
-//     // Update inventory
-//     try {
-//       const cart = await Cart.findOne({ userId: order.user });
-//       if (cart) {
-//         for (let item of cart.items) {
-//           if (item.productId) {
-//             await Product.findByIdAndUpdate(item.productId, {
-//               $inc: { quantity: -item.quantity },
-//             });
-//           }
-//         }
-//         await Cart.findByIdAndDelete(cart._id);
-//       }
-//     } catch (error) {
-//       console.error('Error updating inventory:', error);
-//       // Continue with the success response even if inventory update fails
-//     }
-
-//     return res.json({ 
-//       status: 'success', 
-//       message: 'Payment retried successfully', 
-//       order 
-//     });
-
-//   } catch (error) {
-//     console.error("Error retrying payment:", error);
-//     return res.status(500).json({ 
-//       status: 'failed', 
-//       message: "Internal Server Error" 
-//     });
-//   }
-// };
-
 const retryPayment = async (req, res) => {
   try {
       const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+      if (!orderId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Missing some of the payment details' 
+        });
+    }
 
       const order = await Order.findOne({ orderId });
       if (!order) {
@@ -792,97 +679,35 @@ const retryPayment = async (req, res) => {
 
       res.status(200).json({ status: 'success', message: 'Payment retried successfully', order });
   } catch (error) {
-      console.error('Error retrying payment:', error);
+      console.error('Error retrying payment:', error.message,error.stack);
       res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 
+const returnOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
 
-// const retryPayment = async (req, res) => {
-//   try {
-//     // const { id: orderId ,} = req.params; // UUID passed from frontend
-//     const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const order = await Order.findOne({ orderId });
 
-//     const order = await Order.findOne({ orderId }).populate("orderedItems.product");
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not Found' });
+    }
 
-//     if (!order) {
-//       return res.status(404).send({ success: false, message: "Order not found" });
-//     }
+    if (order.status !== 'Delivered') {
+      return res.status(400).json({ success: false, message: 'Order Cannot be Returned' });
+    }
 
-//     const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
-//     const data = `${razorpay_order_id}|${razorpay_payment_id}`;
-//     hmac.update(data);
-//     const generated_signature = hmac.digest("hex");
+    order.status = 'Return Request';
+    await order.save();
 
-//     if (generated_signature !== razorpay_signature) {
-//       return res.status(400).json({ status: 'failed', message: 'Payment verification failed' });
-//     }
+    res.json({ success: true });
 
-//     if (order.paymentStatus !== "Failed") {
-//       return res.status(400).send({ success: false, message: "Payment is not failed" });
-//     }
-
-  
-
-//     order.paymentId = razorpay_payment_id;
-//     order.razorpayOrderId = razorpay_order_id;
-//     order.status = 'Processing';
-//     order.paymentStatus = 'Paid';
-//     await order.save();
-
-//     const cart = await Cart.findOne({ userId: order.user });
-//     if (cart) {
-//       for (let item of cart.items) {
-//         if (item.productId) {
-//           await Product.findByIdAndUpdate(item.productId, {
-//             $inc: { quantity: -item.quantity },
-//           });
-//         }
-//       }
-//       await Cart.findByIdAndDelete(cart._id);
-//     }
-
-//     console.log("orderId",orderId);
-//     console.log("razorpay_order_id",razorpay_order_id);
-//     console.log("orderrazorpay_payment_idId",razorpay_payment_id);
-//     console.log("razorpay_signature",razorpay_signature);
-//     console.log("order",order);
-//     console.log("hmac",hmac);
-//     console.log("data",data);
-//     console.log("generated_signature",generated_signature);
-//     console.log("cart",cart);
-    
-
-//     res.json({ status: 'success', message: 'Payment retried successfully', order });
-
-//     // const finalAmount = order.finalAmount * 100;
-
-//     // const options = {
-//     //   amount: finalAmount,
-//     //   currency: "INR",
-//     //   receipt: order.orderId,
-//     //   payment_capture: 1,
-//     // };
-
-//     // const razorpayOrder = await razorpay.orders.create(options);
-
-//     // req.session.pendingOrder = {
-//     //   orderData: {
-//     //     ...order.toObject(),
-//     //     razorpayOrderId: razorpayOrder.id,
-//     //   },
-//     // };
-
-//     // return res.redirect(`/checkout/razorpay?orderId=${razorpayOrder.id}`);
-  
-  
-//   } catch (error) {
-//     console.error("Error retrying payment:", error.message);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
-
-
+  } catch (error) {
+    console.error('Error while returning order', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+}
 
 module.exports = {
   getUserOrders,
@@ -894,5 +719,6 @@ module.exports = {
   orderDetails,
   generateInvoice,
   retryPayment,
-  createRetryPaymentOrder
+  createRetryPaymentOrder,
+  returnOrder
 };

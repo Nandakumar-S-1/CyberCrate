@@ -37,10 +37,10 @@
                     </button>
                 </div>
             </div>
-
-            <div class="products-grid">
+<!-- 
+            <div class="grid products-grid">
                 <% products.forEach(product=> { %>
-                    <div class="product-card">
+                    <div class="g-col-6 g-col-md-4 product-card">
                         <div class="product-image">
                             <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>">
                             <button class="edit-button"><a href="/admin/editProduct/<%= product._id %>"><i class="fas fa-edit"></i></a></button>
@@ -128,7 +128,94 @@
                         <% } %>
                 </ul>
             </div>
+        </div> -->
+        <div class="container products-grid">
+            <div class="row">
+                <% products.forEach((product, index) => { %>
+                    <div class="col-12 col-md-4 d-flex justify-content-center mb-4">
+                        <div class="product-card">
+                            <div class="product-image position-relative">
+                                <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>" class="img-fluid">
+                                <button class="edit-button position-absolute top-0 end-0">
+                                    <a href="/admin/editProduct/<%= product._id %>"><i class="fas fa-edit"></i></a>
+                                </button>
+                            </div>
+                            <div class="product-info text-center mt-3">
+                                <h3 class="fw-bold">
+                                    <%= product.productName %>
+                                </h3>
+                                <p class="category">
+                                    <%= product.category ? product.category.name : 'No Category' %>
+                                </p>
+                                <p class="price fw-bold fs-3 text-dark">₹ <%= parseInt(product.salePrice) %></p>
+                                <div class="sideControl">
+                                    <p class="price text-muted text-decoration-line-through fs-5">₹ <%= product.realPrice %></p>
+                                    <div class="buttons mb-2">
+                                        <% if (product.productOffer) { %>
+                                            <button class="btn btn-success">
+                                                <i class="fas fa-gift"></i> <%= product.productOffer %>
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn btn-success">
+                                                <i class="fas fa-gift"></i> 0%
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                    <div class="buttons">
+                                        <% if (product.isBlocked) { %>
+                                            <button class="btn btn-danger" onclick="unblockProduct('<%= product._id %>')">
+                                                <i class="fas fa-unlock"></i> Unblock
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn btn-warning" onclick="blockProduct('<%= product._id %>')">
+                                                <i class="fas fa-lock"></i> Block
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="product-stats mt-3">
+                                    <div class="stat">
+                                        <div class="stat-value text-danger fw-bold">
+                                            <span><%= product.brand ? product.brand.brandName : 'No Brand' %></span>
+                                        </div>
+                                    </div>
+                                    <div class="stat">
+                                        <p class="fw-bold">Sales</p>
+                                        <div class="stat-value text-success fw-bold">
+                                            <i class="fas fa-arrow-up"></i> <span>120</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat">
+                                        <p class="fw-bold">Remaining Products</p>
+                                        <div class="stat-value text-warning fw-bold">
+                                            <span><%= product.quantity %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <% if ((index + 1) % 3 === 0) { %>
+                        </div><div class="row">
+                    <% } %>
+                <% }); %>
+            </div>
+        
+            <div class="pagination-container mt-3">
+                <ul class="pagination justify-content-center">
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link"
+                               href="?page=<%= i %>&search=<%= search %>&date=<%= selectedDate %>&category=<%= selectedCategory %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
         </div>
+        
     </div>
 
 
@@ -187,12 +274,12 @@
                 cursor: pointer;
             }
 
-            .products-grid {
+            /* .products-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
                 gap: 20px;
                 margin-bottom: 30px;
-            }
+            } */
 
             .product-card {
                 background: white;

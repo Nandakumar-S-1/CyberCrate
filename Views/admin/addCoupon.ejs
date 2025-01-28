@@ -1,7 +1,7 @@
 <%- include('../layouts/admin/header.ejs') %>
     <%- include('../layouts/admin/sidebar.ejs', { currentPage: 'coupons' }) %>
 
-    
+
         <div class="content">
             <div class="container-fluid p-3">
                 <div class="row">
@@ -73,6 +73,9 @@
             </div>
         </div>
 
+
+        <%- include('../layouts/admin/footer.ejs') %>
+        
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             function validateForm() {
@@ -83,10 +86,10 @@
                 if (!code) {
                     document.getElementById('codeError').innerText = 'Coupon Code is required.';
                     isValid = false;
-                }else if (!codeRegex.test(code)) { 
+                } else if (!codeRegex.test(code)) {
                     document.getElementById('codeError').innerText = 'Coupon Code must be 6 alphanumeric characters.';
                     isValid = false;
-                }else {
+                } else {
                     document.getElementById('codeError').innerText = '';
                 }
 
@@ -142,5 +145,3 @@
                 return isValid;
             }
         </script>
-
-        <%- include('../layouts/admin/footer.ejs') %>
