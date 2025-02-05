@@ -29,7 +29,7 @@ const loadCategories = async (req, res) => {
       layout: "layouts/admin/layout",
     });
   } catch (error) {
-    console.log("Error while loading categories:", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -54,7 +54,6 @@ const addNewCategories = async (req, res) => {
     // return res.json({message:"Category added successfully"})
     res.redirect("/admin/categories");
   } catch (error) {
-    console.log("Error while adding new category", error);
 
     return res.status(500).json({ error: "Internal Server Error" });
   }
@@ -66,8 +65,7 @@ const editCategory = async (req, res) => {
     const categoryData = await category.findOne({ _id: id });
     res.render("admin/editCategory", { category: categoryData });
   } catch (error) {
-    console.log("error while editing the categories", error);
-
+    
     res.redirect("/pageError");
   }
 };
@@ -115,7 +113,7 @@ const updateCategory = async (req, res) => {
 
     return res.json({ message: "Category Updated Successfully" });
   } catch (error) {
-    console.log("Error while updating category", error);
+    
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -126,7 +124,6 @@ const listCategories = async (req, res) => {
     await category.updateOne({ _id: id }, { $set: { isListed: false } });
     res.redirect("/admin/categories");
   } catch (error) {
-    console.log(error);
 
     res.redirect("/pageError");
   }
@@ -138,7 +135,7 @@ const unListCategories = async (req, res) => {
     await category.updateOne({ _id: id }, { $set: { isListed: true } });
     res.redirect("/admin/categories");
   } catch (error) {
-    console.log(error);
+
     res.redirect("/pageError");
   }
 };

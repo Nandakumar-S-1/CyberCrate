@@ -77,6 +77,7 @@
                         <input type="number" name="pincode" required>
                         <i class="fas fa-pencil-alt"></i>
                     </div>
+                    <span class="error-message"></span> 
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
@@ -84,13 +85,16 @@
                         <input type="tel" name="phone" required>
                         <i class="fas fa-pencil-alt"></i>
                     </div>
+                    <span class="error-message"></span>
                 </div>
+            
                 <div class="form-group">
                     <label>Alternate Phone</label>
                     <div class="input-with-icon">
                         <input type="tel" name="alterPhone" required>
                         <i class="fas fa-pencil-alt"></i>
                     </div>
+                    <span class="error-message"></span>
                 </div>
                 <div class="button-container">
                     <button type="submit" class="save-changes-btn">Add Address</button>
@@ -276,6 +280,67 @@ h1 {
 }
 </style>
 
-
+<script>
+    document.getElementById("addressForm").addEventListener("submit", function(event) {
+        let isValid = true;
+    
+        function showError(input, message) {
+            alert(message);
+            input.focus();
+            isValid = false;
+        }
+    
+        const addressType = document.querySelector("input[name='addressType']");
+        const name = document.querySelector("input[name='name']");
+        const city = document.querySelector("input[name='city']");
+        const landmark = document.querySelector("input[name='landMark']");
+        const district = document.querySelector("input[name='district']");
+        const state = document.querySelector("input[name='state']");
+        const pincode = document.querySelector("input[name='pincode']");
+        const phone = document.querySelector("input[name='phone']");
+        const alterPhone = document.querySelector("input[name='alterPhone']");
+    
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        const pincodeRegex = /^\d{6}$/;
+        const phoneRegex = /^\d{10}$/;
+    
+        function isInvalidPhone(number) {
+            return /^(\d)\1{9}$/.test(number); // Matches 0000000000, 1111111111, etc.
+        }
+    
+        if (!nameRegex.test(addressType.value.trim())) {
+            showError(addressType, "Address Type should contain only letters.");
+        }
+        if (!nameRegex.test(name.value.trim())) {
+            showError(name, "Name should contain only letters.");
+        }
+        if (!nameRegex.test(city.value.trim())) {
+            showError(city, "City should contain only letters.");
+        }
+        if (!nameRegex.test(landmark.value.trim())) {
+            showError(landmark, "Landmark should contain only letters.");
+        }
+        if (!nameRegex.test(district.value.trim())) {
+            showError(district, "District should contain only letters.");
+        }
+        if (!nameRegex.test(state.value.trim())) {
+            showError(state, "State should contain only letters.");
+        }
+        if (!pincodeRegex.test(pincode.value.trim())) {
+            showError(pincode, "Pincode must be exactly 6 digits.");
+        }
+        if (!phoneRegex.test(phone.value.trim()) || isInvalidPhone(phone.value.trim())) {
+            showError(phone, "Phone must be exactly 10 digits and not repetitive (e.g., 0000000000).");
+        }
+        if (!phoneRegex.test(alterPhone.value.trim()) || isInvalidPhone(alterPhone.value.trim())) {
+            showError(alterPhone, "Alternate Phone must be exactly 10 digits and not repetitive (e.g., 0000000000).");
+        }
+    
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+</script>
+    
 
 <%- include('../layouts/user/footer.ejs') %>

@@ -33,7 +33,6 @@ const applyCoupon = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error applying coupon:", error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -46,14 +45,21 @@ const loadCart = async (req, res) => {
     const userData = await User.findById(userId);
     const userCart = await Cart.findOne({ userId: userId });
     cartCount = userCart ? userCart.items.length : 0;
-    console.log(cartCount);
-    // Populate cart items
+    let activeCoupons = [];
+
+    const currentDate = new Date();
+      activeCoupons = await Coupon.find({
+        isListed: true,
+        expireOn: { $gt: currentDate },
+      }).limit(3);
+
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     let relatedProducts = [];
 
     if (!cart || cart.items.length === 0) {
-      // If the cart is empty, show random product recommendations
       relatedProducts = await Product.find({ isBlocked: false }).limit(6);
+
+      
 
       return res.render("users/cart", {
         items: [],
@@ -65,6 +71,7 @@ const loadCart = async (req, res) => {
         relatedProducts,
         user: userData,
         cartCount,
+        activeCoupons,
       });
     }
 
@@ -136,17 +143,17 @@ const loadCart = async (req, res) => {
     // Render the cart page with updated data
     res.render("users/cart", {
       items,
-      cartTotal: parseFloat(cartTotal.toFixed(2)),
-      discount: parseFloat(totalDiscount.toFixed(2)),
-      couponReduction: parseFloat(couponReduction.toFixed(2)),
+      cartTotal: parseInt(cartTotal),
+      discount: parseInt(totalDiscount),
+      couponReduction: parseInt(couponReduction),
       coupon: req.session.coupon || null,
       message: "",
       relatedProducts,
       user: userData,
       cartCount,
+      activeCoupons,
     });
   } catch (error) {
-    console.error("Error loading cart:", error);
     res.status(500).send("Internal server error");
   }
 };
@@ -164,12 +171,10 @@ const addItemToCart = async (req, res) => {
     }
 
     if (!productId || !quantity) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Product ID and quantity are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Product ID and quantity are required",
+      });
     }
 
     let cart = await Cart.findOne({ userId: userId });
@@ -184,6 +189,9 @@ const addItemToCart = async (req, res) => {
         .json({ success: false, message: "Product not found" });
     }
 
+    let availableStock=product.quantity
+    let maxAllowed= Math.min(availableStock,3)
+
     const productIndex = cart.items.findIndex(
       (item) => item.productId.toString() === productId
     );
@@ -191,13 +199,26 @@ const addItemToCart = async (req, res) => {
 
     if (productIndex !== -1) {
       newQuantity += cart.items[productIndex].quantity;
+    }
+    if (newQuantity > availableStock) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${availableStock} left in stock.`,
+      });
+    }
+
+    if (newQuantity > maxAllowed) {
+      return res.status(400).json({
+        success: false,
+        message: `You can add a maximum of ${maxAllowed} units of this product.`,
+      });
+    }
+
+    if (productIndex !== -1) {
+
       cart.items[productIndex].quantity = newQuantity;
       cart.items[productIndex].totalPrice = product.salePrice * newQuantity;
-      return res.status(200).json({
-        success: false,
-        message:
-          "Product is already in your cart. Update quantity in the cart if needed.",
-      });
+      
     } else {
       cart.items.push({
         productId,
@@ -222,7 +243,6 @@ const addItemToCart = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Item added to cart", cart });
   } catch (error) {
-    console.error("Error adding item to cart:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -246,12 +266,12 @@ const removeItemFromCart = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Item has been removed from cart" });
   } catch (error) {
-    console.error("Error removing the item from cart:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 // Controller for updating the quantity of an item
 const updateQuantity = async (req, res) => {
+
   const { productId, quantity } = req.body;
   const userId = req.session.user;
   try {
@@ -274,12 +294,10 @@ const updateQuantity = async (req, res) => {
     );
     if (item) {
       if (quantity > 3) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "You can only purchase a maximum of 3 units per product",
-          });
+        return res.status(400).json({
+          success: false,
+          message: "You can only purchase a maximum of 3 units per product",
+        });
       }
       item.quantity = quantity;
       item.totalPrice = item.price * quantity;
@@ -293,7 +311,7 @@ const updateQuantity = async (req, res) => {
         .json({ success: false, message: "Item not found in cart" });
     }
   } catch (error) {
-    console.error("Error updating item quantity:", error);
+    
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

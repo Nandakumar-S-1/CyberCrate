@@ -12,7 +12,7 @@ const PDFDocument = require("pdfkit");
 
 // Function to handle rendering an error page for the admin
 const pageError = async (req, res) => {
-  console.log("Rendering admin error page");
+
   const errorMessage =
     "An unexpected error occurred while processing your request.";
   const errorCode = 500; // Default error code, can be customized
@@ -38,7 +38,7 @@ const loadAdminLogin = async (req, res) => {
       res.render("admin/adminLogin", { error: null });
     }
   } catch (error) {
-    console.error("Error loading admin login:", error);
+    
     res
       .status(500)
       .render("admin/adminLogin", { error: "Internal server error" });
@@ -50,7 +50,6 @@ const verifyLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const admin = await User.findOne({ email: email, isAdmin: true });
-    console.log('admin   ',admin);
     
     if (admin && ( bcrypt.compare(password, admin.password))) {
       
@@ -63,7 +62,6 @@ const verifyLogin = async (req, res) => {
       res.render("admin/adminLogin", { error: "Invalid email or password" });
     }
   } catch (error) {
-    console.error("Error in admin login:", error);
     res
       .status(500)
       .render("admin/adminLogin", { error: "Internal server error" });
@@ -75,14 +73,13 @@ const logout = async (req, res) => {
   try {
     req.session.destroy((err) => {
       if (err) {
-        console.log("Error while destroying session ", err);
         return res.redirect("/pageError");
       } else {
         res.redirect("/admin/login");
       }
     });
   } catch (error) {
-    console.log("Error while logging out ", error);
+
     res.redirect("/pageError");
   }
 };
@@ -90,34 +87,42 @@ const logout = async (req, res) => {
 // Function to load the admin dashboard
 const loadDashboard = async (req, res) => {
   try {
-    const { filterValue } = req.query;
+    const { filterValue, startDate, endDate } = req.query;
     const today = new Date();
-    let dayStart;
-    let dayEnd;
+    let dayStart, dayEnd;
 
-    if (filterValue == "daily") {
-      dayStart = new Date(today.setHours(0, 0, 0, 0));
-      dayEnd = new Date(today.setHours(23, 59, 59, 999));
-    } else if (filterValue === "weekly") {
-      const firstDayOfWeek = today.getDate() - today.getDay();
-      dayStart = new Date(today.setDate(firstDayOfWeek));
-      dayStart.setHours(0, 0, 0, 0);
-      dayEnd = new Date(today.setDate(firstDayOfWeek + 6));
-      dayEnd.setHours(23, 59, 59, 999);
-    } else if (filterValue === "monthly") {
-      dayStart = new Date(today.getFullYear(), today.getMonth(), 1);
-      dayEnd = new Date(
-        today.getFullYear(),
-        today.getMonth() + 1,
-        0,
-        23,
-        59,
-        59,
-        999
-      );
-    } else {
-      dayStart = new Date(0);
-      dayEnd = new Date();
+    switch (filterValue) {
+      case 'daily':
+        dayStart = new Date(today.setHours(0, 0, 0, 0));
+        dayEnd = new Date(today.setHours(23, 59, 59, 999));
+        break;
+      case 'weekly':
+        const firstDayOfWeek = today.getDate() - today.getDay();
+        dayStart = new Date(today.getFullYear(), today.getMonth(), firstDayOfWeek);
+        dayStart.setHours(0, 0, 0, 0);
+        dayEnd = new Date(today.getFullYear(), today.getMonth(), firstDayOfWeek + 6);
+        dayEnd.setHours(23, 59, 59, 999);
+        break;
+      case 'monthly':
+        dayStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        dayEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        dayEnd.setHours(23, 59, 59, 999);
+        break;
+      case 'yearly':
+        dayStart = new Date(today.getFullYear(), 0, 1);
+        dayEnd = new Date(today.getFullYear(), 11, 31);
+        dayEnd.setHours(23, 59, 59, 999);
+        break;
+      case 'custom':
+        if (startDate && endDate) {
+          dayStart = new Date(startDate);
+          dayEnd = new Date(endDate);
+          dayEnd.setHours(23, 59, 59, 999);
+        }
+        break;
+      default:
+        dayStart = new Date(0);
+        dayEnd = new Date();
     }
 
     const topProducts = await Product.aggregate([
@@ -462,6 +467,7 @@ const loadDashboard = async (req, res) => {
       topProducts,
       topBrands,
       topCategories,
+      selectedFilter: filterValue || 'all',
     });
   } catch (error) {
     console.log("Error while loading dashboard", error);
@@ -520,8 +526,6 @@ const loadSalesPage = async (req, res) => {
       },
     ]);
 
-    // console.log("Total Discount Result in Sales Page:", totalDiscountResult);
-
     totalRevenue = (totalRevenueResult[0]?.totalRevenue || 0).toFixed(2);
     totalDiscount = (totalDiscountResult[0]?.totalDiscount || 0).toFixed(2);
     const totalOrders = await Order.countDocuments();
@@ -554,7 +558,7 @@ const loadSalesPage = async (req, res) => {
       numberOfCustomers,
     });
   } catch (error) {
-    console.log("Error in loading sales page in adminController", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -582,7 +586,6 @@ const filterSalesReport = async (req, res) => {
           endDay = new Date(startDay);
           endDay.setDate(startDay.getDate() + 6);
           break;
-
         case "monthly":
           startDay = new Date(
             currentDay.getFullYear(),
@@ -669,60 +672,6 @@ const filterSalesReport = async (req, res) => {
       orders.reduce((sum, order) => sum + (order.totalDiscount || 0), 0)
     );
 
-    //   const orders = await Order.find({
-    //       createdAt: { $gte: startDay, $lte: endDay }
-    //   })
-    //   .populate('user', 'name email phone')
-    //   .select("finalAmount orderedItems totalDiscount couponDiscount createdAt")
-    //   .sort({ createdAt: -1 });
-
-    //   const orderTotal = orders.reduce((sum, order) => sum + (order.finalAmount || 0), 0);
-    //   const totalDiscountResult = await Order.aggregate([
-    //     { $match: { createdAt: { $gte: startDay, $lte: endDay } } },
-    //     { $unwind: "$orderedItems" },
-    //     {
-    //         $lookup: {
-    //             from: "products",
-    //             localField: "orderedItems.product",
-    //             foreignField: "_id",
-    //             as: "productDetails",
-    //         },
-    //     },
-    //     { $unwind: "$productDetails" },
-    //     {
-    //         $addFields: {
-    //             effectiveDiscount: {
-    //                 $cond: [
-    //                     { $ifNull: ["$productDetails.salePrice", false] },
-    //                     {
-    //                         $subtract: [
-    //                             "$productDetails.realPrice",
-    //                             "$productDetails.salePrice",
-    //                         ],
-    //                     },
-    //                     {
-    //                         $multiply: [
-    //                             "$productDetails.realPrice",
-    //                             { $divide: ["$productDetails.productOffer", 100] },
-    //                         ],
-    //                     },
-    //                 ],
-    //             },
-    //         },
-    //     },
-    //     {
-    //         $group: {
-    //             _id: null,
-    //             totalDiscount: {
-    //                 $sum: {
-    //                     $multiply: ["$orderedItems.quantity", "$effectiveDiscount"],
-    //                 },
-    //             },
-    //         },
-    //     },
-    // ]);
-    // const totalDiscount = totalDiscountResult[0]?.totalDiscount || 0;
-
     const couponDiscount = orders.reduce(
       (sum, order) => sum + (order.couponDiscount || 0),
       0
@@ -748,8 +697,6 @@ const filterSalesReport = async (req, res) => {
 // Function to fetch orders by date range
 const ordersByDateRange = async (startDate, endDate) => {
   try {
-    console.log("startDate:", startDate);
-    console.log("endDate:", endDate);
 
     if (!startDate || !endDate) {
       throw new Error("Start date or end date is missing.");
@@ -772,7 +719,7 @@ const ordersByDateRange = async (startDate, endDate) => {
 
     return orders;
   } catch (error) {
-    console.error("Error fetching orders by date range:", error.message);
+
     throw error;
   }
 };
@@ -833,8 +780,9 @@ const excelReportDownload = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (error) {
-    console.error("Error in downloading excel report:", error);
-    res.status(500).send("Error generating report");
+    console.error("Error generating report:", error);
+
+    res.status(500).json({ success: false, message: "Error generating report" });
   }
 };
 
@@ -906,7 +854,7 @@ const downloadPDFreport = async (req, res) => {
 
     doc.end();
   } catch (error) {
-    console.error("Error generating PDF report:", error.message);
+
     res.status(500).send("Error generating report");
   }
 };
@@ -959,7 +907,7 @@ const filterDashboardData = async (req, res) => {
 
     res.json(stats);
   } catch (err) {
-    console.error(err);
+
     return res.status(500).json({ status: "error",
          message: "An error occurred while filtering the data. Please try again.",
     });

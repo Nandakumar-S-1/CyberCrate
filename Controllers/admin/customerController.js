@@ -44,7 +44,7 @@ const loadUsers = async (req, res) => {
       layout: "layouts/admin/layout",
     });
   } catch (error) {
-    console.error("Error in loadUsers:", error);
+    
     res.status(500).render("admin/error", { error: "Internal Server Error" });
   }
 };
@@ -52,11 +52,11 @@ const loadUsers = async (req, res) => {
 const blockCustomer = async (req, res) => {
   try {
     const userId = req.query.id;
-    // await User.findByIdAndUpdate(userId, { isBlocked: true });
+    
     await User.updateOne({ _id: userId }, { $set: { isBlocked: true } });
     res.redirect("/admin/users");
   } catch (error) {
-    console.error("Error in blockCustomer:", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -66,10 +66,10 @@ const unBlockCustomer = async (req, res) => {
   try {
     const userId = req.query.id;
     await User.updateOne({ _id: userId }, { $set: { isBlocked: false } });
-    // await User.findByIdAndUpdate(userId, { isBlocked: false });
+
     res.redirect("/admin/users");
   } catch (error) {
-    console.error("Error in unBlockCustomer:", error);
+    
     res.redirect("/pageError");
   }
 };

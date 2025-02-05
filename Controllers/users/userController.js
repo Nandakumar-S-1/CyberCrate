@@ -172,6 +172,358 @@ const createReferalCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
+// const signup = async (req, res) => {
+//   try {
+//     const { name, email, phone, password, cPassword, referalCode } = req.body;
+
+//     // Validate passwords match
+//     if (password !== cPassword) {
+//       return res.render("users/authPage", {
+//         message: "Passwords do not match",
+//         activeForm: "signup",
+//       });
+//     }
+
+//     // Check if user already exists
+//     const findUser = await User.findOne({ email });
+//     if (findUser) {
+//       return res.render("users/authPage", {
+//         message: "User with this email already exists",
+//         activeForm: "signup",
+//       });
+//     }
+
+//     // Generate a new referral code for the user
+//     const userReferalCode = createReferalCode();
+
+//     // Validate referral code, if provided
+//     let referedByAUser = null;
+//     if (referalCode) {
+//       referedByAUser = await User.findOne({ referalCode });
+//       if (!referedByAUser) {
+//         console.log("The referral code you entered is invalid");
+
+//         return res.render("users/authPage", {
+//           message: "The referral code you entered is invalid",
+//           activeForm: "signup",
+//         });
+//       }
+//     }
+//     // Generate OTP and send email
+//     const otp = generateOtp();
+//     console.log("Generated OTP:", otp);
+//     console.log("referal code", referalCode);
+
+//     const emailSent = await sendVerificationEmail(email, otp);
+//     if (!emailSent) {
+//       return res.render("users/authPage", {
+//         message: "Failed to send verification email",
+//         activeForm: "signup",
+//       });
+//     }
+
+//     // Store data in session for verification
+//     req.session.userOtp = otp;
+//     req.session.userData = {
+//       name,
+//       email,
+//       phone,
+//       password:password, 
+//       referalCode,
+//       userReferalCode,
+//       referedBy: referedByAUser ? referedByAUser._id : null,
+//     };
+//     req.session.otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes expiry
+
+//     // Redirect to OTP verification page
+//     res.render("users/verifyOtp");
+//     console.log("Session Data after OTP generation:", {
+//       userOtp: req.session.userOtp,
+//       userData: req.session.userData,
+//       otpExpiry: req.session.otpExpiry,
+//     });
+//   } catch (error) {
+//     console.error("Signup error:", error);
+//     res.redirect("/PageNotFound");
+//   }
+// };
+
+// const signin = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const findUser = await User.findOne({ email });
+
+//     if (!findUser) {
+//       return res.render("users/authPage", {
+//         message: "User not found",
+//         activeForm: "signin",
+//       });
+//     }
+
+//     if (findUser.isAdmin) {
+//       return res.render("users/authPage", {
+//         message: "Please use admin login",
+//         activeForm: "signin",
+//       });
+//     }
+
+//     if (findUser.isBlocked) {
+//       return res.render("users/authPage", {
+//         message:
+//           "Your account has been blocked by the admin. Please contact support.",
+//         activeForm: "signin",
+//       });
+//     }
+
+//     const passwordMatch = await bcrypt.compare(password, findUser.password);
+//     if (!passwordMatch) {
+//       return res.render("users/authPage", {
+//         message: "Invalid password",
+//         activeForm: "signin",
+//       });
+//     }
+
+//     req.session.user = {
+//       _id: findUser._id,
+//     };
+//     await req.session.save();
+
+//     // console.log('User Session Data:', req.session.user);
+
+//     return res.redirect("/");
+//   } catch (error) {
+//     console.error("Signin error:", error);
+//     res.render("users/authPage", {
+//       message: "Login failed, please try again",
+//       activeForm: "signin",
+//     });
+//   }
+// };
+
+//function for secure password
+
+
+// const signin = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     console.log(' login with email:', email);
+    
+//     const findUser = await User.findOne({ email });
+//     if (!findUser) {
+//       return res.render("users/authPage", {
+//         message: "User not found",
+//         activeForm: "signin",
+//       });
+//     }
+
+//     // Extra validation to ensure password exists in DB
+//     if (!findUser.password) {
+//       console.log('No password hash found in database!');
+//       return res.render("users/authPage", {
+//         message: "Invalid password",
+//         activeForm: "signin",
+//       });
+//     }
+
+//     console.log('Attempting password comparison:');
+//     console.log('Input password:', password);
+//     console.log('Stored hash:', findUser.password);
+    
+//     try {
+//       const passwordMatch = await bcrypt.compare(password, findUser.password);
+//       console.log('Password match result:', passwordMatch);
+      
+//       if (!passwordMatch) {
+//         return res.render("users/authPage", {
+//           message: "Invalid password",
+//           activeForm: "signin",
+//         });
+//       }
+//     } catch (bcryptError) {
+//       console.error('bcrypt.compare error:', bcryptError);
+//       return res.render("users/authPage", {
+//         message: "Error verifying password",
+//         activeForm: "signin",
+//       });
+//     }
+
+//     req.session.user = {
+//       _id: findUser._id,
+//     };
+//     await req.session.save();
+
+//     return res.redirect("/");
+//   } catch (error) {
+//     console.error("Signin error:", error);
+//     res.render("users/authPage", {
+//       message: "Login failed, please try again",
+//       activeForm: "signin",
+//     });
+//   }
+// };
+
+// const securePassword = async (password) => {
+//   try {
+//     const passwordHash = await bcrypt.hash(password, 10);
+//     return passwordHash;
+//   } catch (error) {
+//     console.log("error while Securing password", error);
+//   }
+// };
+
+
+
+//function for verify otp
+// const verifyOtp = async (req, res) => {
+//   try {
+//     const { otp } = req.body;
+//     console.log("Received OTP:", otp, "Type:", typeof otp);
+//     console.log(
+//       "Stored OTP:",
+//       req.session.userOtp,
+//       "Type:",
+//       typeof req.session.userOtp
+//     );
+
+//     // Check  session exists or mot
+//     if (
+//       !req.session.userOtp ||
+//       !req.session.userData ||
+//       !req.session.otpExpiry
+//     ) {
+//       console.log("Session missing required data:", {
+//         hasOtp: !!req.session.userOtp,
+//         hasUserData: !!req.session.userData,
+//         hasExpiry: !!req.session.otpExpiry,
+//       });
+//       return res.status(400).json({
+//         success: false,
+//         message: "Session expired. Please try signing up again.",
+//       });
+//     }
+
+//     const now = Date.now();
+//     const expiryTime = req.session.otpExpiry;
+//     console.log("Time check:", {
+//       now,
+//       expiryTime,
+//       difference: now - expiryTime,
+//       hasExpired: now > expiryTime,
+//     });
+
+//     if (now > expiryTime) {
+//       delete req.session.userOtp;
+//       delete req.session.userData;
+//       delete req.session.otpExpiry;
+
+//       return res.status(400).json({
+//         success: false,
+//         message: "OTP has expired. Please try signing up again.",
+//       });
+//     }
+
+//     const receivedOtp = String(otp).trim();
+//     const storedOtp = String(req.session.userOtp).trim();
+
+//     if (receivedOtp !== storedOtp) {
+//       console.log("OTP mismatch:", {
+//         received: receivedOtp,
+//         stored: storedOtp,
+//         receivedLength: receivedOtp.length,
+//         storedLength: storedOtp.length,
+//       });
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid OTP. Please try again.",
+//       });
+//     }
+
+//     const user = req.session.userData;
+//     const passwordHash = await securePassword(user.password,10);
+
+//     const saveUserData = new User({
+//       name: user.name,
+//       email: user.email,
+//       phone: user.phone,
+//       password: passwordHash,
+//       referalCode: user.userReferalCode,
+//       referedBy: user.referedBy || null,
+//     });
+
+//     await saveUserData.save();
+//     console.log("User saved successfully:", saveUserData._id);
+
+//     if (user.referedBy) {
+//       const reffererWallet = await Wallet.findOne({ userId: user.referedBy });
+
+//       if (reffererWallet) {
+//         reffererWallet.balance = Number(reffererWallet.balance) + +referalBonus;
+//         reffererWallet.walletHistory.push({
+//           transactionType: "credit",
+//           amount: referalBonus,
+//           description: "Initial balance",
+//         });
+//         await reffererWallet.save();
+//       } else {
+//         const newWallet = new Wallet({
+//           userId: user.referedBy,
+//           balance: referalBonus,
+//           walletHistory: [
+//             {
+//               transactionType: "credit",
+//               amount: referalBonus,
+//               description: "Initial balance",
+//             },
+//           ],
+//         });
+//         await newWallet.save();
+//       }
+//       console.log(
+//         "Referral bonus credited to referrer wallet:",
+//         user.referedBy
+//       );
+//     }
+
+//     // Initialize a wallet for the new user and credit the signup bonus
+//     const userWallet = new Wallet({
+//       userId: saveUserData._id,
+//       balance: signupBonus,
+//       walletHistory: [
+//         {
+//           transactionType: "credit",
+//           amount: signupBonus,
+//           description: "Signup bonus",
+//         },
+//       ],
+//     });
+//     await userWallet.save();
+
+//     console.log("Wallet initialized for new user:", saveUserData._id);
+
+//     delete req.session.userOtp;
+//     delete req.session.userData;
+//     delete req.session.otpExpiry;
+
+//     req.session.user = saveUserData._id;
+//     await req.session.save();
+
+//     return res.json({
+//       success: true,
+//       message: "Email verified successfully!",
+//       redirect: "/",
+//     });
+//   } catch (error) {
+//     console.error("OTP verification error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "An error occurred during verification",
+//     });
+//   }
+// };
+
+//function for resend otp
+
+
 const signup = async (req, res) => {
   try {
     const { name, email, phone, password, cPassword, referalCode } = req.body;
@@ -210,9 +562,6 @@ const signup = async (req, res) => {
       }
     }
 
-    // Hash the password for future saving
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // Generate OTP and send email
     const otp = generateOtp();
     console.log("Generated OTP:", otp);
@@ -232,20 +581,22 @@ const signup = async (req, res) => {
       name,
       email,
       phone,
-      password: hashedPassword, // Save hashed password
+      password: password, // Store plain password - this is the main fix
       referalCode,
       userReferalCode,
       referedBy: referedByAUser ? referedByAUser._id : null,
     };
     req.session.otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes expiry
 
-    // Redirect to OTP verification page
-    res.render("users/verifyOtp");
     console.log("Session Data after OTP generation:", {
       userOtp: req.session.userOtp,
       userData: req.session.userData,
       otpExpiry: req.session.otpExpiry,
     });
+
+    // Redirect to OTP verification page
+    res.render("users/verifyOtp");
+    
   } catch (error) {
     console.error("Signup error:", error);
     res.redirect("/PageNotFound");
@@ -255,8 +606,9 @@ const signup = async (req, res) => {
 const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Attempting login with email:', email);
+    
     const findUser = await User.findOne({ email });
-
     if (!findUser) {
       return res.render("users/authPage", {
         message: "User not found",
@@ -265,21 +617,29 @@ const signin = async (req, res) => {
     }
 
     if (findUser.isAdmin) {
+            return res.render("users/authPage", {
+              message: "Please use admin login",
+              activeForm: "signin",
+            });
+          }
+
+    // Extra validation to ensure password exists in DB
+    if (!findUser.password) {
+      console.log('No password hash found in database!');
       return res.render("users/authPage", {
-        message: "Please use admin login",
+        message: "Invalid password",
         activeForm: "signin",
       });
     }
 
-    if (findUser.isBlocked) {
-      return res.render("users/authPage", {
-        message:
-          "Your account has been blocked by the admin. Please contact support.",
-        activeForm: "signin",
-      });
-    }
-
+    // Try direct comparison using bcrypt
+    console.log('Attempting password comparison:');
+    console.log('Input password:', password);
+    console.log('Stored hash:', findUser.password);
+    
     const passwordMatch = await bcrypt.compare(password, findUser.password);
+    console.log('Password match result:', passwordMatch);
+    
     if (!passwordMatch) {
       return res.render("users/authPage", {
         message: "Invalid password",
@@ -292,8 +652,6 @@ const signin = async (req, res) => {
     };
     await req.session.save();
 
-    // console.log('User Session Data:', req.session.user);
-
     return res.redirect("/");
   } catch (error) {
     console.error("Signin error:", error);
@@ -304,17 +662,7 @@ const signin = async (req, res) => {
   }
 };
 
-//function for secure password
-const securePassword = async (password) => {
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    return passwordHash;
-  } catch (error) {
-    console.log("error while Securing password", error);
-  }
-};
 
-//function for verify otp
 const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
@@ -326,7 +674,7 @@ const verifyOtp = async (req, res) => {
       typeof req.session.userOtp
     );
 
-    // Check  session exists or mot
+    // Check session exists or not
     if (
       !req.session.userOtp ||
       !req.session.userData ||
@@ -380,7 +728,8 @@ const verifyOtp = async (req, res) => {
     }
 
     const user = req.session.userData;
-    const passwordHash = await securePassword(user.password);
+    // Hash the password here - this is the main fix
+    const passwordHash = await bcrypt.hash(user.password, 10);
 
     const saveUserData = new User({
       name: user.name,
@@ -439,7 +788,7 @@ const verifyOtp = async (req, res) => {
     });
     await userWallet.save();
 
-    console.log("Wallet initialized for new user:", saveUserData._id);
+    // console.log("Wallet initialized for new user:", saveUserData._id);
 
     delete req.session.userOtp;
     delete req.session.userData;
@@ -462,7 +811,7 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-//function for resend otp
+
 const resendOtp = async (req, res) => {
   try {
     const email = req.session.userData?.email;

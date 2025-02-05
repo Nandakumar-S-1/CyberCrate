@@ -26,7 +26,7 @@ const loadBrands = async (req, res) => {
       totalBrands: totalBrands,
     });
   } catch (error) {
-    console.log(error);
+    
     res.redirect("/pageError");
   }
 };
@@ -59,7 +59,7 @@ const addNewBrand = async (req, res) => {
 
     res.redirect("/admin/brands");
   } catch (error) {
-    console.log("Error occurred while adding new brand", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -70,7 +70,7 @@ const blockBrand = async (req, res) => {
     await Brand.findByIdAndUpdate(brandId, { isBlocked: true });
     res.json({ success: true });
   } catch (error) {
-    console.error("Error occurred while blocking brand:", error);
+    
     res.json({ success: false });
   }
 };
@@ -81,7 +81,7 @@ const unBlockBrand = async (req, res) => {
     await Brand.findByIdAndUpdate(brandId, { isBlocked: false });
     res.json({ success: true });
   } catch (error) {
-    console.error("Error occurred while unblocking brand:", error);
+    
     res.json({ success: false });
   }
 };
@@ -96,11 +96,10 @@ const deleteBrand = async (req, res) => {
       return res.redirect("/pageError");
     }
     await Brand.findByIdAndUpdate(id, { isDeleted: true });
-    console.log(`Brand with ID: ${id} has been soft deleted successfully`);
 
     res.redirect("/admin/brands");
   } catch (error) {
-    console.log("Error while deleting brand", error);
+    
     res.status(500).redirect("/pageError");
   }
 };
@@ -109,15 +108,14 @@ const restoreBrand = async (req, res) => {
   try {
     const id = req.query.id;
     if (!id) {
-      console.log("Invalid or missing ID");
+      
       return res.redirect("/pageError");
     }
     await Brand.findByIdAndUpdate(id, { isDeleted: false });
-    console.log(`Brand with ID: ${id} has been restored successfully`);
 
     res.redirect("/admin/brands");
   } catch (error) {
-    console.log("Error while restoring brand", error);
+    
     res.status(500).redirect("/pageError");
   }
 };

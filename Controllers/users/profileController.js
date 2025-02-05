@@ -260,9 +260,6 @@ const loadProfile = async (req, res) => {
     // Update session with fresh user data
     req.session.user = userData;
 
-    // Log phone number for debugging
-    console.log("Updated Phone:", userData.phone);
-
     res.render("users/userProfile", { user: userData });
   } catch (error) {
     console.error("Error loading profile:", error);

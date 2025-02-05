@@ -33,7 +33,7 @@ const getAllOrders = async (req, res) => {
       page: page,
     });
   } catch (error) {
-    console.error("Error getting all orders:", error);
+    
     res.status(500).send({ message: "Error getting all orders" });
   }
 };
@@ -60,7 +60,7 @@ const updateStatus = async (req, res) => {
     await order.save();
     return res.json({ message: "Status Updated Successfully" });
   } catch (error) {
-    console.log("Error while updating order status", error);
+    
     return res
       .status(500)
       .json({ message: "Error while updating order status" });
@@ -78,7 +78,7 @@ const viewOrder = async (req, res) => {
     }
     res.render("admin/viewOrder", { order });
   } catch (error) {
-    console.error("Error fetching order details:", error.message);
+    
     res.status(500).send({ message: "Internal Server Error" });
   }
 };

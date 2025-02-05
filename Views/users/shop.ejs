@@ -207,25 +207,74 @@
         }
 
         .discount-badge {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background-color: rgb(44, 33, 145); /* Bright red color */
-    color: rgb(255, 8, 8);
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    z-index: 1;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transform: rotate(5deg);
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: rgb(44, 33, 145);
+            /* Bright red color */
+            color: rgb(255, 8, 8);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transform: rotate(5deg);
+        }
+
+        .discount-badge span {
+            display: block;
+            text-align: center;
+            line-height: 1;
+        }
+        .filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    cursor: pointer;
 }
 
-.discount-badge span {
-    display: block;
-    text-align: center;
-    line-height: 1;
+.filter-group input[type="checkbox"] {
+    margin-right: 8px;
 }
+
+.filter-group input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#category-list, #all-categories,
+#brand-list, #all-brands {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Optional: Style for the scrollbar */
+#category-list::-webkit-scrollbar,
+#all-categories::-webkit-scrollbar,
+#brand-list::-webkit-scrollbar,
+#all-brands::-webkit-scrollbar {
+    width: 6px;
+}
+
+#category-list::-webkit-scrollbar-track,
+#all-categories::-webkit-scrollbar-track,
+#brand-list::-webkit-scrollbar-track,
+#all-brands::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#category-list::-webkit-scrollbar-thumb,
+#all-categories::-webkit-scrollbar-thumb,
+#brand-list::-webkit-scrollbar-thumb,
+#all-brands::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
     </style>
 
 
@@ -233,28 +282,37 @@
         <aside class="sidebar">
             <h2>Filters</h2>
             <form id="filter-form" action="/users/shop" method="GET">
+
+                <% if (hasActiveFilters) { %>
+                    <button type="button" id="clear-filters" class="clear-filters-btn">
+                        Clear All Filters
+                    </button>
+                <% } %>
+
                 <div class="filter-group">
                     <h3>Categories</h3>
                     <input type="text" placeholder="Search Categories" id="category-search">
                     <div id="category-list">
-                        <% categories.slice(0, 18).forEach(category=> { %>
+                        <% categories.slice(0, 18).forEach(category => { %>
                             <label>
-                                <input type="checkbox" name="categories" value="<%= category._id %>"
-                                    <%=selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
-
+                                <input type="checkbox" 
+                                       name="categories" 
+                                       value="<%= category._id %>"
+                                       <%= selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
                                 <%= category.name %>
                             </label>
-                            <% }); %>
-                                <button type="button" class="btn btn-primary" id="more-categories">more</button>
-                    </div>
+                        <% }); %>
+                        </div>
                     <div id="all-categories" style="display:none;">
-                        <% categories.slice(3).forEach(category=> { %>
+                        <% categories.slice(18).forEach(category => { %>
                             <label>
-                                <input type="checkbox" name="categories" value="<%= category._id %>"
-                                    <%=selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
+                                <input type="checkbox" 
+                                       name="categories" 
+                                       value="<%= category._id %>"
+                                       <%= selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
                                 <%= category.name %>
                             </label>
-                            <% }); %>
+                        <% }); %>
                     </div>
                 </div>
 
@@ -307,6 +365,9 @@
                         <option value="aToZ" <%=sortWays==='aToZ' ? 'selected' : '' %>>Name: Ascending</option>
                         <option value="zToA" <%=sortWays==='zToA' ? 'selected' : '' %>>Name: Descending</option>
                     </select>
+                    <input type="hidden" name="page" value="<%= currentPage %>">
+                    <input type="hidden" name="limit" value="<%= limit %>">
+
                 </div>
                 <button type="submit">Apply Filters</button>
             </form>
@@ -325,9 +386,9 @@
                                 <%= product.productName %>
                             </h2>
                         </a>
-                        <p>Offer Price: ₹<%= product.salePrice.toFixed(2) %>
+                        <p>Offer Price: ₹<%=parseInt( product.salePrice) %>
                         </p>
-                        <p>Original Price: ₹<%= product.realPrice.toFixed(2) %>
+                        <p>Original Price: ₹<%=parseInt(product.realPrice) %>
                         </p>
 
                         <!-- <p>You Save: ₹<%= product.discountAmount %> on this product</p> -->
@@ -335,20 +396,23 @@
                         <p>Stocks left: <%= product.quantity %>
                         </p>
                         <div class="product-buttons">
-                            <%if(product.discountPercentage && product.discountPercentage > 0){%>
-                            <div class="discount-badge">
-                                <span><%= product.discountPercentage %>% OFF</span>
-                            </div>
-                            <%}%>
-                            <button class="icon-btn" onclick="addToCart('<%= product._id %>')">
-                                <i class="fas fa-shopping-cart discount-circle"></i>
-                            </button>
-                            <button
-                                class="icon-btn add-to-favorites <%= wishListProducts.includes(product._id.toString()) ? 'in-wishlist' : '' %>"
-                                onclick="addToFavorites('<%= product._id %>')" data-product-id="<%= product._id %>">
-                                <i class="fas fa-heart discount-circle"></i>
-                            </button>
-                            <!-- <button class="icon-btn " onclick="addToFavorites('<%= product._id %>')">
+                            <%if(product.discountPercentage && product.discountPercentage> 0){%>
+                                <div class="discount-badge">
+                                    <span>
+                                        <%= product.discountPercentage %>% OFF
+                                    </span>
+                                </div>
+                                <%}%>
+                                    <button class="icon-btn" onclick="addToCart('<%= product._id %>')">
+                                        <i class="fas fa-shopping-cart discount-circle"></i>
+                                    </button>
+                                    <button
+                                        class="icon-btn add-to-favorites <%= wishListProducts.includes(product._id.toString()) ? 'in-wishlist' : '' %>"
+                                        onclick="addToFavorites('<%= product._id %>')"
+                                        data-product-id="<%= product._id %>">
+                                        <i class="fas fa-heart discount-circle"></i>
+                                    </button>
+                                    <!-- <button class="icon-btn " onclick="addToFavorites('<%= product._id %>')">
                                 <i class="fas fa-heart discount-circle"></i>
                             </button> -->
                         </div>
@@ -358,9 +422,14 @@
             </div>
             <div class="pagination">
                 <% for (let i=1; i <=totalPages; i++) { %>
-                    <a href="?page=<%= i %>&limit=<%= limit %>" class="<%= currentPage === i ? 'active' : '' %>">
+                    <!-- <a href="?page=<%= i %>&limit=<%= limit %>" class="<%= currentPage === i ? 'active' : '' %>">
+                        <%= i %>
+                    </a> -->
+                    <a href="?page=<%= i %>&limit=<%= limit %>&<%= filterQuery %>"
+                        class="<%= currentPage === i ? 'active' : '' %>">
                         <%= i %>
                     </a>
+
                     <% } %>
             </div>
         </main>
@@ -431,85 +500,171 @@
                     e.stopPropagation();
                     addToFavorites(productId);
                 });
-                card.querySelector(".product-title").addEventListener("click", (e) => {
-                    e.stopPropagation();
-                });
             });
+
+            // Initialize filtering and pagination functionality
+            initProductFiltering();
         });
-    </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Expand categories
-            document.getElementById('more-categories').addEventListener('click', function () {
-                document.getElementById('all-categories').style.display = 'block';
-                this.style.display = 'none'; // Hide the "more" button
-            });
 
-            // Expand brands
-            document.getElementById('more-brands').addEventListener('click', function () {
-                document.getElementById('all-brands').style.display = 'block';
-                this.style.display = 'none'; // Hide the "more" button
-            });
+        function initProductFiltering() {
+            const filterForm = document.getElementById('filter-form');
+            const productsContainer = document.querySelector('.products');
+            const paginationContainer = document.querySelector('.pagination');
+
+            function updateURL(params) {
+                const url = new URL(window.location.href);
+                params.forEach((value, key) => {
+                    if (value) {
+                        url.searchParams.set(key, value);
+                    } else {
+                        url.searchParams.delete(key);
+                    }
+                });
+                return url;
+            }
+
+            async function fetchFilteredProducts(url) {
+                try {
+                    const response = await fetch(url, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    if (!response.ok) throw new Error('Failed to fetch products');
+
+                    const data = await response.json();
+                    if (!data.success) throw new Error(data.message || 'Failed to load products');
+
+                    renderProducts(data.products);
+                    renderPagination(data.currentPage, data.totalPages, data.filterQuery);
+                    window.history.pushState({}, '', url);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    productsContainer.innerHTML = `
+        <div class="error-message">
+          Failed to load products. Please try again later.
+        </div>
+      `;
+                }
+            }
+
+            function renderProducts(products) {
+                productsContainer.innerHTML = products.map(product => `
+      <div class="product-card">
+        <a href="/productDetails/${product._id}">
+          <img src="/img/products/${product.productImage[0]}" alt="${product.productName}" loading="lazy">
+          <h2 class="p-name">${product.productName}</h2>
+        </a>
+        <p>Offer Price: ₹${parseInt(product.salePrice)}</p>
+        <p>Original Price: ₹${parseInt(product.realPrice)}</p>
+        <p>Stocks left: ${product.quantity}</p>
+        <div class="product-buttons">
+          ${product.discountPercentage > 0 ?
+                        `<div class="discount-badge">
+              <span>${product.discountPercentage}% OFF</span>
+             </div>` : ''
+                    }
+          <button class="icon-btn" onclick="addToCart('${product._id}')">
+            <i class="fas fa-shopping-cart discount-circle"></i>
+          </button>
+          <button class="icon-btn add-to-favorites" onclick="addToFavorites('${product._id}')"
+            data-product-id="${product._id}">
+            <i class="fas fa-heart discount-circle"></i>
+          </button>
+        </div>
+      </div>
+    `).join('');
+            }
+
+            function renderPagination(currentPage, totalPages, filterQuery) {
+                paginationContainer.innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .map(page => `
+        <a href="?page=${page}&${filterQuery}"
+           class="${page === currentPage ? 'active' : ''}"
+           data-page="${page}">
+          ${page}
+        </a>
+      `).join('');
+
+                // Attach event listeners to new pagination links
+                paginationContainer.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', handlePaginationClick);
+                });
+            }
+
+            function handlePaginationClick(e) {
+                e.preventDefault();
+                const url = new URL(e.target.href);
+                fetchFilteredProducts(url.toString());
+            }
 
             // Handle form submission
-            document.getElementById('filter-form').addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                const form = document.getElementById('filter-form');
-                const formData = new FormData(form);
-
-                // Convert form data to query string
-                const params = new URLSearchParams();
-                for (const [key, value] of formData.entries()) {
-                    if (Array.isArray(params.getAll(key))) {
-                        params.append(key, value);
-                    } else {
-                        params.set(key, value);
-                    }
-                }
-
-                // Update browser URL
-                const newUrl = `${window.location.pathname}?${params.toString()}`;
-                window.history.pushState({}, '', newUrl);
-
-                // Fetch filtered products
-                fetch(`/users/shop?${params.toString()}`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Failed to fetch products');
-                        return response.json();
-                    })
-                    .then(data => {
-                        const productsContainer = document.querySelector('.products');
-                        productsContainer.innerHTML = ''; // Clear previous products
-
-                        data.products.forEach(product => {
-                            const productCard = `
-                        <div class="product-card">
-                            <a href="/productDetails/${product._id}">
-                                <img src="/img/products/${product.productImage[0]}" alt="${product.productName}">
-                                <h2>${product.productName}</h2>
-                            </a>
-                            <p>₹${product.salePrice}</p>
-                            <div class="product-buttons">
-                                <button class="icon-btn" onclick="addToCart('${product._id}')">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </button>
-                                <button class="icon-btn" onclick="addToFavorites('${product._id}')">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>`;
-                            productsContainer.insertAdjacentHTML('beforeend', productCard);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        const productsContainer = document.querySelector('.products');
-                        productsContainer.innerHTML = `<p class="error-message">Failed to load products. Please try again later.</p>`;
-                    });
+            filterForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(filterForm);
+                const url = updateURL(formData);
+                await fetchFilteredProducts(url.toString());
             });
+
+            // Initialize filter triggers
+            initializeFilterTriggers();
+        }
+
+        function initializeFilterTriggers() {
+           
+            const categorySearch = document.getElementById('category-search');
+            categorySearch?.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                document.querySelectorAll('#category-list label, #all-categories label').forEach(label => {
+                    const categoryName = label.textContent.trim().toLowerCase();
+                    label.style.display = categoryName.includes(searchTerm) ? '' : 'none';
+                });
+            });
+
+            // Brand search
+            const brandSearch = document.getElementById('brand-search');
+            brandSearch?.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                document.querySelectorAll('#brand-list label, #all-brands label').forEach(label => {
+                    const brandName = label.textContent.trim().toLowerCase();
+                    label.style.display = brandName.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', () => {
+            // Uncheck all category checkboxes
+            document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Uncheck all brand checkboxes
+            document.querySelectorAll('input[name="brands"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Reset price range to default
+            const minPriceInput = document.getElementById('min-price-input');
+            const maxPriceInput = document.getElementById('max-price-input');
+            minPriceInput.value = 5000;
+            maxPriceInput.value = 500000;
+
+            // Reset sort by to default
+            document.getElementById('sort-by').value = 'default';
+
+            // Submit the form to clear all filters
+            document.getElementById('filter-form').submit();
         });
+    }
+});
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initProductFiltering);
 
     </script>
 

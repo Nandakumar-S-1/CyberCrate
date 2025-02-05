@@ -26,7 +26,7 @@ const getCheckoutPage = async (req, res) => {
 
     const userCart = await Cart.findOne({ userId: userId });
     cartCount = userCart ? userCart.items.length : 0;
-    console.log(cartCount);
+    
 
     if (!userId) {
       return res.status(400).send({ message: "User is not logged in" });
@@ -82,9 +82,6 @@ const getCheckoutPage = async (req, res) => {
     // const finalAmount = Math.max(cartTotal - totalDiscount, 0);
     const couponReduction = req.session.couponReduction || 0
 
-    // console.log("Session in Checkout:", req.session);
-    // console.log("Coupon Reduction in Checkout:", couponReduction);
-
     const finalAmount = Math.max(cartTotal + deliveryCharge - couponReduction, 0);
 
     res.render("users/checkout", {
@@ -102,7 +99,6 @@ const getCheckoutPage = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error loading checkout page:", error);
     res.status(500).send({ message: "Error loading checkout page" });
   }
 };
@@ -238,7 +234,6 @@ const placeOrders = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error placing order:", error);
     return res.status(500).json({ message: "Error placing order" });
   }
 };
@@ -482,15 +477,12 @@ const orderDetails = async (req, res) => {
       select: "productName productImage description ",
     });
 
-    console.log('order', order.deliveryCharge);
-
     if (!order) {
       return res.status(404).send({ message: "Order not found" });
     }
 
     res.render("users/orderDetails", { order, userId });
   } catch (error) {
-    console.error("Error fetching order details:", error.message);
     res.status(500).send({ message: "Internal Server Error" });
   }
 }

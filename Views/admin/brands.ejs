@@ -40,7 +40,7 @@
                                         <th>Logo</th>
                                         <th>Status</th>
                                         <th>Block/Unblock</th>
-                                        <th>Delete/Restore</th>
+                                        <!-- <th>Delete/Restore</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -76,7 +76,7 @@
                                                 </button>
                                                 <% } %>
                                             </td>
-                                            <td>
+                                            <!-- <td>
                                                 <% if (brand.isDeleted) { %>
                                                 <button class="btn btn-warning" style="width: 90px" onclick="return confirmRestore()">
                                                     <a href="/admin/restoreBrand?id=<%= brand._id %>" class="text-white text-decoration-none">Restore</a>
@@ -86,7 +86,7 @@
                                                     <a href="/admin/deleteBrand?id=<%= brand._id %>" class="text-white text-decoration-none">Delete</a>
                                                 </button>
                                                 <% } %>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     <% }) %>
                                 </tbody>

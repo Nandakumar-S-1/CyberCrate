@@ -74,7 +74,7 @@ const loadProducts = async (req, res) => {
       res.render("404-error");
     }
   } catch (error) {
-    console.error("Error loading products:", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -91,7 +91,7 @@ const loadAddProduct = async (req, res) => {
       product: product,
     });
   } catch (error) {
-    console.error("Error loading add product page:", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -175,7 +175,7 @@ const addNewProduct = async (req, res) => {
       res.status(500).json({ error: "Failed to save product" });
     }
   } catch (error) {
-    console.log("Error adding new product:", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -267,7 +267,7 @@ const editProduct = async (req, res) => {
     );
     res.redirect("/admin/products");
   } catch (error) {
-    console.error("Error while editing product:", error);
+   
     res.redirect("/pageError");
   }
 };
@@ -276,13 +276,11 @@ const blockProduct = async (req, res) => {
   try {
     const productId = req.params.id;
 
-    // await Product.updateOne({_id:productId},{$set:{isBlocked:true}})
-    await Product.findByIdAndUpdate(productId, { isBlocked: true });
-    // await Cart.updateMany({}, { $pull: { items: { productId: productId } } });
-
+  await Product.findByIdAndUpdate(productId, { isBlocked: true });
+    
     res.status(200).send({ message: "Product blocked successfully" });
   } catch (error) {
-    console.log("error while blocking product", error);
+    
     res.status(500).send("Error while blocking product");
   }
 };
@@ -293,7 +291,6 @@ const unBlockProduct = async (req, res) => {
     await Product.updateOne({ _id: productId }, { $set: { isBlocked: false } });
     res.status(200).send({ message: "Product unblocked successfully" });
   } catch (error) {
-    console.log("error while unblocking product", error);
     res.status(500).send("Error while unblocking product");
   }
 };
@@ -315,7 +312,7 @@ const loadEditProduct = async (req, res) => {
       brand: brand,
     });
   } catch (error) {
-    console.log("Error while loading edit product", error);
+    
     res.redirect("/pageError");
   }
 };
@@ -407,7 +404,7 @@ const deleteOffer = async (req, res) => {
       res.status(404).send("Product not found");
     }
   } catch (error) {
-    console.log("error while deleting offer", error);
+    
     res.status(500).send("Error while deleting offer");
   }
 };

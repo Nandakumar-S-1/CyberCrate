@@ -55,9 +55,9 @@
                         <h5 class="card-title">Report Summary</h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Total Revenue:</strong> ₹<%= totalRevenue %>
+                                <p><strong>Total Revenue:</strong> ₹<%=parseInt( totalRevenue) %>
                                 </p>
-                                <p><strong>Total Discounts:</strong> ₹<%= totalDiscount %>
+                                <p><strong>Total Discounts:</strong> ₹<%= parseInt( totalDiscount )%>
                                 </p>
                                 <p><strong>Coupon Discounts:</strong> ₹<%= couponDiscount %>
                                 </p>
@@ -121,45 +121,10 @@
             <%- include('../layouts/admin/footer.ejs') %>
         </main>
 
-        <style>
-            .main-wrap {
-                margin-left: 300px;
-                background-color: #f8f9fa;
-                min-height: 100vh;
-                padding: 20px;
-            }
-
-            .content-header {
-                background-color: #007bff !important;
-                color: #fff;
-            }
-
-            .content-title {
-                font-size: 1.75rem;
-                font-weight: 600;
-            }
-
-            .btn {
-                text-transform: uppercase;
-            }
-
-            .card-title {
-                font-weight: 600;
-            }
-
-            .form-label {
-                font-weight: 500;
-            }
-
-            .table th {
-                background-color: #e9ecef;
-            }
-        </style>
-
 
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
+        <!-- <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const reportForm = document.getElementById('reportForm');
                 const reportType = document.getElementById('reportType');
@@ -171,6 +136,20 @@
                 function formatDate(date) {
                     return date.toISOString().split('T')[0];
                 }
+
+                pdfDownload.addEventListener('click', function (event) {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+
+            if (!startDate || !endDate) {
+                event.preventDefault(); // Prevent navigation
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Dates',
+                    text: 'Please select both start and end dates before generating the report.',
+                });
+            }
+        });
 
                 reportType.addEventListener('change', function () {
                     const today = new Date();
@@ -241,4 +220,141 @@
 
                 startDateInput.addEventListener('change', updateDownloadLinks);
     endDateInput.addEventListener('change', updateDownloadLinks);});
+        </script> -->
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+    const reportForm = document.getElementById('reportForm');
+    const reportType = document.getElementById('reportType');
+    const startDateInput = document.querySelector('input[name="startDate"]');
+    const endDateInput = document.querySelector('input[name="endDate"]');
+    const pdfDownload = document.getElementById('pdfDownload');
+    const excelDownload = document.getElementById('excelDownload');
+
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function validateDateSelection(event) {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        if (!startDate || !endDate) {
+            event.preventDefault(); // Prevent navigation
+            Swal.fire({
+                icon: 'error',
+                title: 'Missing Dates',
+                text: 'Please select both start and end dates before generating the report.',
+            });
+        }
+    }
+
+    pdfDownload.addEventListener('click', validateDateSelection);
+    excelDownload.addEventListener('click', validateDateSelection);
+
+    reportType.addEventListener('change', function () {
+        const today = new Date();
+        let startDate, endDate;
+
+        switch (this.value) {
+            case 'daily':
+                startDate = endDate = today;
+                break;
+            case 'weekly':
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - today.getDay());
+                endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 6);
+                break;
+            case 'monthly':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                break;
+            case 'custom':
+                startDateInput.value = '';
+                endDateInput.value = '';
+                return;
+        }
+
+        if (startDate && endDate) {
+            startDateInput.value = formatDate(startDate);
+            endDateInput.value = formatDate(endDate);
+        }
+
+        updateDownloadLinks();
+    });
+
+    reportForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const params = new URLSearchParams(formData);
+
+        try {
+            window.location.href = `/admin/filter-sales?${params.toString()}`;
+            Swal.fire({
+                icon: 'success',
+                title: 'Report Generated',
+                text: 'The sales report has been successfully generated.',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while generating the sales report.',
+            });
+        }
+    });
+
+    function updateDownloadLinks() {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        if (startDate && endDate) {
+            const params = `startDate=${startDate}&endDate=${endDate}`;
+            pdfDownload.href = `/admin/download-pdf?${params}`;
+            excelDownload.href = `/admin/download-excel?${params}`;
+        }
+    }
+
+    startDateInput.addEventListener('change', updateDownloadLinks);
+    endDateInput.addEventListener('change', updateDownloadLinks);
+});
+
         </script>
+        
+<style>
+    .main-wrap {
+        margin-left: 300px;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .content-header {
+        background-color: #007bff !important;
+        color: #fff;
+    }
+
+    .content-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        text-transform: uppercase;
+    }
+
+    .card-title {
+        font-weight: 600;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .table th {
+        background-color: #e9ecef;
+    }
+</style>

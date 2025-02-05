@@ -2,172 +2,167 @@ const Product = require("../../Models/productModel");
 const Category = require("../../Models/categoryModel");
 const Brand = require("../../Models/brandModel");
 const User = require("../../Models/userModel");
-const Order = require("../../Models/orderModel");
 const Cart = require("../../Models/cartModel");
-const Wallet = require("../../Models/walletModel");
-const Address = require("../../Models/addressModel");
 const Wishlist = require("../../Models/wishlistModel");
-const mongoose = require("mongoose");
 
-//function to calculate discount
+// Function to calculate discount
 function calculateDiscount(realPrice, salePrice) {
   if (realPrice <= 0) return 0;
   return Math.round(((realPrice - salePrice) / realPrice) * 100);
 }
 
-//function to load shop
+
 const loadShop = async (req, res) => {
   try {
     const userId = req.session.user;
     const userData = await User.findById(userId);
-
     const userCart = await Cart.findOne({ userId: userId });
-    cartCount = userCart ? userCart.items.length : 0;
+    const cartCount = userCart ? userCart.items.length : 0;
 
+    // Pagination parameters
     const page = parseInt(req.query.page) || 1;
-    const limit = 9;
+    const limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
+    
+    // Filter parameters
     const sortBy = req.query.sortBy || "default";
     const minPrice = parseInt(req.query.minPrice) || 5000;
     const maxPrice = parseInt(req.query.maxPrice) || 500000;
+    const searchWord = req.query.searchWord || "";
 
-    const selectedCategories = Array.isArray(req.query.categories)
-      ? req.query.categories
-      : req.query.categories
-      ? [req.query.categories]
+    // Handle categories and brands
+    const selectedCategories = req.query.categories 
+      ? (Array.isArray(req.query.categories) ? req.query.categories : [req.query.categories])
       : [];
-    const selectedBrands = Array.isArray(req.query.brands)
-      ? req.query.brands
-      : req.query.brands
-      ? [req.query.brands]
+    const selectedBrands = req.query.brands 
+      ? (Array.isArray(req.query.brands) ? req.query.brands : [req.query.brands])
       : [];
 
-    const listedCategories = await Category.find({ isListed: true });
-    const listedCategoryIds = listedCategories.map((category) =>
-      category._id.toString()
-    );
-
-    const activeBrands = await Brand.find({
-      isBlocked: false,
-      isDeleted: false,
-    }).select("_id");
-    const activeBrandIds = activeBrands.map((brand) => brand._id.toString());
-
+    // Build base query
     let query = {
       salePrice: { $gte: minPrice, $lte: maxPrice },
-      isBlocked: false,
-      brand: { $in: activeBrandIds }, 
+      isBlocked: false
     };
-    let sortCriteria = {};
 
-    query.category = { $in: listedCategoryIds };
-
+    // Apply category filter
     if (selectedCategories.length > 0) {
-      query.category = {
-        $in: selectedCategories.filter((id) => listedCategoryIds.includes(id)),
-      };
+      query.category = { $in: selectedCategories };
     }
+
+    // Apply brand filter
     if (selectedBrands.length > 0) {
       query.brand = { $in: selectedBrands };
     }
 
-    if (req.query.searchWord) {
+    // Apply search filter
+    if (searchWord) {
       query.$or = [
-        { name: { $regex: req.query.searchWord, $options: "i" } },
-        { description: { $regex: req.query.searchWord, $options: "i" } },
+        { productName: { $regex: searchWord, $options: "i" } },
+        { description: { $regex: searchWord, $options: "i" } }
       ];
     }
 
-    if (sortBy === "priceLowHigh") {
-      sortCriteria = { salePrice: 1 };
-    } else if (sortBy === "priceHighLow") {
-      sortCriteria = { salePrice: -1 };
-    } else if (sortBy === "featured") {
-      sortCriteria = { quantity: -1 };
-    } else if (sortBy === "newArrivals") {
-      sortCriteria = { createdAt: -1 };
-    } else if (sortBy === "aToZ") {
-      sortCriteria = { productName: 1 };
-    } else if (sortBy === "zToA") {
-      sortCriteria = { productName: -1 };
+    // Determine sort criteria
+    let sortWays = {};
+    switch (sortBy) {
+      case "priceLowHigh": sortWays = { salePrice: 1 }; break;
+      case "priceHighLow": sortWays = { salePrice: -1 }; break;
+      case "featured": sortWays = { quantity: -1 }; break;
+      case "newArrivals": sortWays = { createdAt: -1 }; break;
+      case "aToZ": sortWays = { productName: 1 }; break;
+      case "zToA": sortWays = { productName: -1 }; break;
+      default: sortWays = { createdAt: -1 };
     }
 
+    // Fetch products with pagination
     const products = await Product.find(query)
-      .sort(sortCriteria)
+      .sort(sortWays)
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean(); // Using lean() for better performance
 
-    products.forEach((product) => {
-      product.discountPercentage = calculateDiscount(
-        product.realPrice,
-        product.salePrice
-      );
-      // product.discountAmount = (product.realPrice - product.salePrice).toFixed(2);
-    });
-
-    const discountAmount = parseInt(products.realPrice - products.salePrice);
-
+    // Calculate total for pagination
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
-    const categories = await Category.find({ isListed: true });
-    const brands = await Brand.find({ isBlocked: false });
 
-    const bestSellers = await Order.aggregate([
-      {
-        $unwind: "$products", // Flatten the products array
-      },
-      {
-        $group: {
-          _id: "$products.productId", // Group by product ID
-          totalSold: { $sum: "$products.quantity" }, // Sum the quantities
-        },
-      },
-      {
-        $sort: { totalSold: -1 },
-      },
-      {
-        $limit: 6, // Limit to the top 5 most sold products
-      },
-    ]);
-
-    // Fetch the product details for the best sellers
-    const bestSellerProducts = await Product.find({
-      _id: { $in: bestSellers.map((product) => product._id) },
+    // Calculate discount for each product
+    products.forEach(product => {
+      product.discountPercentage = calculateDiscount(product.realPrice, product.salePrice);
     });
 
-    // In your loadShop controller function
-    const userWishlist = userId
-      ? await Wishlist.findOne({ userId: userId })
-      : null;
-    const wishListProducts = userWishlist
-      ? userWishlist.products.map((item) => item.productId.toString()) // Convert ObjectId to string
-      : [];
-
-    res.render("users/shop", {
-      user: userData,
-      products: products,
-      categories: categories,
-      brands: brands,
-      currentPage: "shop",
-      totalPages: totalPages,
-      limit: limit,
-      selectedCategories: selectedCategories,
-      selectedBrands: selectedBrands,
-      sortWays: sortBy,
+    // Build filter query string for pagination links
+    const filterParams = new URLSearchParams({
       minPrice: minPrice,
       maxPrice: maxPrice,
-      searchWord: req.query.searchWord || "",
-      discountAmount,
-      bestSellers: bestSellerProducts,
+      sortBy: sortBy,
+      limit: limit
+    });
+
+    if (selectedCategories.length) filterParams.append('categories', selectedCategories.join(','));
+    if (selectedBrands.length) filterParams.append('brands', selectedBrands.join(','));
+    if (searchWord) filterParams.append('searchWord', searchWord);
+
+    const filterQuery = filterParams.toString();
+
+         const hasActiveFilters = selectedCategories.length > 0 || 
+        selectedBrands.length > 0 || 
+        searchWord || 
+        minPrice !== 5000 || 
+        maxPrice !== 500000 || 
+        sortBy !== 'default';
+
+
+    // Handle AJAX requests
+    if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.json({
+        success: true,
+        products: products,
+        currentPage: page,
+        totalPages: totalPages,
+        filterQuery: filterQuery
+      });
+    }
+
+    // Regular page render
+    const categories = await Category.find({ isListed: true }).lean();
+    const brands = await Brand.find({ isBlocked: false }).lean();
+    const userWishlist = userId ? await Wishlist.findOne({ userId: userId }) : null;
+    const wishListProducts = userWishlist 
+      ? userWishlist.products.map(item => item.productId.toString())
+      : [];
+
+    return res.render("users/shop", {
+      user: userData,
+      products,
+      categories,
+      brands,
+      currentPage: page,
+      totalPages,
+      limit,
+      selectedCategories,
+      selectedBrands,
+      sortBy,
+      minPrice,
+      maxPrice,
+      searchWord,
       wishListProducts,
       cartCount,
-      // wishlistCount
+      filterQuery,
+      sortWays,
+      hasActiveFilters
     });
+
   } catch (error) {
-    console.log("Error while loading shop:", error);
-    res.redirect("/pageError");
+    console.error("Error in loadShop:", error);
+    if (!res.headersSent) {
+      res.status(500).render('error', { 
+        message: "An error occurred while loading the shop",
+        error: error 
+      });
+    }
   }
 };
+
 
 module.exports = {
   loadShop,
