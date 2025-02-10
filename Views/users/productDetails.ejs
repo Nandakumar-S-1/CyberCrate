@@ -1,6 +1,40 @@
 <%- include('../layouts/user/header') %>
 
     <style>
+
+        
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.breadcrumb-item {
+    font-size: 14px;
+    color: #000000;
+}
+
+.breadcrumb-item a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    padding: 0 10px;
+    color: #000000;
+}
+
+.breadcrumb-item.active {
+    color: #000000;
+}
+
         .zoom-container {
             position: relative;
             width: 100%;
@@ -428,6 +462,15 @@
             font-size: 18px;
         }
     </style>
+
+<div class="breadcrumb-container">
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Product Details</li>
+        </ol>
+    </nav>
+</div>
 
     <section class="mt-50 mb-50">
         <div class="container">

@@ -124,7 +124,8 @@
 
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- <script>
+       
+        <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const reportForm = document.getElementById('reportForm');
                 const reportType = document.getElementById('reportType');
@@ -132,63 +133,80 @@
                 const endDateInput = document.querySelector('input[name="endDate"]');
                 const pdfDownload = document.getElementById('pdfDownload');
                 const excelDownload = document.getElementById('excelDownload');
-
+            
+                const today = new Date();
+                const todayStr = formatDate(today);
+            
+                // Prevent selecting future dates
+                startDateInput.setAttribute("max", todayStr);
+                endDateInput.setAttribute("max", todayStr);
+            
                 function formatDate(date) {
                     return date.toISOString().split('T')[0];
                 }
-
-                pdfDownload.addEventListener('click', function (event) {
-            const startDate = startDateInput.value;
-            const endDate = endDateInput.value;
-
-            if (!startDate || !endDate) {
-                event.preventDefault(); // Prevent navigation
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Missing Dates',
-                    text: 'Please select both start and end dates before generating the report.',
-                });
-            }
-        });
-
+            
+                function validateDateSelection(event) {
+                    const startDate = startDateInput.value;
+                    const endDate = endDateInput.value;
+            
+                    if (!startDate || !endDate) {
+                        event.preventDefault();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Missing Dates',
+                            text: 'Please select both start and end dates before generating the report.',
+                        });
+                        return;
+                    }
+            
+                    if (startDate > todayStr || endDate > todayStr) {
+                        event.preventDefault();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Date',
+                            text: 'You cannot select a future date.',
+                        });
+                    }
+                }
+            
+                pdfDownload.addEventListener('click', validateDateSelection);
+                excelDownload.addEventListener('click', validateDateSelection);
+            
                 reportType.addEventListener('change', function () {
-                    const today = new Date();
                     let startDate, endDate;
-
+            
                     switch (this.value) {
                         case 'daily':
                             startDate = endDate = today;
                             break;
                         case 'weekly':
                             startDate = new Date(today);
-                            startDate.setDate(today.getDate() - today.getDay()); 
-                            endDate = new Date(startDate);
-                            endDate.setDate(startDate.getDate() + 6); 
+                            startDate.setDate(today.getDate() - today.getDay()); // Start of the week
+                            endDate = today; // If week is incomplete, today is the max end date
                             break;
                         case 'monthly':
-                            startDate = new Date(today.getFullYear(), today.getMonth(), 1); 
-                            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); 
+                            startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Start of the month
+                            endDate = today; // If month is incomplete, today is the max end date
                             break;
                         case 'custom':
-                            
                             startDateInput.value = '';
                             endDateInput.value = '';
                             return;
                     }
-
+            
                     if (startDate && endDate) {
                         startDateInput.value = formatDate(startDate);
                         endDateInput.value = formatDate(endDate);
                     }
-
+            
                     updateDownloadLinks();
                 });
-
+            
                 reportForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const formData = new FormData(e.target);
                     const params = new URLSearchParams(formData);
-
+            
                     try {
                         window.location.href = `/admin/filter-sales?${params.toString()}`;
                         Swal.fire({
@@ -206,22 +224,83 @@
                         });
                     }
                 });
-
+            
                 function updateDownloadLinks() {
                     const startDate = startDateInput.value;
                     const endDate = endDateInput.value;
-
+            
                     if (startDate && endDate) {
                         const params = `startDate=${startDate}&endDate=${endDate}`;
                         pdfDownload.href = `/admin/download-pdf?${params}`;
                         excelDownload.href = `/admin/download-excel?${params}`;
                     }
                 }
+            
+                startDateInput.addEventListener('change', function () {
+                    if (this.value > todayStr) {
+                        this.value = todayStr;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Date',
+                            text: 'Future dates are not allowed.',
+                        });
+                    }
+                    updateDownloadLinks();
+                });
+            
+                endDateInput.addEventListener('change', function () {
+                    if (this.value > todayStr) {
+                        this.value = todayStr;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Date',
+                            text: 'Future dates are not allowed.',
+                        });
+                    }
+                    updateDownloadLinks();
+                });
+            });
+            </script>
+            
 
-                startDateInput.addEventListener('change', updateDownloadLinks);
-    endDateInput.addEventListener('change', updateDownloadLinks);});
-        </script> -->
+<style>
+    .main-wrap {
+        margin-left: 300px;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 20px;
+    }
 
+    .content-header {
+        background-color: #007bff !important;
+        color: #fff;
+    }
+
+    .content-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        text-transform: uppercase;
+    }
+
+    .card-title {
+        font-weight: 600;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .table th {
+        background-color: #e9ecef;
+    }
+</style>
+
+
+        
+<!-- 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
     const reportForm = document.getElementById('reportForm');
@@ -322,39 +401,5 @@
     endDateInput.addEventListener('change', updateDownloadLinks);
 });
 
-        </script>
-        
-<style>
-    .main-wrap {
-        margin-left: 300px;
-        background-color: #f8f9fa;
-        min-height: 100vh;
-        padding: 20px;
-    }
-
-    .content-header {
-        background-color: #007bff !important;
-        color: #fff;
-    }
-
-    .content-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-    }
-
-    .btn {
-        text-transform: uppercase;
-    }
-
-    .card-title {
-        font-weight: 600;
-    }
-
-    .form-label {
-        font-weight: 500;
-    }
-
-    .table th {
-        background-color: #e9ecef;
-    }
-</style>
+        </script> -->
+ 

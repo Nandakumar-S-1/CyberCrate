@@ -140,12 +140,14 @@ router.get(
   orderController.orderDetails
 );
 router.get("/orders/:id/invoice", isLogAuth, orderController.generateInvoice);
-router.get("/orders/retry/:id", isLogAuth, orderController.retryPayment);
+// router.get("/orders/retry/:id", isLogAuth, orderController.retryPayment);
 router.post(
   "/createRetryPaymentOrder",
   isLogAuth,
   orderController.createRetryPaymentOrder
 );
+router.post('/retryPayment',isLogAuth,orderController.retryPayment)
+
 router.patch("/orders/:orderId/return", isLogAuth, orderController.returnOrder);
 
 // Wishlist routes
@@ -166,7 +168,9 @@ router.use("/wallet", (err, req, res, next) => {
   });
 });
 router.get("/wallet", isLogAuth, walletController.getWalletPage);
-router.post("/wallet/add-money", isLogAuth, walletController.addMoneyToWallet);
+// router.post("/wallet/add-money", isLogAuth, walletController.addMoneyToWallet);
+router.post('/wallet/recharge', isLogAuth, walletController.initiateWalletRecharge);
+router.post('/wallet/verify-recharge', isLogAuth, walletController.verifyWalletRecharge);
 
 router.post("/verifyCoupon", isLogAuth, couponController.verifyCoupon);
 router.post("/applyCoupon", isLogAuth, cartController.applyCoupon);

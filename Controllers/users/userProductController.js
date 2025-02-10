@@ -24,7 +24,6 @@ const productDetails = async (req, res) => {
       if (!product) {
         return res.status(404).render('404-error', { message: 'Product not found' });
       }
-      // console.log(product.brand);
 
       const relatedProducts = await Product.find({
         category: product.category,

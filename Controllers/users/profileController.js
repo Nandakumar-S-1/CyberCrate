@@ -455,7 +455,9 @@ const deleteAddress = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const user = req.user;
-    res.render("users/changePassword", { user });
+    const message = req.session.message || null; 
+    delete req.session.message; 
+    res.render("users/changePassword", { user,message });
   } catch (error) {
     res.redirect("/404-error");
   }
@@ -467,44 +469,86 @@ const changePasswordValidation = async (req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "New password and confirm password do not match",
-      });
+      req.session.message = {
+        type: "error",
+        text: "New password and confirm password do not match.",
+      };
+      return res.redirect("/profile/changePassword");
     }
 
     const user = await User.findById(req.session.user);
 
     if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User not found" });
+      req.session.message = { type: "error", text: "User not found." };
+      return res.redirect("/profile/changePassword");
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Current password is incorrect" });
+      req.session.message = { type: "error", text: "Current password is incorrect." };
+      return res.redirect("/profile/changePassword");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
 
-    return res.json({
-      success: true,
-      message: "Password changed successfully",
-      redirectUrl: "/profile",
-    });
+    req.session.message = { type: "success", text: "Password changed successfully!" };
+    return res.redirect("/profile/changePassword");
   } catch (error) {
     console.error("Change password error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error. Please try again later.",
-    });
+    req.session.message = {
+      type: "error",
+      text: "Internal server error. Please try again later.",
+    };
+    return res.redirect("/profile/changePassword");
   }
 };
+
+
+// const changePasswordValidation = async (req, res) => {
+//   try {
+//     const { currentPassword, newPassword, confirmPassword } = req.body;
+
+//     if (newPassword !== confirmPassword) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "New password and confirm password do not match",
+//       });
+//     }
+
+//     const user = await User.findById(req.session.user);
+
+//     if (!user) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "User not found" });
+//     }
+
+//     const isMatch = await bcrypt.compare(currentPassword, user.password);
+//     if (!isMatch) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Current password is incorrect" });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+//     user.password = hashedPassword;
+//     await user.save();
+
+//     return res.json({
+//       success: true,
+//       message: "Password changed successfully",
+//       redirectUrl: "/profile",
+//     });
+//   } catch (error) {
+//     console.error("Change password error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error. Please try again later.",
+//     });
+//   }
+// };
 
 //the controller function for getting addresses
 const getAddresses = async (req, res) => {

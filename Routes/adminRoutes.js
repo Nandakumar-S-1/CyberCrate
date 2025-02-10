@@ -151,6 +151,8 @@ router.get(
   adminOrderController.viewOrder
 );
 
+router.post('/orders/approve-return/:orderId',isAdminAuthenticated,adminOrderController.approveReturnOrder)
+
 //couponManagement routes
 router.get("/coupons", isAdminAuthenticated, couponController.loadCoupons);
 router.get(

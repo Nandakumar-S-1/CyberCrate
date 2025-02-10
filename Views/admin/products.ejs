@@ -2,9 +2,13 @@
     <%- include('../layouts/admin/sidebar.ejs', {currentPage: 'products' }) %>
             <div class="products-container">
             <div class="products-header">
-                <div class="header-left">
-                    <h2>All Products</h2>
-                    <p>Home > All Products</p>
+                <div class="breadcrumb-container">
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Product Details</li>
+                        </ol>
+                    </nav>
                 </div>
                 <div class="header-right">
                     <form id="filter-form" method="GET" action="/admin/products">
@@ -37,98 +41,7 @@
                     </button>
                 </div>
             </div>
-<!-- 
-            <div class="grid products-grid">
-                <% products.forEach(product=> { %>
-                    <div class="g-col-6 g-col-md-4 product-card">
-                        <div class="product-image">
-                            <img src="/img/products/<%= product.productImage[0] %>" alt="<%= product.productName %>">
-                            <button class="edit-button"><a href="/admin/editProduct/<%= product._id %>"><i class="fas fa-edit"></i></a></button>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="fw-bold">
-                                <%= product.productName %>
-                            </h3>
-                            <p class="category">
-                                <%= product.category ? product.category.name : 'No Category' %>
-                            </p>
-                            <p class="price fw-bold fw-dark fs-3 text-dark">₹ <%= parseInt(product.salePrice) %>
-                            </p>
-                            <div class="sideControl">
-                                <p class="price fw-bold fw-dark fs-5 text-muted text-decoration-line-through">₹ <%=
-                                        product.realPrice %>
-                                </p>
-                                <div class="buttons ">
-                                    <%if(product.productOffer){%>
-                                        <button class="btn btn-success">
-                                            <i class="fas fa-gift"></i>
-                                            <%=product.productOffer%>
-                                        </button>
-                                        <%}else{%>
-                                            <button class="btn btn-success">
-                                                <i class="fas fa-gift"></i>
-                                                0%
-                                            </button>
-                                        <%}%>
-                                </div>
-                                
-                                <div class="buttons">
-                                    <% if(product.isBlocked) { %>
-                                        <button class="btn btn-danger" onclick="unblockProduct('<%= product._id %>')"><i
-                                                class="fas fa-unlock"></i> Unblock</button>
-                                        <% } else { %>
-                                            <button class="btn btn-warning"
-                                                onclick="blockProduct('<%= product._id %>')"><i class="fas fa-lock"></i>
-                                                Block</button>
-                                            <% } %>
-                                </div>
-                            </div>
-                            <div class="product-stats">
-                                <div class="stat">
-                                    <div class="stat-value text-danger fw-bold">
-                                        <span>
-                                            <%= product.brand ? product.brand.brandName : 'No Brand' %>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="stat">
-                                    <p class="fw-bold">Sales</p>
-                                    <div class="stat-value text-success fw-bold">
-                                        <i class="fas fa-arrow-up"></i>
-                                        <span class="fw-bold">120</span>
-                                    </div>
-                                </div>
-                                <div class="stat">
-                                    <p class="fw-bold">Offers</p>
-                                    <div class="stat-value text-success fw-bold">
-                                </div>
-                                <div class="stat">
-                                    <p class="fw-bold">Remaining Products</p>
-                                    <div class="stat-value text-warning fw-bold">
-                                        <span>
-                                            <%= product.quantity %>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% }); %>
-            </div>
 
-            <div class="pagination-container mt-3">
-                <ul class="pagination justify-content-center">
-                    <% for (let i=1; i <=totalPages; i++) { %>
-                        <li class="page-item <%= (currentPage === i) ? 'active' : '' %>">
-                            <a class="page-link"
-                                href="?page=<%= i %>&search=<%= search %>&date=<%= selectedDate %>&category=<%= selectedCategory %>">
-                                <%= i %>
-                            </a>
-                        </li>
-                        <% } %>
-                </ul>
-            </div>
-        </div> -->
         <div class="container products-grid">
             <div class="row">
                 <% products.forEach((product, index) => { %>
@@ -220,6 +133,41 @@
 
 
         <style>
+
+                    
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.breadcrumb-item {
+    font-size: 14px;
+    color: #000000;
+}
+
+.breadcrumb-item a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    padding: 0 10px;
+    color: #000000;
+}
+
+.breadcrumb-item.active {
+    color: #000000;
+}
+
+
             .products-container {
                 padding: 20px;
                 margin-left: 250px;

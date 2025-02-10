@@ -11,7 +11,6 @@ function calculateDiscount(realPrice, salePrice) {
   return Math.round(((realPrice - salePrice) / realPrice) * 100);
 }
 
-
 const loadShop = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -23,7 +22,7 @@ const loadShop = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
-    
+
     // Filter parameters
     const sortBy = req.query.sortBy || "default";
     const minPrice = parseInt(req.query.minPrice) || 5000;
@@ -31,17 +30,21 @@ const loadShop = async (req, res) => {
     const searchWord = req.query.searchWord || "";
 
     // Handle categories and brands
-    const selectedCategories = req.query.categories 
-      ? (Array.isArray(req.query.categories) ? req.query.categories : [req.query.categories])
+    const selectedCategories = req.query.categories
+      ? Array.isArray(req.query.categories)
+        ? req.query.categories
+        : [req.query.categories]
       : [];
-    const selectedBrands = req.query.brands 
-      ? (Array.isArray(req.query.brands) ? req.query.brands : [req.query.brands])
+    const selectedBrands = req.query.brands
+      ? Array.isArray(req.query.brands)
+        ? req.query.brands
+        : [req.query.brands]
       : [];
 
     // Build base query
     let query = {
       salePrice: { $gte: minPrice, $lte: maxPrice },
-      isBlocked: false
+      isBlocked: false,
     };
 
     // Apply category filter
@@ -58,20 +61,69 @@ const loadShop = async (req, res) => {
     if (searchWord) {
       query.$or = [
         { productName: { $regex: searchWord, $options: "i" } },
-        { description: { $regex: searchWord, $options: "i" } }
+        { description: { $regex: searchWord, $options: "i" } },
       ];
     }
 
     // Determine sort criteria
     let sortWays = {};
     switch (sortBy) {
-      case "priceLowHigh": sortWays = { salePrice: 1 }; break;
-      case "priceHighLow": sortWays = { salePrice: -1 }; break;
-      case "featured": sortWays = { quantity: -1 }; break;
-      case "newArrivals": sortWays = { createdAt: -1 }; break;
-      case "aToZ": sortWays = { productName: 1 }; break;
-      case "zToA": sortWays = { productName: -1 }; break;
-      default: sortWays = { createdAt: -1 };
+      case "priceLowHigh":
+        sortWays = { salePrice: 1 };
+        break;
+      case "priceHighLow":
+        sortWays = { salePrice: -1 };
+        break;
+      case "featured":
+        sortWays = { quantity: -1 };
+        break;
+      case "newArrivals":
+        sortWays = { createdAt: -1 };
+        break;
+      case "aToZ":
+        sortWays = { productName: 1 };
+        break;
+      case "zToA":
+        sortWays = { productName: -1 };
+        break;
+      case "topSellingProducts":
+        const topSellingIds = await Product.aggregate([
+          {
+            $lookup: {
+              from: "orders",
+              localField: "_id",
+              foreignField: "orderedItems.product",
+              as: "orders",
+            },
+          },
+          { $unwind: "$orders" },
+          { $unwind: "$orders.orderedItems" },
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$orders.orderedItems.product"] },
+              "orders.status": {
+                $nin: ["Cancelled", "Returned", "Return Request", "Failed"],
+              },
+              isBlocked: false,
+              quantity: { $gt: 0 },
+            },
+          },
+          {
+            $group: {
+              _id: "$_id",
+              totalQuantitySold: {
+                $sum: { $toInt: "$orders.orderedItems.quantity" },
+              },
+            },
+          },
+          { $sort: { totalQuantitySold: -1 } },
+          { $project: { _id: 1 } },
+        ]);
+
+        query._id = { $in: topSellingIds.map((item) => item._id) };
+        break;
+      default:
+        sortWays = { createdAt: -1 };
     }
 
     // Fetch products with pagination
@@ -86,8 +138,11 @@ const loadShop = async (req, res) => {
     const totalPages = Math.ceil(totalProducts / limit);
 
     // Calculate discount for each product
-    products.forEach(product => {
-      product.discountPercentage = calculateDiscount(product.realPrice, product.salePrice);
+    products.forEach((product) => {
+      product.discountPercentage = calculateDiscount(
+        product.realPrice,
+        product.salePrice
+      );
     });
 
     // Build filter query string for pagination links
@@ -95,41 +150,91 @@ const loadShop = async (req, res) => {
       minPrice: minPrice,
       maxPrice: maxPrice,
       sortBy: sortBy,
-      limit: limit
+      limit: limit,
     });
 
-    if (selectedCategories.length) filterParams.append('categories', selectedCategories.join(','));
-    if (selectedBrands.length) filterParams.append('brands', selectedBrands.join(','));
-    if (searchWord) filterParams.append('searchWord', searchWord);
+    if (selectedCategories.length)
+      filterParams.append("categories", selectedCategories.join(","));
+    if (selectedBrands.length)
+      filterParams.append("brands", selectedBrands.join(","));
+    if (searchWord) filterParams.append("searchWord", searchWord);
 
     const filterQuery = filterParams.toString();
 
-         const hasActiveFilters = selectedCategories.length > 0 || 
-        selectedBrands.length > 0 || 
-        searchWord || 
-        minPrice !== 5000 || 
-        maxPrice !== 500000 || 
-        sortBy !== 'default';
-
+    const hasActiveFilters =
+      selectedCategories.length > 0 ||
+      selectedBrands.length > 0 ||
+      searchWord ||
+      minPrice !== 5000 ||
+      maxPrice !== 500000 ||
+      sortBy !== "default";
 
     // Handle AJAX requests
-    if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
       return res.json({
         success: true,
         products: products,
         currentPage: page,
         totalPages: totalPages,
-        filterQuery: filterQuery
+        filterQuery: filterQuery,
       });
     }
 
     // Regular page render
     const categories = await Category.find({ isListed: true }).lean();
     const brands = await Brand.find({ isBlocked: false }).lean();
-    const userWishlist = userId ? await Wishlist.findOne({ userId: userId }) : null;
-    const wishListProducts = userWishlist 
-      ? userWishlist.products.map(item => item.productId.toString())
+    const userWishlist = userId
+      ? await Wishlist.findOne({ userId: userId })
+      : null;
+    const wishListProducts = userWishlist
+      ? userWishlist.products.map((item) => item.productId.toString())
       : [];
+
+    // const topSellingProducts = await Product.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "orders",
+    //       localField: "_id",
+    //       foreignField: "orderedItems.product",
+    //       as: "orders",
+    //     },
+    //   },
+    //   {
+    //     $unwind: "$orders",
+    //   },
+    //   {
+    //     $unwind: "$orders.orderedItems",
+    //   },
+    //   {
+    //     $match: {
+    //       $expr: {
+    //         $eq: ["$_id", "$orders.orderedItems.product"],
+    //       },
+    //       "orders.status": {
+    //         $nin: ["Cancelled", "Returned", "Return Request", "Failed"],
+    //       },
+    //       isBlocked: false,
+    //       quantity: { $gt: 0 },
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$_id",
+    //       productName: { $first: "$productName" },
+    //       productImage: { $first: "$productImage" },
+    //       quantity: { $first: "$quantity" },
+    //       price: { $first: "$price" },
+    //       totalQuantitySold: {
+    //         $sum: { $toInt: "$orders.orderedItems.quantity" },
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $sort: {
+    //       totalQuantitySold: -1,
+    //     },
+    //   },
+    // ]);
 
     return res.render("users/shop", {
       user: userData,
@@ -140,6 +245,7 @@ const loadShop = async (req, res) => {
       totalPages,
       limit,
       selectedCategories,
+      // topSellingProducts,
       selectedBrands,
       sortBy,
       minPrice,
@@ -149,20 +255,18 @@ const loadShop = async (req, res) => {
       cartCount,
       filterQuery,
       sortWays,
-      hasActiveFilters
+      hasActiveFilters,
     });
-
   } catch (error) {
     console.error("Error in loadShop:", error);
     if (!res.headersSent) {
-      res.status(500).render('error', { 
+      res.status(500).render("error", {
         message: "An error occurred while loading the shop",
-        error: error 
+        error: error,
       });
     }
   }
 };
-
 
 module.exports = {
   loadShop,

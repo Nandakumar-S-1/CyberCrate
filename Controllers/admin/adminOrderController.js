@@ -3,18 +3,77 @@ const User = require("../../Models/userModel");
 const Product = require("../../Models/productModel");
 const Category = require("../../Models/categoryModel");
 const Brand = require("../../Models/brandModel");
+const Wallet=require("../../Models/walletModel")
 
 // Get all orders
+// const getAllOrders = async (req, res) => {
+//   try {
+//     const filterStatus = req.query.status || "";
+//     const searchOrderId=req.query.orderId || "";
+
+//     const filterQuery={}
+//     if (filterStatus) {
+//       filterQuery.status = filterStatus;
+//     }
+    
+//     if (searchOrderId) {
+//       filterQuery._id = searchOrderId;
+//     }
+
+
+//     let orders = await Order.find(filterStatus ? { status: filterStatus } : {})
+//       .populate("orderedItems.product")
+//       .populate("user", "name email")
+//       .sort({ createdAt: -1 });
+
+//     orders = orders.filter((order) => order.user);
+
+//     const itemsPerPage = 10;
+//     const page = parseInt(req.query.page) || 1;
+//     const totalPages = Math.ceil(orders.length / itemsPerPage);
+//     const pageOrders = orders.slice(
+//       (page - 1) * itemsPerPage,
+//       page * itemsPerPage
+//     );
+
+//     res.render("admin/orderList", {
+//       orders: pageOrders,
+//       totalPages: totalPages,
+//       currentPage: "orderList",
+//       filterStatus: filterStatus,
+//       itemsPerPage: itemsPerPage,
+//       searchOrderId:searchOrderId,
+//       page: page,
+//     });
+//   } catch (error) {
+    
+//     res.status(500).send({ message: "Error getting all orders" });
+//   }
+// };
+
 const getAllOrders = async (req, res) => {
   try {
     const filterStatus = req.query.status || "";
+    const searchOrderId = req.query.orderId || "";
 
-    let orders = await Order.find(filterStatus ? { status: filterStatus } : {})
+    const filterQuery = {};
+    
+    // Apply status filter
+    if (filterStatus) {
+      filterQuery.status = filterStatus;
+    }
+    
+    // Apply Order ID search (ensure it's a valid ObjectId format)
+    if (searchOrderId) {
+      filterQuery._id = searchOrderId;
+    }
+
+    let orders = await Order.find(filterQuery)
       .populate("orderedItems.product")
       .populate("user", "name email")
       .sort({ createdAt: -1 });
 
-    orders = orders.filter((order) => order.user);
+    orders = orders.filter((order) => order.user); // Ensure user exists
 
     const itemsPerPage = 10;
     const page = parseInt(req.query.page) || 1;
@@ -30,40 +89,33 @@ const getAllOrders = async (req, res) => {
       currentPage: "orderList",
       filterStatus: filterStatus,
       itemsPerPage: itemsPerPage,
+      searchOrderId: searchOrderId,
       page: page,
     });
   } catch (error) {
-    
     res.status(500).send({ message: "Error getting all orders" });
   }
 };
 
-// Update order status
+
 const updateStatus = async (req, res) => {
   try {
     const { orderId, updatedStatus } = req.body;
     const order = await Order.findById(orderId);
 
     if (!order) {
-      return res.status(404).json({ message: "Order is Missing" });
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    if (order.status === "Cancelled") {
-      if (order.status !== "Refund Completed") {
-        return res
-          .status(400)
-          .json({ message: "You cannot update status of cancelled order" });
-      }
+    if (order.status === "Cancelled" && updatedStatus !== "Refund Completed") {
+      return res.status(400).json({ message: "Cannot update a cancelled order" });
     }
 
     order.status = updatedStatus;
     await order.save();
-    return res.json({ message: "Status Updated Successfully" });
+    return res.json({ message: "Status Updated Successfully", updatedStatus });
   } catch (error) {
-    
-    return res
-      .status(500)
-      .json({ message: "Error while updating order status" });
+    return res.status(500).json({ message: "Error updating order status" });
   }
 };
 
@@ -83,8 +135,35 @@ const viewOrder = async (req, res) => {
   }
 };
 
+const approveReturnOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.status !== "Return Request") {
+      return res.status(400).json({ message: "Invalid return request" });
+    }
+    order.status = "Returned";
+    await order.save();
+
+    return res.status(200).json({
+      message: "Return request approved successfully",
+    });
+
+  } catch (error) {
+    console.error("Error approving return:", error);
+    return res.status(500).json({ message: "Error approving return request" });
+  }
+};
+
+
 module.exports = {
   getAllOrders,
   updateStatus,
   viewOrder,
+  approveReturnOrder
 };

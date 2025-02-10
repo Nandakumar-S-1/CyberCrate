@@ -8,7 +8,8 @@ const Coupon = require("../../Models/couponModel");
 const bcrypt = require("bcrypt");
 const { create } = require("connect-mongo");
 const exceljs = require("exceljs");
-const PDFDocument = require("pdfkit");
+// const PDFDocument = require("pdfkit");
+const PDFDocument = require("pdfkit-table");
 
 // Function to handle rendering an error page for the admin
 const pageError = async (req, res) => {
@@ -787,6 +788,78 @@ const excelReportDownload = async (req, res) => {
 };
 
 // PDF Report
+// const downloadPDFreport = async (req, res) => {
+//   try {
+//     const { startDate, endDate } = req.query;
+
+//     if (!startDate || !endDate) {
+//       return res.status(400).json({
+//         status: "error",
+//         message:
+//           "Please select both start and end dates before generating the report.",
+//       });
+//     }
+
+//     const orders = await ordersByDateRange(startDate, endDate);
+
+//     const doc = new PDFDocument();
+//     res.setHeader("Content-Type", "application/pdf");
+//     res.setHeader(
+//       "Content-Disposition",
+//       "attachment; filename=sales-report.pdf"
+//     );
+//     doc.pipe(res);
+
+//     doc.fontSize(20).text("Sales Report", { align: "center" });
+//     doc.moveDown();
+//     doc
+//       .fontSize(12)
+//       .text(
+//         `Period: ${new Date(startDate).toLocaleDateString()} - ${new Date(
+//           endDate
+//         ).toLocaleDateString()}`,
+//         { align: "center" }
+//       );
+//     doc.moveDown();
+
+//     const totalAmount = orders.reduce(
+//       (sum, order) => sum + (order.finalAmount || 0),
+//       0
+//     );
+//     const totalDiscount = orders.reduce(
+//       (sum, order) => sum + (order.totalDiscount || 0),
+//       0
+//     );
+//     const couponDiscount = orders.reduce(
+//       (sum, order) => sum + (order.couponDiscount || 0),
+//       0
+//     );
+
+//     doc.text(`Total Orders: ${orders.length}`);
+//     doc.text(`Total Amount: ₹${totalAmount.toFixed(2)}`);
+//     doc.text(`Total Discount: ₹${totalDiscount.toFixed(2)}`);
+//     doc.text(`Coupon Discount: ₹${couponDiscount.toFixed(2)}`);
+//     doc.moveDown();
+
+//     doc.text("Order Details:", { underline: true });
+//     orders.forEach((order, index) => {
+//       doc.moveDown();
+//       doc.text(`Order ${index + 1}:`);
+//       doc.text(`Order ID: ${order._id}`);
+//       doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`);
+//       doc.text(`Customer: ${order.user?.name || "N/A"}`);
+//       doc.text(`Status: ${order.status}`);
+//       doc.text(`Amount: ₹${order.finalAmount}`);
+//       doc.text(`Payment: ${order.paymentMethod}`);
+//     });
+
+//     doc.end();
+//   } catch (error) {
+
+//     res.status(500).send("Error generating report");
+//   }
+// };
+
 const downloadPDFreport = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
@@ -801,63 +874,58 @@ const downloadPDFreport = async (req, res) => {
 
     const orders = await ordersByDateRange(startDate, endDate);
 
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 30 });
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=sales-report.pdf"
-    );
+    res.setHeader("Content-Disposition", "attachment; filename=sales-report.pdf");
     doc.pipe(res);
 
-    doc.fontSize(20).text("Sales Report", { align: "center" });
-    doc.moveDown();
+    // Title
+    doc.fontSize(20).text("Sales Report", { align: "center" }).moveDown();
+    
+    // Date range
     doc
       .fontSize(12)
       .text(
-        `Period: ${new Date(startDate).toLocaleDateString()} - ${new Date(
-          endDate
-        ).toLocaleDateString()}`,
+        `Period: ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`,
         { align: "center" }
-      );
-    doc.moveDown();
+      )
+      .moveDown(2);
 
-    const totalAmount = orders.reduce(
-      (sum, order) => sum + (order.finalAmount || 0),
-      0
-    );
-    const totalDiscount = orders.reduce(
-      (sum, order) => sum + (order.totalDiscount || 0),
-      0
-    );
-    const couponDiscount = orders.reduce(
-      (sum, order) => sum + (order.couponDiscount || 0),
-      0
-    );
+    // Summary
+    const totalAmount = orders.reduce((sum, order) => sum + (order.finalAmount || 0), 0);
+    const totalDiscount = orders.reduce((sum, order) => sum + (order.totalDiscount || 0), 0);
+    const couponDiscount = orders.reduce((sum, order) => sum + (order.couponDiscount || 0), 0);
 
     doc.text(`Total Orders: ${orders.length}`);
     doc.text(`Total Amount: ₹${totalAmount.toFixed(2)}`);
     doc.text(`Total Discount: ₹${totalDiscount.toFixed(2)}`);
-    doc.text(`Coupon Discount: ₹${couponDiscount.toFixed(2)}`);
-    doc.moveDown();
+    doc.text(`Coupon Discount: ₹${couponDiscount.toFixed(2)}`).moveDown(2);
 
-    doc.text("Order Details:", { underline: true });
-    orders.forEach((order, index) => {
-      doc.moveDown();
-      doc.text(`Order ${index + 1}:`);
-      doc.text(`Order ID: ${order._id}`);
-      doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`);
-      doc.text(`Customer: ${order.user?.name || "N/A"}`);
-      doc.text(`Status: ${order.status}`);
-      doc.text(`Amount: ₹${order.finalAmount}`);
-      doc.text(`Payment: ${order.paymentMethod}`);
+    // Table headers
+    const table = {
+      headers: ["Order ID", "Date", "Customer", "Status", "Amount (₹)", "Payment"],
+      rows: orders.map((order) => [
+        order._id,
+        new Date(order.createdAt).toLocaleDateString(),
+        order.user?.name || "N/A",
+        order.status,
+        order.finalAmount.toFixed(2),
+        order.paymentMethod,
+      ]),
+    };
+
+    // Draw table
+    await doc.table(table, {
+      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(12),
+      prepareRow: () => doc.font("Helvetica").fontSize(10),
     });
 
     doc.end();
   } catch (error) {
-
     res.status(500).send("Error generating report");
   }
 };
+
 
 const filterDashboardData = async (req, res) => {
   try {

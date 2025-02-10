@@ -7,7 +7,7 @@ const loadWishlist = async (req, res) => {
   try {
     // Check if the user is logged in
     if (!req.session || !req.session.user) {
-      return res.render("users/wishlist", {
+      return res.render("users/wishList", {
         wishlist: { products: [] },
         totalPages: 0,
         currentPage: 1,
@@ -25,7 +25,7 @@ const loadWishlist = async (req, res) => {
       .populate("products.productId.brand");
 
     if (!wishlist || wishlist.products.length === 0) {
-      return res.render("users/wishlist", {
+      return res.render("users/wishList", {
         wishlist: { products: [] },
         totalPages: 0,
         currentPage: 1,
@@ -43,7 +43,7 @@ const loadWishlist = async (req, res) => {
       page * itemsPerPage
     );
 
-    res.render("users/wishlist", {
+    res.render("users/wishList", {
       user: userId,
       wishlist: { products: pageProducts },
       totalPages,

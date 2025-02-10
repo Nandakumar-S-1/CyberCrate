@@ -377,17 +377,20 @@ const cancelOrder = async (req, res) => {
     }
 
     // Ensure the order can be cancelled
-    if (["Delivered", "Failed", 'Shipped', 'Return'].includes(order.status)) {
+    if (["Delivered", "Failed", "Shipped", "Return Request", "Returned"].includes(order.status) || 
+        order.paymentStatus === "Failed") {
       return res.status(400).json({ message: "You cannot cancel this order" });
     }
 
-    // Process refund if applicable
-    if (["Wallet", "COD", "Razorpay"].includes(order.paymentMethod)) {
-      try {
-        await walletRefund(order.user, order.finalAmount, "Cancelled");
-      } catch (error) {
-        console.error("Refund error:", error);
-        return res.status(500).json({ message: "Error processing wallet refund" });
+    // Process refund only if the payment was successful
+    if (["Completed", "Paid"].includes(order.paymentStatus)) {
+      if (["Wallet", "COD", "Razorpay"].includes(order.paymentMethod)) {
+        try {
+          await walletRefund(order.user, order.finalAmount, "Cancelled");
+        } catch (error) {
+          console.error("Refund error:", error);
+          return res.status(500).json({ message: "Error processing wallet refund" });
+        }
       }
     }
 
@@ -403,7 +406,7 @@ const cancelOrder = async (req, res) => {
     }
 
     return res.status(200).json({
-      message: "Order cancelled and refunded successfully",
+      message: "Order cancelled successfully",
     });
   } catch (error) {
     console.error("Error cancelling order:", error);
@@ -411,8 +414,6 @@ const cancelOrder = async (req, res) => {
   }
 };
 
-
-//function to get user orders
 const getUserOrders = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -432,7 +433,6 @@ const getUserOrders = async (req, res) => {
     res.status(500).send({ message: "Error getting user orders" });
   }
 };
-
 
 //function to select address
 const selectAddress = async (req, res) => {
@@ -596,6 +596,8 @@ const createRetryPaymentOrder = async (req, res) => {
   try {
       const { orderId, finalAmount } = req.body;
 
+      console.log('Received retry payment order request:', req.body);
+
       const order = await Order.findOne({ orderId });
       if (!order) {
           return res.status(404).json({ 
@@ -634,12 +636,15 @@ const createRetryPaymentOrder = async (req, res) => {
       console.error("Error creating retry payment order:", error);
       return res.status(500).json({ 
           success: false, 
-          message: "Error creating payment order" 
+          message: "Error creating payment order" ,
+          error: error.message 
       });
   }
 };
 
 const retryPayment = async (req, res) => {
+  console.log('ssssssssssssssssssssssssss');
+  
   try {
       const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
@@ -681,25 +686,73 @@ const returnOrder = async (req, res) => {
     const { orderId } = req.params;
 
     const order = await Order.findOne({ orderId });
-
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not Found' });
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    if (order.status !== 'Delivered') {
-      return res.status(400).json({ success: false, message: 'Order Cannot be Returned' });
+    // Check if order can be returned
+    if (order.status !== "Delivered") {
+      return res.status(400).json({ message: "Order Cannot be Returned" });
     }
 
-    order.status = 'Return Request';
+    // Process refund only if the payment was successful
+    if (["Completed", "Paid"].includes(order.paymentStatus)) {
+      if (["Wallet", "COD", "Razorpay"].includes(order.paymentMethod)) {
+        try {
+          await walletRefund(order.user, order.finalAmount, "Returned");
+        } catch (error) {
+          console.error("Refund error:", error);
+          return res.status(500).json({ message: "Error processing wallet refund" });
+        }
+      }
+    }
+
+    // Update the order status
+    order.status = "Return Request";
     await order.save();
 
-    res.json({ success: true });
+    // Restore product quantities
+    for (let item of order.orderedItems) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { quantity: item.quantity },
+      });
+    }
+
+    return res.status(200).json({
+      message: "Return request submitted successfully",
+    });
 
   } catch (error) {
-    console.error('Error while returning order', error);
-    res.status(500).json({ success: false, message: 'Server Error' });
+    console.error("Error while returning order:", error);
+    return res.status(500).json({ message: "Error processing return request" });
   }
-}
+};
+
+// const returnOrder = async (req, res) => {
+//   try {
+//     const { orderId } = req.params;
+
+//     const order = await Order.findOne({ orderId });
+
+//     if (!order) {
+//       return res.status(404).json({ success: false, message: "Order not Found" });
+//     }
+
+//     if (order.status !== "Delivered") {
+//       return res.status(400).json({ success: false, message: "Order Cannot be Returned" });
+//     }
+
+//     order.status = "Return Request";
+//     await order.save();
+
+//     res.json({ success: true, message: "Return request submitted" });
+
+//   } catch (error) {
+//     console.error("Error while returning order", error);
+//     res.status(500).json({ success: false, message: "Server Error" });
+//   }
+// };
+
 
 module.exports = {
   getUserOrders,

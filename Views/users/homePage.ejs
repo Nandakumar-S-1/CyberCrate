@@ -170,10 +170,8 @@
         .featured-item h3,
         .featured-item p {
             color: #000000;
-            /* Set text color to black */
-            margin: 5px 0;
+            margin: 5px 0 0 5rem;
             padding: 0;
-            /* Remove any padding */
             font-weight: bold;
         }
 
@@ -351,14 +349,14 @@
                         <h3 class="text-white fs-5">
                             <%= product.productName %>
                         </h3>
-                        <p class="text-white fs-6"><span class="fw-bold text-warning">Price: </span> ₹<%=
-                                product.salePrice %>
+                        <!-- <p class="text-white fs-6"><span class="fw-bold text-warning">Price: </span> 
+                            ₹<%= product.salePrice %>
                         </p>
                         <p class="text-white fs-6"><span class="fw-bold text-warning"></span>Stock left: <span
                                 class="fw-bold text-danger">
                                 <%= product.quantity %>
                             </span>
-                        </p>
+                        </p> -->
                     </a>
                 </div>
                 <% }); %>
@@ -393,15 +391,6 @@
                             <span class="current-price">₹<%= product.salePrice %></span>
                             <span class="original-price">₹<%= product.realPrice %></span>
                         </div>
-                        <div class="product-rating">
-                            <div class="rating-stars">
-                                <% for (let i=1; i <=5; i++) { %>
-                                    <i
-                                        class="fas <%= i <= Math.floor(product.rating) ? 'fa-star' : (i - 0.5 <= product.rating ? 'fa-star-half-alt' : 'fa-star') %>"></i>
-                                    <% } %>
-                            </div>
-                            <span>(<%= product.rating %>)</span>
-                        </div>
                         <div class="product-actions">
                             <button class="action-button add-to-favorites"
                                 onclick="addToFavorites('<%= product._id %>')">
@@ -420,18 +409,20 @@
     <section class="brand-slideshow">
         <div class="brand-container">
             <div class="brand-track">
-                <% brands.forEach((brand)=> { %> <div class="brand-item"> <a href="/shop?brand=<%= brand._id %>">
-                            <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
-                <% }); %>
-                <% brands.forEach((brand)=> { %>
-                    <div class="brand-item brand-icon " onclick="filterByBrand('<%= brand._id %>')">
-                        <a href="/shop?brand=<%= brand._id %>">
-                    <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>"> </a> </div>
+                <% brands.forEach((brand) => { %>
+                    <div class="brand-item" onclick="filterByBrand('<%= brand._id %>')">
+                        <img src="/img/brands/<%= brand.image %>" alt="<%= brand.name %>">
+                    </div>
                 <% }); %>
             </div>
         </div>
     </section>
-
+    
+    <script>
+        function filterByBrand(brandId) {
+            window.location.href = `/shop?brands=${brandId}`;
+        }
+    </script>
 
     <!-- Featured Product Showcase -->
     <section class="featured-showcase" style="background-color: #000; padding: 60px 0">
@@ -604,9 +595,8 @@
             brandTrack.style.animationPlayState = 'running';
         });
         function filterByBrand(brandId) {
-
-    window.location.href = `/home?brand=${brandId}`;
-  }
+        window.location.href = `/shop?brands=${brandId}`;
+    }
     </script>
 
 

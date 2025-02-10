@@ -271,6 +271,7 @@ const editProduct = async (req, res) => {
     res.redirect("/pageError");
   }
 };
+
 //function to block product
 const blockProduct = async (req, res) => {
   try {
@@ -284,6 +285,7 @@ const blockProduct = async (req, res) => {
     res.status(500).send("Error while blocking product");
   }
 };
+
 //function to unblock product
 const unBlockProduct = async (req, res) => {
   try {
@@ -294,6 +296,7 @@ const unBlockProduct = async (req, res) => {
     res.status(500).send("Error while unblocking product");
   }
 };
+
 //function to load edit product
 const loadEditProduct = async (req, res) => {
   try {
@@ -316,6 +319,7 @@ const loadEditProduct = async (req, res) => {
     res.redirect("/pageError");
   }
 };
+
 //function to delete single image
 const deleteSingleImage = async (req, res) => {
   try {
@@ -339,6 +343,7 @@ const deleteSingleImage = async (req, res) => {
     res.redirect("/pageError");
   }
 };
+
 //function to update product
 const updateProduct = async (req, res) => {
   try {
@@ -386,6 +391,7 @@ const updateProduct = async (req, res) => {
     res.redirect("/pageError");
   }
 };
+
 //function to delete offer
 const deleteOffer = async (req, res) => {
   try {

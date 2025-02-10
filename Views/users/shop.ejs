@@ -227,54 +227,56 @@
             text-align: center;
             line-height: 1;
         }
+
         .filter-group label {
-    display: block;
-    margin-bottom: 8px;
-    cursor: pointer;
-}
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
 
-.filter-group input[type="checkbox"] {
-    margin-right: 8px;
-}
+        .filter-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
 
-.filter-group input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+        .filter-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
-#category-list, #all-categories,
-#brand-list, #all-brands {
-    max-height: 300px;
-    overflow-y: auto;
-    padding-right: 10px;
-}
+        #category-list,
+        #all-categories,
+        #brand-list,
+        #all-brands {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
 
-/* Optional: Style for the scrollbar */
-#category-list::-webkit-scrollbar,
-#all-categories::-webkit-scrollbar,
-#brand-list::-webkit-scrollbar,
-#all-brands::-webkit-scrollbar {
-    width: 6px;
-}
+        /* Optional: Style for the scrollbar */
+        #category-list::-webkit-scrollbar,
+        #all-categories::-webkit-scrollbar,
+        #brand-list::-webkit-scrollbar,
+        #all-brands::-webkit-scrollbar {
+            width: 6px;
+        }
 
-#category-list::-webkit-scrollbar-track,
-#all-categories::-webkit-scrollbar-track,
-#brand-list::-webkit-scrollbar-track,
-#all-brands::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
+        #category-list::-webkit-scrollbar-track,
+        #all-categories::-webkit-scrollbar-track,
+        #brand-list::-webkit-scrollbar-track,
+        #all-brands::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
 
-#category-list::-webkit-scrollbar-thumb,
-#all-categories::-webkit-scrollbar-thumb,
-#brand-list::-webkit-scrollbar-thumb,
-#all-brands::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 3px;
-}
-
+        #category-list::-webkit-scrollbar-thumb,
+        #all-categories::-webkit-scrollbar-thumb,
+        #brand-list::-webkit-scrollbar-thumb,
+        #all-brands::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
     </style>
 
 
@@ -283,93 +285,106 @@
             <h2>Filters</h2>
             <form id="filter-form" action="/users/shop" method="GET">
 
-                <% if (hasActiveFilters) { %>
-                    <button type="button" id="clear-filters" class="clear-filters-btn">
-                        Clear All Filters
-                    </button>
-                <% } %>
+               
+                        <br>
 
-                <div class="filter-group">
-                    <h3>Categories</h3>
-                    <input type="text" placeholder="Search Categories" id="category-search">
-                    <div id="category-list">
-                        <% categories.slice(0, 18).forEach(category => { %>
-                            <label>
-                                <input type="checkbox" 
-                                       name="categories" 
-                                       value="<%= category._id %>"
-                                       <%= selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
-                                <%= category.name %>
-                            </label>
-                        <% }); %>
+                        <div class="filter-group">
+                            <h3 class="fw-bold">Categories</h3>
+                            <input type="text" placeholder="Search Categories" id="category-search">
+                            <div id="category-list">
+                                <% categories.slice(0, 18).forEach(category=> { %>
+                                    <label>
+                                        <input type="checkbox" name="categories" value="<%= category._id %>"
+                                            <%=selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
+                                        <%= category.name %>
+                                    </label>
+                                    <% }); %>
+                            </div>
+                            <div id="all-categories" style="display:none;">
+                                <% categories.slice(18).forEach(category=> { %>
+                                    <label>
+                                        <input type="checkbox" name="categories" value="<%= category._id %>"
+                                            <%=selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
+                                        <%= category.name %>
+                                    </label>
+                                    <% }); %>
+                            </div>
                         </div>
-                    <div id="all-categories" style="display:none;">
-                        <% categories.slice(18).forEach(category => { %>
-                            <label>
-                                <input type="checkbox" 
-                                       name="categories" 
-                                       value="<%= category._id %>"
-                                       <%= selectedCategories.includes(category._id.toString()) ? 'checked' : '' %>>
-                                <%= category.name %>
-                            </label>
-                        <% }); %>
-                    </div>
-                </div>
 
-                <div class="filter-group">
-                    <h3>Brands</h3>
-                    <input type="text" placeholder="Search Brands" id="brand-search">
-                    <div id="brand-list">
-                        <% brands.slice(0, 10).forEach(brand=> { %>
-                            <label>
-                                <input type="checkbox" name="brands" value="<%= brand._id %>"
-                                    <%=selectedBrands.includes(brand._id.toString()) ? 'checked' : '' %>>
-                                <%= brand.brandName %>
-                            </label>
-                            <% }); %>
-                                <button type="button" class="btn btn-primary" id="more-brands">more</button>
-                    </div>
-                    <div id="all-brands" style="display:none;">
-                        <% brands.slice(10).forEach(brand=> { %>
-                            <label>
-                                <input type="checkbox" name="brands" value="<%= brand._id %>"
-                                    <%=selectedBrands.includes(brand._id.toString()) ? 'checked' : '' %>>
-                                <%= brand.brandName %>
-                            </label>
-                            <% }); %>
-                    </div>
-                </div>
 
-                <div class="filter-group">
-                    <h3>Price</h3>
-                    <div id="price-slider" style="margin: 20px 0;"></div>
-                    <div class="price-range">
-                        <span id="min-price">₹<%= minPrice %></span> - <span id="max-price">₹<%= maxPrice %></span>
-                    </div>
-                    <input type="hidden" name="minPrice" id="min-price-input" value="<%= minPrice %>">
-                    <input type="hidden" name="maxPrice" id="max-price-input" value="<%= maxPrice %>">
-                </div>
-                <div class="filter-group">
-                    <h3>Sort By</h3>
-                    <select name="sortBy" id="sort-by">
-                        <option value="popularity" <%=sortWays==='popularity' ? 'selected' : '' %>>Popularity</option>
-                        <option value="priceLowHigh" <%=sortWays==='priceLowHigh' ? 'selected' : '' %>>Price: Low to
-                            High</option>
-                        <option value="priceHighLow" <%=sortWays==='priceHighLow' ? 'selected' : '' %>>Price: High to
-                            Low</option>
-                        <option value="averageRatings" <%=sortWays==='averageRatings' ? 'selected' : '' %>>Average
-                            Ratings</option>
-                        <option value="featured" <%=sortWays==='featured' ? 'selected' : '' %>>Featured</option>
-                        <option value="newArrivals" <%=sortWays==='newArrivals' ? 'selected' : '' %>>New Arrivals
-                        </option>
-                        <option value="aToZ" <%=sortWays==='aToZ' ? 'selected' : '' %>>Name: Ascending</option>
-                        <option value="zToA" <%=sortWays==='zToA' ? 'selected' : '' %>>Name: Descending</option>
-                    </select>
-                    <input type="hidden" name="page" value="<%= currentPage %>">
-                    <input type="hidden" name="limit" value="<%= limit %>">
+                        <div class="filter-group">
+                            <br>
+                            <h3 class="fw-bold">Brands</h3>
+                            <br>
+                            <input type="text" placeholder="Search Brands" id="brand-search">
+                            <div id="brand-list">
+                                <% brands.slice(0, 10).forEach(brand=> { %>
+                                    <label>
+                                        <input type="checkbox" name="brands" value="<%= brand._id %>"
+                                            <%=selectedBrands.includes(brand._id.toString()) ? 'checked' : '' %>>
+                                        <%= brand.brandName %>
+                                    </label>
+                                    <% }); %>
+                                        <button type="button" class="btn btn-primary" id="more-brands">more</button>
+                            </div>
+                            <div id="all-brands" style="display:none;">
+                                <% brands.slice(10).forEach(brand=> { %>
+                                    <label>
+                                        <input type="checkbox" name="brands" value="<%= brand._id %>"
+                                            <%=selectedBrands.includes(brand._id.toString()) ? 'checked' : '' %>>
+                                        <%= brand.brandName %>
+                                    </label>
+                                    <% }); %>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <div class="filter-group">
+                            <h3 class="fw-bold">Price</h3>
+                            <br>
+                            <div id="price-slider" style="margin: 20px 0;"></div>
+                            <div class="price-range">
+                                <span id="min-price">₹<%= minPrice %></span> - <span id="max-price">₹<%= maxPrice %>
+                                        </span>
+                            </div>
+                            <input type="hidden" name="minPrice" id="min-price-input" value="<%= minPrice %>">
+                            <input type="hidden" name="maxPrice" id="max-price-input" value="<%= maxPrice %>">
+                        </div>
+                        <div class="filter-group">
+                            <br>
+                            <br>
+                            <h3 class="fw-bold">Sort By</h3>
+                            <br>
+                            <select name="sortBy" id="sort-by">
+                                <option value="popularity" <%=sortWays==='popularity' ? 'selected' : '' %>>Popularity
+                                </option>
+                                <option value="priceLowHigh" <%=sortWays==='priceLowHigh' ? 'selected' : '' %>>Price:
+                                    Low to
+                                    High</option>
+                                <option value="priceHighLow" <%=sortWays==='priceHighLow' ? 'selected' : '' %>>Price:
+                                    High to
+                                    Low</option>
+                                <option value="featured" <%=sortWays==='featured' ? 'selected' : '' %>>Featured</option>
+                                <option value="newArrivals" <%=sortWays==='newArrivals' ? 'selected' : '' %>>New
+                                    Arrivals
+                                </option>
+                                <option value="aToZ" <%=sortWays==='aToZ' ? 'selected' : '' %>>Name: Ascending</option>
+                                <option value="topSellingProducts" <%=sortWays==='topSellingProducts' ? 'selected' : ''
+                                    %>>Top Selling</option>
+                                <option value="zToA" <%=sortWays==='zToA' ? 'selected' : '' %>>Name: Descending</option>
+                            </select>
+                            <input type="hidden" name="page" value="<%= currentPage %>">
+                            <input type="hidden" name="limit" value="<%= limit %>">
+                            <br>
+                        </div>
+                        <br>
+                        <button type="submit">Apply Filters</button>
 
-                </div>
-                <button type="submit">Apply Filters</button>
+                        <% if (hasActiveFilters) { %>
+                            <button type="button" id="clear-filters" class="clear-filters-btn mt-2">
+                                Clear All Filters
+                            </button>
+                        <% } %>
             </form>
         </aside>
 
@@ -422,9 +437,6 @@
             </div>
             <div class="pagination">
                 <% for (let i=1; i <=totalPages; i++) { %>
-                    <!-- <a href="?page=<%= i %>&limit=<%= limit %>" class="<%= currentPage === i ? 'active' : '' %>">
-                        <%= i %>
-                    </a> -->
                     <a href="?page=<%= i %>&limit=<%= limit %>&<%= filterQuery %>"
                         class="<%= currentPage === i ? 'active' : '' %>">
                         <%= i %>
@@ -506,11 +518,33 @@
             initProductFiltering();
         });
 
-
         function initProductFiltering() {
             const filterForm = document.getElementById('filter-form');
             const productsContainer = document.querySelector('.products');
             const paginationContainer = document.querySelector('.pagination');
+            const clearFiltersBtn = document.getElementById('clear-filters');
+
+            // Function to check if any filters are active
+            function checkActiveFilters() {
+                const selectedCategories = Array.from(document.querySelectorAll('input[name="categories"]:checked')).length > 0;
+                const selectedBrands = Array.from(document.querySelectorAll('input[name="brands"]:checked')).length > 0;
+                const minPrice = parseInt(document.getElementById('min-price-input').value);
+                const maxPrice = parseInt(document.getElementById('max-price-input').value);
+                const sortBy = document.getElementById('sort-by').value;
+
+                const hasActiveFilters = selectedCategories ||
+                    selectedBrands ||
+                    minPrice !== 5000 ||
+                    maxPrice !== 500000 ||
+                    sortBy !== 'default';
+
+                // Show/hide clear filters button
+                if (clearFiltersBtn) {
+                    clearFiltersBtn.style.display = hasActiveFilters ? 'block' : 'none';
+                }
+
+                return hasActiveFilters;
+            }
 
             function updateURL(params) {
                 const url = new URL(window.location.href);
@@ -538,54 +572,55 @@
                     renderProducts(data.products);
                     renderPagination(data.currentPage, data.totalPages, data.filterQuery);
                     window.history.pushState({}, '', url);
+                    checkActiveFilters();
 
                 } catch (error) {
                     console.error('Error:', error);
                     productsContainer.innerHTML = `
-        <div class="error-message">
-          Failed to load products. Please try again later.
-        </div>
-      `;
+                <div class="error-message">
+                    Failed to load products. Please try again later.
+                </div>
+            `;
                 }
             }
 
             function renderProducts(products) {
                 productsContainer.innerHTML = products.map(product => `
-      <div class="product-card">
-        <a href="/productDetails/${product._id}">
-          <img src="/img/products/${product.productImage[0]}" alt="${product.productName}" loading="lazy">
-          <h2 class="p-name">${product.productName}</h2>
-        </a>
-        <p>Offer Price: ₹${parseInt(product.salePrice)}</p>
-        <p>Original Price: ₹${parseInt(product.realPrice)}</p>
-        <p>Stocks left: ${product.quantity}</p>
-        <div class="product-buttons">
-          ${product.discountPercentage > 0 ?
+            <div class="product-card">
+                <a href="/productDetails/${product._id}">
+                    <img src="/img/products/${product.productImage[0]}" alt="${product.productName}" loading="lazy">
+                    <h2 class="p-name">${product.productName}</h2>
+                </a>
+                <p>Offer Price: ₹${parseInt(product.salePrice)}</p>
+                <p>Original Price: ₹${parseInt(product.realPrice)}</p>
+                <p>Stocks left: ${product.quantity}</p>
+                <div class="product-buttons">
+                    ${product.discountPercentage > 0 ?
                         `<div class="discount-badge">
-              <span>${product.discountPercentage}% OFF</span>
-             </div>` : ''
+                            <span>${product.discountPercentage}% OFF</span>
+                        </div>` : ''
                     }
-          <button class="icon-btn" onclick="addToCart('${product._id}')">
-            <i class="fas fa-shopping-cart discount-circle"></i>
-          </button>
-          <button class="icon-btn add-to-favorites" onclick="addToFavorites('${product._id}')"
-            data-product-id="${product._id}">
-            <i class="fas fa-heart discount-circle"></i>
-          </button>
-        </div>
-      </div>
-    `).join('');
+                    <button class="icon-btn" onclick="addToCart('${product._id}')">
+                        <i class="fas fa-shopping-cart discount-circle"></i>
+                    </button>
+                    <button class="icon-btn add-to-favorites" onclick="addToFavorites('${product._id}')"
+                        data-product-id="${product._id}">
+                        <i class="fas fa-heart discount-circle"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
             }
 
             function renderPagination(currentPage, totalPages, filterQuery) {
                 paginationContainer.innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
                     .map(page => `
-        <a href="?page=${page}&${filterQuery}"
-           class="${page === currentPage ? 'active' : ''}"
-           data-page="${page}">
-          ${page}
-        </a>
-      `).join('');
+                <a href="?page=${page}&${filterQuery}"
+                   class="${page === currentPage ? 'active' : ''}"
+                   data-page="${page}">
+                    ${page}
+                </a>
+            `).join('');
 
                 // Attach event listeners to new pagination links
                 paginationContainer.querySelectorAll('a').forEach(link => {
@@ -599,20 +634,183 @@
                 fetchFilteredProducts(url.toString());
             }
 
-            // Handle form submission
-            filterForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(filterForm);
-                const url = updateURL(formData);
-                await fetchFilteredProducts(url.toString());
-            });
+            // Add event listeners for real-time filtering
+            function addFilterListeners() {
+                // Category checkboxes
+                document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        const formData = new FormData(filterForm);
+                        const url = updateURL(formData);
+                        fetchFilteredProducts(url.toString());
+                    });
+                });
 
-            // Initialize filter triggers
-            initializeFilterTriggers();
+                // Brand checkboxes
+                document.querySelectorAll('input[name="brands"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        const formData = new FormData(filterForm);
+                        const url = updateURL(formData);
+                        fetchFilteredProducts(url.toString());
+                    });
+                });
+
+                // Sort by dropdown
+                document.getElementById('sort-by').addEventListener('change', () => {
+                    const formData = new FormData(filterForm);
+                    const url = updateURL(formData);
+                    fetchFilteredProducts(url.toString());
+                });
+
+                // Price range inputs
+                ['min-price-input', 'max-price-input'].forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.addEventListener('change', () => {
+                            const formData = new FormData(filterForm);
+                            const url = updateURL(formData);
+                            fetchFilteredProducts(url.toString());
+                        });
+                    }
+                });
+            }
+
+            // Initialize clear filters functionality
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', () => {
+                    // Reset all form elements
+                    document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    document.querySelectorAll('input[name="brands"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    document.getElementById('min-price-input').value = 5000;
+                    document.getElementById('max-price-input').value = 500000;
+                    document.getElementById('sort-by').value = 'default';
+
+                    // Fetch products with cleared filters
+                    const formData = new FormData(filterForm);
+                    const url = updateURL(formData);
+                    fetchFilteredProducts(url.toString());
+                });
+            }
+
+            // Initialize everything
+            addFilterListeners();
+            checkActiveFilters();
         }
 
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', initProductFiltering);
+
+        //     function initProductFiltering() {
+        //         const filterForm = document.getElementById('filter-form');
+        //         const productsContainer = document.querySelector('.products');
+        //         const paginationContainer = document.querySelector('.pagination');
+
+
+
+        //         function updateURL(params) {
+        //             const url = new URL(window.location.href);
+        //             params.forEach((value, key) => {
+        //                 if (value) {
+        //                     url.searchParams.set(key, value);
+        //                 } else {
+        //                     url.searchParams.delete(key);
+        //                 }
+        //             });
+        //             return url;
+        //         }
+
+        //         async function fetchFilteredProducts(url) {
+        //             try {
+        //                 const response = await fetch(url, {
+        //                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        //                 });
+
+        //                 if (!response.ok) throw new Error('Failed to fetch products');
+
+        //                 const data = await response.json();
+        //                 if (!data.success) throw new Error(data.message || 'Failed to load products');
+
+        //                 renderProducts(data.products);
+        //                 renderPagination(data.currentPage, data.totalPages, data.filterQuery);
+        //                 window.history.pushState({}, '', url);
+
+        //             } catch (error) {
+        //                 console.error('Error:', error);
+        //                 productsContainer.innerHTML = `
+        //     <div class="error-message">
+        //       Failed to load products. Please try again later.
+        //     </div>
+        //   `;
+        //             }
+        //         }
+
+        //         function renderProducts(products) {
+        //             productsContainer.innerHTML = products.map(product => `
+        //   <div class="product-card">
+        //     <a href="/productDetails/${product._id}">
+        //       <img src="/img/products/${product.productImage[0]}" alt="${product.productName}" loading="lazy">
+        //       <h2 class="p-name">${product.productName}</h2>
+        //     </a>
+        //     <p>Offer Price: ₹${parseInt(product.salePrice)}</p>
+        //     <p>Original Price: ₹${parseInt(product.realPrice)}</p>
+        //     <p>Stocks left: ${product.quantity}</p>
+        //     <div class="product-buttons">
+        //       ${product.discountPercentage > 0 ?
+        //                     `<div class="discount-badge">
+        //           <span>${product.discountPercentage}% OFF</span>
+        //          </div>` : ''
+        //                 }
+        //       <button class="icon-btn" onclick="addToCart('${product._id}')">
+        //         <i class="fas fa-shopping-cart discount-circle"></i>
+        //       </button>
+        //       <button class="icon-btn add-to-favorites" onclick="addToFavorites('${product._id}')"
+        //         data-product-id="${product._id}">
+        //         <i class="fas fa-heart discount-circle"></i>
+        //       </button>
+        //     </div>
+        //   </div>
+        // `).join('');
+        //         }
+
+        //         function renderPagination(currentPage, totalPages, filterQuery) {
+        //             paginationContainer.innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
+        //                 .map(page => `
+        //     <a href="?page=${page}&${filterQuery}"
+        //        class="${page === currentPage ? 'active' : ''}"
+        //        data-page="${page}">
+        //       ${page}
+        //     </a>
+        //   `).join('');
+
+        //             // Attach event listeners to new pagination links
+        //             paginationContainer.querySelectorAll('a').forEach(link => {
+        //                 link.addEventListener('click', handlePaginationClick);
+        //             });
+        //         }
+
+        //         function handlePaginationClick(e) {
+        //             e.preventDefault();
+        //             const url = new URL(e.target.href);
+        //             fetchFilteredProducts(url.toString());
+        //         }
+
+        //         // Handle form submission
+        //         filterForm.addEventListener('submit', async (e) => {
+        //             e.preventDefault();
+        //             const formData = new FormData(filterForm);
+        //             const url = updateURL(formData);
+        //             await fetchFilteredProducts(url.toString());
+        //         });
+
+        //         // Initialize filter triggers
+        //         initializeFilterTriggers();
+        //     }
+
         function initializeFilterTriggers() {
-           
+
             const categorySearch = document.getElementById('category-search');
             categorySearch?.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
@@ -635,35 +833,35 @@
 
 
         document.addEventListener('DOMContentLoaded', () => {
-    const clearFiltersBtn = document.getElementById('clear-filters');
-    
-    if (clearFiltersBtn) {
-        clearFiltersBtn.addEventListener('click', () => {
-            // Uncheck all category checkboxes
-            document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
+            const clearFiltersBtn = document.getElementById('clear-filters');
 
-            // Uncheck all brand checkboxes
-            document.querySelectorAll('input[name="brands"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', () => {
+                    // Uncheck all category checkboxes
+                    document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
 
-            // Reset price range to default
-            const minPriceInput = document.getElementById('min-price-input');
-            const maxPriceInput = document.getElementById('max-price-input');
-            minPriceInput.value = 5000;
-            maxPriceInput.value = 500000;
+                    // Uncheck all brand checkboxes
+                    document.querySelectorAll('input[name="brands"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
 
-            // Reset sort by to default
-            document.getElementById('sort-by').value = 'default';
+                    // Reset price range to default
+                    const minPriceInput = document.getElementById('min-price-input');
+                    const maxPriceInput = document.getElementById('max-price-input');
+                    minPriceInput.value = 5000;
+                    maxPriceInput.value = 500000;
 
-            // Submit the form to clear all filters
-            document.getElementById('filter-form').submit();
+                    // Reset sort by to default
+                    document.getElementById('sort-by').value = 'default';
+
+                    // Submit the form to clear all filters
+                    document.getElementById('filter-form').submit();
+                });
+            }
         });
-    }
-});
-        // Initialize on page load
+
         document.addEventListener('DOMContentLoaded', initProductFiltering);
 
     </script>

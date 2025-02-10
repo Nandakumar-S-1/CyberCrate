@@ -37,7 +37,7 @@ const walletSchema = new mongoose.Schema(
           type: String,
           enum: [
             "Refund",
-            "Add to Wallet",
+            "Wallet Recharge",
             "Returned",
             "Purchase",
             "Initial balance",

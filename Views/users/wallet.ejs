@@ -1,4 +1,5 @@
 <%- include('../layouts/user/header.ejs') %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <style>
         .wallet-page {
@@ -223,6 +224,7 @@
     </div>
 
     <script>
+        
 document.getElementById('addMoneyForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const amount = e.target.amount.value;
@@ -288,9 +290,158 @@ document.getElementById('addMoneyForm').addEventListener('submit', async (e) => 
 
     </script>
 
+<script>
+document.getElementById('addMoneyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const amount = e.target.amount.value;
+
+    if (!amount || amount <= 0) {
+        Toastify({
+            text: "Please enter a valid amount greater than 0.",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "#FF6F61",
+        }).showToast();
+        return;
+    }
+
+    try {
+        //  initiate the recharge request
+        const response = await fetch('/wallet/recharge', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount }),
+        });
+
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.message);
+        }
+
+        // Initialize Razorpay payment
+        const options = {
+            key: data.key_id,
+            amount: amount * 100,
+            currency: "INR",
+            name: "Wallet Recharge",
+            description: "Add money to wallet",
+            order_id: data.razorpayOrderId,
+            handler: async function (response) {
+                try {
+                    // Verify  payment
+                    const verificationResponse = await fetch('/wallet/verify-recharge', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            payment_status: 'Success'
+                        }),
+                    });
+
+                    const verificationResult = await verificationResponse.json();
+
+                    if (verificationResult.status === 'success') {
+                        Toastify({
+                            text: "Money added successfully!",
+                            duration: 3000,
+                            gravity: "top",
+                            position: "center",
+                            backgroundColor: "#4CAF50",
+                        }).showToast();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        throw new Error(verificationResult.message);
+                    }
+                } catch (error) {
+                    Toastify({
+                        text: error.message || "Payment verification failed",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "center",
+                        backgroundColor: "#FF6F61",
+                    }).showToast();
+                }
+            },
+           
+            theme: {
+                color: "#7C3AED" 
+            },
+            modal: {
+                ondismiss: function() {
+                    // Handle payment modal dismiss
+                    Toastify({
+                        text: "Payment cancelled",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "center",
+                        backgroundColor: "#FF6F61",
+                    }).showToast();
+                }
+            }
+        };
+
+        const razorpayInstance = new Razorpay(options);
+        razorpayInstance.open();
+
+        // Handle payment failure
+        razorpayInstance.on('payment.failed', async function(response) {
+            try {
+                const verificationResponse = await fetch('/wallet/verify-recharge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.error.metadata.payment_id,
+                        razorpay_order_id: response.error.metadata.order_id,
+                        payment_status: 'Failed',
+                        error_code: response.error.code,
+                        error_description: response.error.description
+                    }),
+                });
+
+                Toastify({
+                    text: "Payment failed: " + response.error.description,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "center",
+                    backgroundColor: "#FF6F61",
+                }).showToast();
+            } catch (error) {
+                console.error('Error handling payment failure:', error);
+            }
+        });
+
+    } catch (error) {
+        Toastify({
+            text: error.message || "An error occurred while processing payment",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "#FF6F61",
+        }).showToast();
+    }
+});
+
+document.querySelector('input[name="amount"]').addEventListener('input', function () {
+    if (this.value && isNaN(this.value)) {
+        alert('Only numeric values are allowed!');
+        this.value = this.value.replace(/[^0-9]/g, '');
+    }
+});
+</script>
+
     <%- include('../layouts/user/footer.ejs') %>
 
-    <!-- Include Toastify CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<!-- Include Toastify JS -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
