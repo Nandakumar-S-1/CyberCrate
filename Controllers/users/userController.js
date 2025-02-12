@@ -185,7 +185,7 @@ async function sendVerificationEmail(email, otp) {
     });
 
     await transporter.verify();
-    console.log("Transporter verified successfully");
+    // console.log("Transporter verified successfully");
 
     console.log("Sending email to:", email);
     console.log("OTP:", otp);
@@ -204,13 +204,6 @@ async function sendVerificationEmail(email, otp) {
                     <p>If you didn't request this code, please ignore this email.</p>
                 </div>
             `,
-    });
-
-    console.log("Email sent successfully:", {
-      messageId: info.messageId,
-      response: info.response,
-      accepted: info.accepted,
-      rejected: info.rejected,
     });
 
     return info.accepted.length > 0;
@@ -282,24 +275,23 @@ const signup = async (req, res) => {
       });
     }
 
-    // Store data in session for verification
     req.session.userOtp = otp;
     req.session.userData = {
       name,
       email,
       phone,
-      password: password, // Store plain password - this is the main fix
+      password: password,
       referalCode,
       userReferalCode,
       referedBy: referedByAUser ? referedByAUser._id : null,
     };
     req.session.otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes expiry
 
-    console.log("Session Data after OTP generation:", {
-      userOtp: req.session.userOtp,
-      userData: req.session.userData,
-      otpExpiry: req.session.otpExpiry,
-    });
+    // console.log("Session Data after OTP generation:", {
+    //   userOtp: req.session.userOtp,
+    //   userData: req.session.userData,
+    //   otpExpiry: req.session.otpExpiry,
+    // });
 
     // Redirect to OTP verification page
     res.render("users/verifyOtp");
@@ -312,7 +304,7 @@ const signup = async (req, res) => {
 const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("Attempting login with email:", email);
+    // console.log("Attempting login with email:", email);
 
     const findUser = await User.findOne({ email });
     if (!findUser) {
@@ -337,12 +329,6 @@ const signin = async (req, res) => {
         activeForm: "signin",
       });
     }
-
-    // Try direct comparison using bcrypt
-    console.log("Attempting password comparison:");
-    console.log("Input password:", password);
-    console.log("Stored hash:", findUser.password);
-
     const passwordMatch = await bcrypt.compare(password, findUser.password);
     console.log("Password match result:", passwordMatch);
 
@@ -372,16 +358,10 @@ const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
     console.log("Received OTP:", otp, "Type:", typeof otp);
-    console.log(
-      "Stored OTP:",
-      req.session.userOtp,
-      "Type:",
-      typeof req.session.userOtp
-    );
+    console.log( "Stored OTP:",req.session.userOtp, "Type:",typeof req.session.userOtp  );
 
     // Check session exists or not
-    if (
-      !req.session.userOtp ||
+    if ( !req.session.userOtp ||
       !req.session.userData ||
       !req.session.otpExpiry
     ) {
@@ -398,17 +378,13 @@ const verifyOtp = async (req, res) => {
 
     const now = Date.now();
     const expiryTime = req.session.otpExpiry;
-    console.log("Time check:", {
-      now,
-      expiryTime,
-      difference: now - expiryTime,
-      hasExpired: now > expiryTime,
-    });
+    const createdAt = req.session.otpCreatedAt;
 
     if (now > expiryTime) {
       delete req.session.userOtp;
       delete req.session.userData;
       delete req.session.otpExpiry;
+      delete req.session.otpCreatedAt;
 
       return res.status(400).json({
         success: false,
@@ -418,6 +394,13 @@ const verifyOtp = async (req, res) => {
 
     const receivedOtp = String(otp).trim();
     const storedOtp = String(req.session.userOtp).trim();
+
+    if (createdAt !== req.session.otpCreatedAt) {
+      return res.status(400).json({
+          success: false,
+          message: "This OTP is no longer valid. Please use the most recent OTP."
+      });
+  }
 
     if (receivedOtp !== storedOtp) {
       console.log("OTP mismatch:", {
@@ -549,7 +532,8 @@ const resendOtp = async (req, res) => {
     }
 
     req.session.userOtp = otp;
-    req.session.otpExpiry = Date.now() + 5 * 60 * 1000;
+    req.session.otpCreatedAt = Date.now();
+    req.session.otpExpiry = Date.now() + 60 * 1000;
 
     console.log(`New OTP has been sent to ${email}: ${otp}`);
     res.status(200).json({ success: true, message: "OTP sent successfully." });

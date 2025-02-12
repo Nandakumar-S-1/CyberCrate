@@ -46,13 +46,13 @@
                                         <input type="number" class="form-control" id="usageLimit" name="usageLimit">
                                         <small id="usageLimitError" class="form-text text-danger"></small>
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label for="isActive">Active</label>
                                         <select class="form-control" id="isActive" name="isActive">
                                             <option value="true">Yes</option>
                                             <option value="false">No</option>
                                         </select>
-                                    </div>
+                                    </div> -->
                                     <div class="form-group">
                                         <label for="isList">Listed</label>
                                         <select class="form-control" id="isList" name="isList">
@@ -75,73 +75,105 @@
 
 
         <%- include('../layouts/admin/footer.ejs') %>
-        
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            function validateForm() {
-                let isValid = true;
 
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                // Regular expression for alphanumeric validation
+                const codeRegex = /^[A-Za-z0-9]{6}$/;
 
-                const code = document.getElementById('code').value;
-                if (!code) {
-                    document.getElementById('codeError').innerText = 'Coupon Code is required.';
-                    isValid = false;
-                } else if (!codeRegex.test(code)) {
-                    document.getElementById('codeError').innerText = 'Coupon Code must be 6 alphanumeric characters.';
-                    isValid = false;
-                } else {
-                    document.getElementById('codeError').innerText = '';
+                // Real-time coupon code format checker (without error popup)
+                document.getElementById('code').addEventListener('input', function () {
+                    const code = this.value.trim();
+                    const errorElement = document.getElementById('codeError');
+
+                    if (code.length > 6) {
+                        this.value = code.slice(0, 6); // Prevent more than 6 characters
+                    }
+
+                    if (code.length > 0) {
+                        if (!code.match(/^[A-Za-z0-9]*$/)) {
+                            errorElement.innerText = 'Only letters and numbers allowed';
+                        } else if (code.length < 6) {
+                            errorElement.innerText = `${6 - code.length} more characters needed`;
+                        } else if (code.length === 6) {
+                            errorElement.innerText = '';
+                        }
+                    } else {
+                        errorElement.innerText = '';
+                    }
+                });
+
+                function validateForm() {
+                    let isValid = true;
+                    const currentDate = new Date();
+
+                    // Clear all previous error messages
+                    const errorElements = document.querySelectorAll('.form-text.text-danger');
+                    errorElements.forEach(element => element.innerText = '');
+
+                    // Validate Coupon Code
+                    const code = document.getElementById('code').value.trim();
+                    if (!code) {
+                        document.getElementById('codeError').innerText = 'Coupon Code is required.';
+                        isValid = false;
+                    } else if (!codeRegex.test(code)) {
+                        document.getElementById('codeError').innerText = 'Coupon Code must be exactly 6 alphanumeric characters.';
+                        isValid = false;
+                    }
+
+                    // Validate Offer Price
+                    const offerPrice = parseFloat(document.getElementById('offerPrice').value);
+                    if (!offerPrice || offerPrice <= 0) {
+                        document.getElementById('offerPriceError').innerText = 'Offer price must be greater than 0.';
+                        isValid = false;
+                    }
+
+                    // Validate Minimum Price
+                    const minimumPrice = parseFloat(document.getElementById('minimumPrice').value);
+                    if (!minimumPrice || minimumPrice <= 0) {
+                        document.getElementById('minimumPriceError').innerText = 'Minimum price must be greater than 0.';
+                        isValid = false;
+                    }
+
+                    // Validate Maximum Price
+                    const maximumPrice = parseFloat(document.getElementById('maximumPrice').value);
+                    if (!maximumPrice || maximumPrice <= 0) {
+                        document.getElementById('maximumPriceError').innerText = 'Maximum price must be greater than 0.';
+                        isValid = false;
+                    }
+
+                    // Compare Minimum and Maximum Prices
+                    if (minimumPrice && maximumPrice && minimumPrice >= maximumPrice) {
+                        document.getElementById('minimumPriceError').innerText = 'Minimum price must be less than maximum price.';
+                        document.getElementById('maximumPriceError').innerText = 'Maximum price must be greater than minimum price.';
+                        isValid = false;
+                    }
+
+                    // Validate Expiration Date
+                    const expireOn = new Date(document.getElementById('expireOn').value);
+                    if (!document.getElementById('expireOn').value) {
+                        document.getElementById('expireOnError').innerText = 'Expiration date is required.';
+                        isValid = false;
+                    } else if (expireOn <= currentDate) {
+                        document.getElementById('expireOnError').innerText = 'Expiration date must be in the future.';
+                        isValid = false;
+                    }
+
+                    // Validate Usage Limit
+                    const usageLimit = parseInt(document.getElementById('usageLimit').value);
+                    if (document.getElementById('usageLimit').value && (!usageLimit || usageLimit < 1)) {
+                        document.getElementById('usageLimitError').innerText = 'Usage limit must be at least 1.';
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: 'Please correct the errors in the form.',
+                        });
+                    }
+
+                    return isValid;
                 }
-
-                const offerPrice = document.getElementById('offerPrice').value;
-                if (!offerPrice || offerPrice <= 0) {
-                    document.getElementById('offerPriceError').innerText = 'Offer price have to be a positive number.';
-                    isValid = false;
-                } else {
-                    document.getElementById('offerPriceError').innerText = '';
-                }
-
-
-                const minimumPrice = document.getElementById('minimumPrice').value;
-                if (!minimumPrice || minimumPrice <= 0) {
-                    document.getElementById('minimumPriceError').innerText = 'Minimum price must be a positive number.';
-                    isValid = false;
-                } else {
-                    document.getElementById('minimumPriceError').innerText = '';
-                }
-
-                const maximumPrice = document.getElementById('maximumPrice').value;
-                if (!maximumPrice || maximumPrice <= 0) {
-                    document.getElementById('maximumPriceError').innerText = 'Maximum price must be a positive number.';
-                    isValid = false;
-                } else {
-                    document.getElementById('maximumPriceError').innerText = '';
-                }
-
-                const expireOn = document.getElementById('expireOn').value;
-                if (!expireOn) {
-                    document.getElementById('expireOnError').innerText = 'Expiration date is required.';
-                    isValid = false;
-                } else {
-                    document.getElementById('expireOnError').innerText = '';
-                }
-
-                const usageLimit = document.getElementById('usageLimit').value;
-                if (usageLimit && usageLimit <= 0) {
-                    document.getElementById('usageLimitError').innerText = 'Usage limit have to be a positive number.';
-                    isValid = false;
-                } else {
-                    document.getElementById('usageLimitError').innerText = '';
-                }
-
-                if (!isValid) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Validation Error',
-                        text: 'Please correct the errors in the form.',
-                    });
-                }
-
-                return isValid;
-            }
-        </script>
+            </script>

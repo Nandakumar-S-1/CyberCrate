@@ -63,20 +63,7 @@
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-tags"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Total Discounts</h3>
-                        <div class="total-discount stat-number">₹<%= totalDiscount %>
-                        </div>
-                        <div class="stat-change">
-                            <i class="fas fa-arrow-down"></i>
-                            <span></span>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -176,6 +163,21 @@
 
                 <div class="stat-card">
                     <div class="stat-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Discounts</h3>
+                        <div class="total-discount stat-number">₹<%= totalDiscount %>
+                        </div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-down"></i>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
                         <i class="fas fa-percentage"></i>
                     </div>
                     <div class="stat-info">
@@ -226,6 +228,27 @@
             
                 <button id="applyFilter" class="btn btn-primary btn-sm">Apply Filter</button>
             </div>
+            
+
+            <!-- <div class="date-filter p-3 border rounded bg-light shadow-sm d-flex flex-wrap align-items-center gap-3">   
+                <select id="dateRangeFilter" class="form-control form-control-sm w-auto">
+                    <option value="custom" <%= selectedFilter === 'custom' ? 'selected' : '' %>>Custom Date Range</option>
+                    <option value="daily" <%= selectedFilter === 'daily' ? 'selected' : '' %>>Today</option>
+                    <option value="weekly" <%= selectedFilter === 'weekly' ? 'selected' : '' %>>This Week</option>
+                    <option value="monthly" <%= selectedFilter === 'monthly' ? 'selected' : '' %>>This Month</option>
+                    <option value="yearly" <%= selectedFilter === 'yearly' ? 'selected' : '' %>>This Year</option>
+                </select>
+            
+                <div id="customDateInputs" class="d-flex align-items-center gap-2">
+                    <label for="startDate" class="form-label mb-0">Start Date:</label>
+                    <input type="date" id="startDate" class="form-control form-control-sm w-auto">
+            
+                    <label for="endDate" class="form-label mb-0">End Date:</label>
+                    <input type="date" id="endDate" class="form-control form-control-sm w-auto">
+                </div>
+            
+                <button id="applyFilter" class="btn btn-primary btn-sm">Apply Filter</button>
+            </div> -->
 
 
             <!-- Top Brands -->
@@ -537,92 +560,70 @@
                     },
                 });
             </script>
-
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-    const dateRangeFilter = document.getElementById('dateRangeFilter');
-    const customDateInputs = document.getElementById('customDateInputs');
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-
-    // Toggle custom date inputs based on filter selection
-    dateRangeFilter.addEventListener('change', () => {
-        const selectedValue = dateRangeFilter.value;
-        customDateInputs.style.display = selectedValue === 'custom' ? 'flex' : 'none';
-    });
-
-    document.getElementById('applyFilter').addEventListener('click', async () => {
-        const filterType = dateRangeFilter.value;
-        let queryParams = `filterValue=${filterType}`;
-
-        if (filterType === 'custom') {
-            const startDate = startDateInput.value;
-            const endDate = endDateInput.value;
-
-            if (!startDate || !endDate) {
-                alert('Please select both start and end dates.');
-                return;
+        const dateRangeFilter = document.getElementById('dateRangeFilter');
+        const customDateInputs = document.getElementById('customDateInputs');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const applyFilterButton = document.getElementById('applyFilter');
+    
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+    
+        // Set max attribute to prevent selecting future dates
+        startDateInput.setAttribute('max', today);
+        endDateInput.setAttribute('max', today);
+    
+        // Toggle custom date inputs based on filter selection
+        dateRangeFilter.addEventListener('change', () => {
+            const selectedValue = dateRangeFilter.value;
+            customDateInputs.style.display = selectedValue === 'custom' ? 'flex' : 'none';
+        });
+    
+        // Validate dates before applying the filter
+        applyFilterButton.addEventListener('click', () => {
+            const filterType = dateRangeFilter.value;
+    
+            if (filterType === 'custom') {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+    
+                if (!startDate || !endDate) {
+                    alert('Please select both start and end dates.');
+                    return;
+                }
+    
+                if (startDate > endDate) {
+                    alert('Start date cannot be greater than end date.');
+                    return;
+                }
+    
+                if (endDate > today) {
+                    alert('End date cannot be in the future.');
+                    return;
+                }
+    
+                if (startDate > today) {
+                    alert('Start date cannot be in the future.');
+                    return;
+                }
             }
-
-            queryParams += `&startDate=${startDate}&endDate=${endDate}`;
-        }
-
-        try {
+    
+            // Redirect with query parameters
+            let queryParams = `filterValue=${filterType}`;
+            if (filterType === 'custom') {
+                queryParams += `&startDate=${startDateInput.value}&endDate=${endDateInput.value}`;
+            }
             window.location.href = `/admin/dashboard?${queryParams}`;
-        } catch (error) {
-            console.error('Error filtering dashboard:', error);
-            alert('An error occurred while filtering the dashboard.');
-        }
+        });
+    
+        // Set initial state
+        customDateInputs.style.display = dateRangeFilter.value === 'custom' ? 'flex' : 'none';
     });
+    </script>
 
-    // Set initial state
-    customDateInputs.style.display = 
-        dateRangeFilter.value === 'custom' ? 'flex' : 'none';
-});
-</script>
-
-            <!-- <script>
-                document.getElementById('applyFilter').addEventListener('click', async () => {
-                    const startDate = document.getElementById('startDate').value;
-                    const endDate = document.getElementById('endDate').value;
-
-                    if (!startDate || !endDate) {
-                        alert('Please select both start and end dates.');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch('/admin/filter-dashboard', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ startDate, endDate }),
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            // Update stats dynamically
-                            document.querySelector('.total-revenue').textContent = `₹${data.totalRevenue}`;
-                            document.querySelector('.total-discount').textContent = `₹${data.totalDiscount}`;
-                            document.querySelector('.coupon-discount').textContent = `₹${data.couponDiscount}`;
-                            document.querySelector('.total-orders').textContent = data.totalOrders;
-                            document.querySelector('.active-orders').textContent = data.activeOrders;
-                            document.querySelector('.cancelled-orders').textContent = data.cancelledOrders;
-                            document.querySelector('.completed-orders').textContent = data.completedOrders;
-                            document.querySelector('.returned-orders').textContent = data.returnedOrders;
-                        } else {
-                            alert(data.message || 'Failed to filter data.');
-                        }
-                    } catch (err) {
-                        console.error('Error:', err);
-                        alert('An error occurred while filtering the data.');
-                    }
-                });
-            </script> -->
-
-
+           
             <style>
                 .chart-container {
                     width: 100%;

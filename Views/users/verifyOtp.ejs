@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verify OTP</title>
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="sweetalert2.min.css">
+    
     <style>
         body {
             background-color: #f8f9fa;
@@ -18,6 +17,7 @@
             height: 100vh;
             margin: 0;
         }
+
         .otp-container {
             background: #ffffff;
             padding: 30px;
@@ -26,30 +26,37 @@
             width: 100%;
             max-width: 400px;
         }
+
         .form-control:focus {
             box-shadow: none;
             border-color: #6c63ff;
         }
+
         .btn-primary {
             background-color: #6c63ff;
             border: none;
         }
+
         .btn-primary:hover {
             background-color: #4e47cc;
         }
+
         .otp-input {
             letter-spacing: 0.5em;
             text-align: center;
             font-size: 1.5em;
         }
+
         .resend-link {
             color: #6c63ff;
         }
+
         .resend-link:hover {
             color: #4e47cc;
         }
     </style>
 </head>
+
 <body>
     <div class="otp-container">
         <h3 class="text-center mb-4">Verify Your Email</h3>
@@ -57,23 +64,16 @@
 
         <form id="otpForm">
             <div class="mb-4">
-                <input
-                    type="text"
-                    class="form-control otp-input"
-                    id="otp"
-                    name="otp"
-                    placeholder="Enter OTP"
-                    maxlength="6"
-                    required
-                    autocomplete="off"
-                />
+                <input type="text" class="form-control otp-input" id="otp" name="otp" placeholder="Enter OTP"
+                    maxlength="6" required autocomplete="off" />
             </div>
             <button type="submit" class="btn btn-primary w-100 mb-3">Verify OTP</button>
         </form>
 
         <div class="text-center">
             <p class="mb-0">Didn't receive the code?</p>
-            <button id="resendOtpBtn" class="btn btn-link resend-link text-decoration-none" onclick="resendOtp()" disabled>
+            <button id="resendOtpBtn" class="btn btn-link resend-link text-decoration-none" onclick="resendOtp()"
+                disabled>
                 Resend OTP (<span id="timer">60</span>s)
             </button>
         </div>
@@ -85,7 +85,7 @@
             e.preventDefault();
 
             const otp = document.getElementById('otp').value.trim();
-            
+
             // Validate OTP format
             if (!otp || otp.length !== 6 || !/^\d+$/.test(otp)) {
                 Swal.fire({
@@ -102,7 +102,7 @@
                     method: 'GET',
                     credentials: 'same-origin'
                 });
-                
+
                 if (!sessionCheck.ok) {
                     throw new Error('Your session has expired. Please try signing up again.');
                 }
@@ -158,15 +158,15 @@
 
         // Restrict OTP input to numbers only and auto-submit when 6 digits are entered
         const otpInput = document.getElementById('otp');
-        otpInput.addEventListener('input', function(e) {
+        otpInput.addEventListener('input', function (e) {
             // Remove any non-digit characters
             this.value = this.value.replace(/\D/g, '');
-            
+
             // Limit to 6 digits
             if (this.value.length > 6) {
                 this.value = this.value.slice(0, 6);
             }
-            
+
             // Auto-submit when 6 digits are entered
             if (this.value.length === 6) {
                 document.getElementById('otpForm').dispatchEvent(new Event('submit'));
@@ -181,14 +181,23 @@
         function startTimer() {
             let timeLeft = timerDuration;
             resendOtpBtn.disabled = true;
-            timerDisplay.textContent = timeLeft;
 
-            const timerInterval = setInterval(() => {
+            // Clear any existing interval
+            if (window.timerInterval) {
+                clearInterval(window.timerInterval);
+            }
+
+            // Set initial text
+            timerDisplay.textContent = timeLeft;
+            resendOtpBtn.textContent = `Resend OTP (${timeLeft}s)`;
+
+            window.timerInterval = setInterval(() => {
                 timeLeft--;
                 timerDisplay.textContent = timeLeft;
+                resendOtpBtn.textContent = `Resend OTP (${timeLeft}s)`;
 
                 if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
+                    clearInterval(window.timerInterval);
                     resendOtpBtn.disabled = false;
                     timerDisplay.textContent = "0";
                     resendOtpBtn.textContent = "Resend OTP";
@@ -196,10 +205,71 @@
             }, 1000);
         }
 
+        // const timerInterval = setInterval(() => {
+        //     timeLeft--;
+        //     timerDisplay.textContent = timeLeft;
+
+        //     if (timeLeft <= 0) {
+        //         clearInterval(timerInterval);
+        //         resendOtpBtn.disabled = false;
+        //         timerDisplay.textContent = "0";
+        //         resendOtpBtn.textContent = "Resend OTP";
+        //     }
+        // }, 1000);}
+
+        // async function resendOtp() {
+        //     try {
+        //         resendOtpBtn.disabled = true;
+
+        //         const response = await fetch('/resend-otp', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json'
+        //             },
+        //             credentials: 'same-origin'
+        //         });
+
+        //         const data = await response.json();
+        //         console.log('Resend response:', data); // Debug log
+
+        //         if (response.ok && data.success) {
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'OTP Sent!',
+        //                 text: 'Please check your email for the new OTP.',
+        //                 timer: 2000,
+        //                 showConfirmButton: false
+        //             });
+
+        //             // Reset input field
+        //             document.getElementById('otp').value = '';
+
+        //             clearInterval(window.timerInterval);
+
+        //             // Restart timer
+        //             timerDisplay.textContent = timerDuration;
+        //             startTimer();
+        //         } else {
+        //             throw new Error(data.message || 'Failed to resend OTP');
+        //         }
+        //     } catch (error) {
+        //         console.error('Resend OTP error:', error);
+        //         Swal.fire({
+        //             icon: 'error',
+        //             title: 'Error',
+        //             text: error.message || 'Failed to resend OTP. Please try again.',
+        //         });
+        //         resendOtpBtn.disabled = false;
+        //     }
+        // }
+
+        // Start timer on page load
+
+
         async function resendOtp() {
             try {
                 resendOtpBtn.disabled = true;
-                
+
                 const response = await fetch('/resend-otp', {
                     method: 'POST',
                     headers: {
@@ -209,7 +279,6 @@
                 });
 
                 const data = await response.json();
-                console.log('Resend response:', data); // Debug log
 
                 if (response.ok && data.success) {
                     Swal.fire({
@@ -219,12 +288,19 @@
                         timer: 2000,
                         showConfirmButton: false
                     });
-                    
+
                     // Reset input field
                     document.getElementById('otp').value = '';
-                    
-                    // Restart timer
-                    timerDisplay.textContent = timerDuration;
+
+                    // Stop the current timer
+                    if (window.timerInterval) {
+                        clearInterval(window.timerInterval);
+                    }
+
+                    // Reset the button text
+                    resendOtpBtn.textContent = `Resend OTP (${timerDuration}s)`;
+
+                    // Start fresh timer
                     startTimer();
                 } else {
                     throw new Error(data.message || 'Failed to resend OTP');
@@ -240,15 +316,12 @@
             }
         }
 
-        // Start timer on page load
         startTimer();
     </script>
 
-    <!-- Include SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Include jQuery (for AJAX and compatibility with older libraries, optional) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
-    <!-- Include Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

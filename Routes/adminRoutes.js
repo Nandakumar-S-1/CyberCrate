@@ -202,6 +202,6 @@ module.exports = router;
 // Catch-all route for undefined admin routes
 router.all("*", (req, res) => {
   const errorMessage = "The page you are looking for doesn't exist.";
-  const errorCode = 404; // You can change this if needed
+  const errorCode = 404;
   res.render("admin/adminError", { errorMessage, errorCode });
 });

@@ -223,7 +223,7 @@
             border: 1px solid #ddd;
         }
 
-        
+
         .carousel-control-prev-icon,
         .carousel-control-next-icon {
             filter: invert(1) grayscale(100);
@@ -363,56 +363,44 @@
                         <% if (activeCoupons && activeCoupons.length> 0) { %>
                             <div class="coupon-list">
                                 <% activeCoupons.forEach(coupon=> { %>
-                                    <!-- <div class="coupon-card">
-                                        <div class="coupon-details">
-                                            <div class="coupon-code">
-                                                <span class="code-label">Code:</span>
-                                                <span class="code-value">
-                                                    <%= coupon.code %>
-                                                </span>
-                                            </div>
-                                            <div class="coupon-info">
-                                                <p>Get ₹<%= parseInt( coupon.offerPrice) %> off</p>
-                                                <p>Min. Purchase: ₹<%= parseInt( coupon.minimumPrice) %>
-                                                </p>
-                                                <p>Expires: <%= new Date(coupon.expireOn).toLocaleDateString() %>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <button class="copy-code-btn" onclick="copyCouponCode('<%= coupon.code %>')">
-                                            Copy Code
-                                        </button>
-                                    </div> -->
-                                    
+
                                     <div class="coupon-card">
                                         <svg class="mini-circuit mini-circuit-1" viewBox="0 0 50 50">
-                                            <path d="M0 25h50 M25 0v50" stroke="white" stroke-width="0.5"/>
-                                            <circle cx="25" cy="25" r="5" fill="none" stroke="white" stroke-width="0.5"/>
+                                            <path d="M0 25h50 M25 0v50" stroke="white" stroke-width="0.5" />
+                                            <circle cx="25" cy="25" r="5" fill="none" stroke="white"
+                                                stroke-width="0.5" />
                                         </svg>
-                                        
+
                                         <svg class="mini-circuit mini-circuit-2" viewBox="0 0 50 50">
-                                            <path d="M10 10h30v30h-30z" fill="none" stroke="white" stroke-width="0.5"/>
-                                            <path d="M25 10v30 M10 25h30" stroke="white" stroke-width="0.5"/>
+                                            <path d="M10 10h30v30h-30z" fill="none" stroke="white" stroke-width="0.5" />
+                                            <path d="M25 10v30 M10 25h30" stroke="white" stroke-width="0.5" />
                                         </svg>
-                                        
+
                                         <svg class="tech-icon" viewBox="0 0 100 100">
-                                            <path d="M20 20h60v60h-60z" fill="none" stroke="white" stroke-width="2"/>
-                                            <circle cx="50" cy="50" r="20" fill="none" stroke="white" stroke-width="2"/>
-                                            <path d="M35 50h30 M50 35v30" stroke="white" stroke-width="2"/>
+                                            <path d="M20 20h60v60h-60z" fill="none" stroke="white" stroke-width="2" />
+                                            <circle cx="50" cy="50" r="20" fill="none" stroke="white"
+                                                stroke-width="2" />
+                                            <path d="M35 50h30 M50 35v30" stroke="white" stroke-width="2" />
                                         </svg>
-                                        
+
                                         <div class="coupon-content">
                                             <div class="coupon-left">
-                                                <div class="discount-amount">₹<%= parseInt(coupon.offerPrice) %> OFF</div>
+                                                <div class="discount-amount">₹<%= parseInt(coupon.offerPrice) %> OFF
+                                                </div>
                                                 <div class="coupon-code">
-                                                    <span class="code-value"><%= coupon.code %></span>
+                                                    <span class="code-value">
+                                                        <%= coupon.code %>
+                                                    </span>
                                                 </div>
                                                 <div class="coupon-info">
-                                                    <p>Min. Purchase: ₹<%= parseInt(coupon.minimumPrice) %></p>
-                                                    <p>Expires: <%= new Date(coupon.expireOn).toLocaleDateString() %></p>
+                                                    <p>Min. Purchase: ₹<%= parseInt(coupon.minimumPrice) %>
+                                                    </p>
+                                                    <p>Expires: <%= new Date(coupon.expireOn).toLocaleDateString() %>
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <button class="copy-code-btn" onclick="copyCouponCode('<%= coupon.code %>')">
+                                            <button class="copy-code-btn"
+                                                onclick="copyCouponCode('<%= coupon.code %>')">
                                                 Copy Code
                                             </button>
                                         </div>
@@ -668,127 +656,151 @@
                                 showToast('Error adding item to cart', 'error');
                             });
                     }
+
+                    function copyCouponCode(code) {
+                        
+                        const tempInput = document.createElement("input");
+                        tempInput.value = code;
+                        document.body.appendChild(tempInput);
+
+                        
+                        tempInput.select();
+                        tempInput.setSelectionRange(0, 99999); 
+                        document.execCommand("copy");
+
+                       
+                        document.body.removeChild(tempInput);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Copied!',
+                            text: `Coupon code "${code}" copied to clipboard.`,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
                 </script>
 
-<style>
-    .coupon-card {
-        position: relative;
-        background: linear-gradient(135deg, #1a0235 0%, #4b0082 100%);
-        border: none;
-        color: white;
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 15px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .coupon-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h80v80h-80z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M20 20l60 60M80 20l-60 60' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E") repeat;
-        opacity: 0.3;
-    }
-    
-    .coupon-card::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 40px;
-        width: 2px;
-        height: 100%;
-        background: repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(255,255,255,0.2) 5px, rgba(255,255,255,0.2) 10px);
-    }
-    
-    .coupon-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .coupon-left {
-        flex: 1;
-    }
-    
-    .discount-amount {
-        font-size: 24px;
-        font-weight: bold;
-        color: #f0c14b;
-        margin-bottom: 10px;
-        text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
-    }
-    
-    .coupon-code {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 8px 15px;
-        border-radius: 6px;
-        display: inline-block;
-        margin-bottom: 10px;
-        border: 1px dashed rgba(255, 255, 255, 0.3);
-    }
-    
-    .code-value {
-        font-family: 'Courier New', monospace;
-        font-weight: bold;
-        letter-spacing: 2px;
-        color: #fff;
-    }
-    
-    .coupon-info p {
-        margin: 5px 0;
-        font-size: 0.9em;
-        color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .copy-code-btn {
-        background:linear-gradient(to bottom, #f7dfa5, #f0c14b);
-        color: #1a0235;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 25px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(0, 255, 157, 0.2);
-    }
-    
-    .copy-code-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 255, 157, 0.3);
-    }
-    
-    .tech-icon {
-        position: absolute;
-        right: 60px;
-        top: 50%;
-        transform: translateY(-50%);
-        opacity: 0.1;
-        width: 80px;
-        height: 80px;
-    }
-    
-    .mini-circuit {
-        position: absolute;
-        width: 40px;
-        height: 40px;
-        opacity: 0.1;
-    }
-    
-    .mini-circuit-1 {
-        top: 10px;
-        left: 10px;
-    }
-    
-    .mini-circuit-2 {
-        bottom: 10px;
-        right: 80px;
-    }
-</style>
+                <style>
+                    .coupon-card {
+                        position: relative;
+                        background: linear-gradient(135deg, #1a0235 0%, #4b0082 100%);
+                        border: none;
+                        color: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        margin-bottom: 15px;
+                        overflow: hidden;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                    }
+
+                    .coupon-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h80v80h-80z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3Cpath d='M20 20l60 60M80 20l-60 60' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E") repeat;
+                        opacity: 0.3;
+                    }
+
+                    .coupon-card::after {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        right: 40px;
+                        width: 2px;
+                        height: 100%;
+                        background: repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(255, 255, 255, 0.2) 5px, rgba(255, 255, 255, 0.2) 10px);
+                    }
+
+                    .coupon-content {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        position: relative;
+                        z-index: 1;
+                    }
+
+                    .coupon-left {
+                        flex: 1;
+                    }
+
+                    .discount-amount {
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #f0c14b;
+                        margin-bottom: 10px;
+                        text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+                    }
+
+                    .coupon-code {
+                        background: rgba(255, 255, 255, 0.1);
+                        padding: 8px 15px;
+                        border-radius: 6px;
+                        display: inline-block;
+                        margin-bottom: 10px;
+                        border: 1px dashed rgba(255, 255, 255, 0.3);
+                    }
+
+                    .code-value {
+                        font-family: 'Courier New', monospace;
+                        font-weight: bold;
+                        letter-spacing: 2px;
+                        color: #fff;
+                    }
+
+                    .coupon-info p {
+                        margin: 5px 0;
+                        font-size: 0.9em;
+                        color: rgba(255, 255, 255, 0.8);
+                    }
+
+                    .copy-code-btn {
+                        background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+                        color: #1a0235;
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 25px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        box-shadow: 0 4px 15px rgba(0, 255, 157, 0.2);
+                    }
+
+                    .copy-code-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(0, 255, 157, 0.3);
+                    }
+
+                    .tech-icon {
+                        position: absolute;
+                        right: 60px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        opacity: 0.1;
+                        width: 80px;
+                        height: 80px;
+                    }
+
+                    .mini-circuit {
+                        position: absolute;
+                        width: 40px;
+                        height: 40px;
+                        opacity: 0.1;
+                    }
+
+                    .mini-circuit-1 {
+                        top: 10px;
+                        left: 10px;
+                    }
+
+                    .mini-circuit-2 {
+                        bottom: 10px;
+                        right: 80px;
+                    }
+                </style>

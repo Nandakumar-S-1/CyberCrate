@@ -1,4 +1,5 @@
 <%- include('../layouts/admin/header.ejs') %>
+<%- include('../layouts/admin/sidebar.ejs', {currentPage: 'products' }) %>
 
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
@@ -213,14 +214,14 @@
     </style>
 
 
-    <section class="content-main ">
+    <section class="content-main " style="margin-left: 10rem;">
         <div class="row ms-5">
             <div class="col-9">
                 <div class="content-header">
                     <h2 class="content-title">Add New Product</h2>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6 "style="margin-left: 10rem;">
                 <div class="card mb-4">
                     <div class="card-body">
                         <form method="post" action="/admin/products" enctype="multipart/form-data"
@@ -328,45 +329,51 @@
 
                             <div class="card mb-2">
                                 <div class="card-header">
-                                  <h4>Choose images</h4>
+                                    <h4>Choose images</h4>
                                 </div>
                                 <div class="border row">
-                                  <div id="addedImagesContainer" class="thumbnails-container"></div>
+                                    <div id="addedImagesContainer" class="thumbnails-container"></div>
                                 </div>
-                              
+
                                 <div class="row">
-                                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                    <img src="" alt="" id="imgView1">
-                                    <input class="form-control" type="file" name="images" id="input1" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 1)">
-                                  </div>
-                                  <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                    <img src="" id="croppedImg1" alt="">
-                                    <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
-                                  </div>
+                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                        <img src="" alt="" id="imgView1">
+                                        <input class="form-control" type="file" name="images" id="input1"
+                                            accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 1)">
+                                    </div>
+                                    <div class="image-cropper d-flex align-items-center"
+                                        style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                        <img src="" id="croppedImg1" alt="">
+                                        <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
+                                    </div>
                                 </div>
-                              
+
                                 <div class="row">
-                                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                    <img src="" alt="" id="imgView2">
-                                    <input class="form-control" type="file" name="images" id="input2" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 2)">
-                                  </div>
-                                  <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                    <img src="" id="croppedImg2" alt="">
-                                    <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
-                                  </div>
+                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                        <img src="" alt="" id="imgView2">
+                                        <input class="form-control" type="file" name="images" id="input2"
+                                            accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 2)">
+                                    </div>
+                                    <div class="image-cropper d-flex align-items-center"
+                                        style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                        <img src="" id="croppedImg2" alt="">
+                                        <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
+                                    </div>
                                 </div>
-                              
+
                                 <div class="row">
-                                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                    <img src="" alt="" id="imgView3">
-                                    <input class="form-control" type="file" name="images" id="input3" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 3)">
-                                  </div>
-                                  <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                    <img src="" id="croppedImg3" alt="">
-                                    <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
-                                  </div>
+                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                        <img src="" alt="" id="imgView3">
+                                        <input class="form-control" type="file" name="images" id="input3"
+                                            accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 3)">
+                                    </div>
+                                    <div class="image-cropper d-flex align-items-center"
+                                        style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                        <img src="" id="croppedImg3" alt="">
+                                        <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
+                                    </div>
                                 </div>
-                              </div>
+                            </div>
                             <div class="publish-button-container">
                                 <button class="publish-button" type="submit"
                                     onclick="validateAndSubmit()">Publish</button>
@@ -382,6 +389,31 @@
 
 
     <script>
+        function formatPriceInput(input) {
+            
+            let value = input.value.replace(/[^\d.]/g, '');
+
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+
+            if (parts.length > 1) {
+                value = parts[0] + '.' + parts[1].slice(0, 2);
+            }
+            input.value = value;
+        }
+
+        // Add real-time formatting to price inputs
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceInputs = document.querySelectorAll('input[name="regularPrice"], input[name="salePrice"]');
+            priceInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    formatPriceInput(this);
+                });
+            });
+        });
+
         function validateAndSubmit() {
             if (validateForm()) {
                 document.forms[0].submit();
@@ -389,73 +421,198 @@
         }
 
         function validateForm() {
-            let imageDatas = false
-            console.log("validate form");
             clearErrorMessages();
-            const name = document.getElementsByName('productName')[0].value;
-            const description = document.getElementsByName('descriptionData')[0].value;
-            const brand = document.getElementsByName('brand')[0].value;
-            const price = document.getElementsByName('regularPrice')[0].value;
-            const saleprice = document.getElementsByName('salePrice')[0].value;
-            const category = document.getElementsByName('category')[0].value;
-            const images = document.getElementById('input1')
-            const quantity = document.getElementsByName('quantity')
-            imageDatas = document.getElementById("imageDatas")?.value;
-
             let isValid = true;
-            if (name.trim() === "") {
-                displayErrorMessage('productName-error', 'Please enter a product name.');
+
+            // Product Name Validation
+            const name = document.getElementsByName('productName')[0].value.trim();
+            if (!name) {
+                displayErrorMessage('productName-error', 'Product name is required.');
+                isValid = false;
+            } else if (name.length < 3) {
+                displayErrorMessage('productName-error', 'Product name must be at least 3 characters long.');
                 isValid = false;
             }
 
-            if (description === '') {
-                displayErrorMessage('description-error', 'Please enter a product description.');
+            // Description Validation
+            const description = document.getElementById('descriptionid').value.trim();
+            if (!description) {
+                displayErrorMessage('description-error', 'Product description is required.');
+                isValid = false;
+            } else if (description.length < 10) {
+                displayErrorMessage('description-error', 'Description must be at least 10 characters long.');
                 isValid = false;
             }
 
-
-            if (parseInt(quantity) < 0) {
-                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+            // Regular Price Validation
+            const regularPrice = parseFloat(document.getElementsByName('regularPrice')[0].value);
+            if (!regularPrice || isNaN(regularPrice)) {
+                displayErrorMessage('regularPrice-error', 'Regular price is required.');
+                isValid = false;
+            } else if (regularPrice <= 0) {
+                displayErrorMessage('regularPrice-error', 'Regular price must be greater than 0.');
                 isValid = false;
             }
 
+            // Sale Price Validation
+            const salePriceInput = document.getElementsByName('salePrice')[0].value;
+            if (salePriceInput.trim() !== '') {
+                const salePrice = parseFloat(salePriceInput);
+                if (isNaN(salePrice)) {
+                    displayErrorMessage('salePrice-error', 'Sale price must be a valid number.');
+                    isValid = false;
+                } else if (salePrice <= 0) {
+                    displayErrorMessage('salePrice-error', 'Sale price must be greater than 0.');
+                    isValid = false;
+                } else if (salePrice >= regularPrice) {
+                    displayErrorMessage('salePrice-error', 'Sale price must be less than regular price.');
+                    isValid = false;
+                }
+            }
 
-            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-                displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+            // Quantity Validation
+            const quantity = parseInt(document.getElementsByName('quantity')[0].value);
+            if (!quantity || isNaN(quantity)) {
+                displayErrorMessage('quantity-error', 'Quantity is required.');
                 isValid = false;
-            }
-            if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+            } else if (quantity <= 0) {
+                displayErrorMessage('quantity-error', 'Quantity must be greater than 0.');
                 isValid = false;
             }
 
-            if (color.trim() === "") {
-                displayErrorMessage('color-error', 'Please enter a color.');
+            // Product Offer Validation
+            const offerInput = document.getElementsByName('productOffer')[0];
+            if (offerInput.value.trim() !== '') {
+                const offer = parseInt(offerInput.value);
+                if (isNaN(offer) || offer < 0 || offer > 100) {
+                    displayErrorMessage('offer-error', 'Offer must be between 0 and 100.');
+                    isValid = false;
+                }
+            }
+
+            // Image Validation
+            const imageInputs = document.querySelectorAll('input[type="file"][name="images"]');
+            let hasImage = false;
+            imageInputs.forEach(input => {
+                if (input.files.length > 0) {
+                    hasImage = true;
+                    // Validate file type
+                    const file = input.files[0];
+                    if (!file.type.match('image/(jpeg|jpg|png)')) {
+                        displayErrorMessage('images-error', 'Only JPG, JPEG, and PNG images are allowed.');
+                        isValid = false;
+                    }
+                }
+            });
+
+            if (!hasImage) {
+                displayErrorMessage('images-error', 'At least one product image is required.');
                 isValid = false;
             }
-            if (!imageDatas && images.files.length === 0) {
-                displayErrorMessage("images-error", 'Please select an image.');
-                isValid = false;
+
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Please correct the errors in the form.',
+                });
             }
+
             return isValid;
         }
 
         function displayErrorMessage(elementId, message) {
-            var errorElement = document.getElementById(elementId);
-            errorElement.innerText = message;
-            errorElement.style.display = "block";
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.innerText = message;
+                errorElement.style.color = '#dc3545';
+                errorElement.style.fontSize = '0.875em';
+                errorElement.style.marginTop = '0.25rem';
+            }
         }
-
 
         function clearErrorMessages() {
             const errorElements = document.getElementsByClassName('error-message');
             Array.from(errorElements).forEach(element => {
                 element.innerText = '';
             });
-            const errorMessage = document.getElementById('errorMessage');
-
-
         }
+
+
+        // function validateAndSubmit() {
+        //     if (validateForm()) {
+        //         document.forms[0].submit();
+        //     }
+        // }
+
+        // function validateForm() {
+        //     let imageDatas = false
+        //     console.log("validate form");
+        //     clearErrorMessages();
+        //     const name = document.getElementsByName('productName')[0].value;
+        //     const description = document.getElementsByName('descriptionData')[0].value;
+        //     const brand = document.getElementsByName('brand')[0].value;
+        //     const price = document.getElementsByName('regularPrice')[0].value;
+        //     const saleprice = document.getElementsByName('salePrice')[0].value;
+        //     const category = document.getElementsByName('category')[0].value;
+        //     const images = document.getElementById('input1')
+        //     const quantity = document.getElementsByName('quantity')
+        //     imageDatas = document.getElementById("imageDatas")?.value;
+
+        //     let isValid = true;
+        //     if (name.trim() === "") {
+        //         displayErrorMessage('productName-error', 'Please enter a product name.');
+        //         isValid = false;
+        //     }
+
+        //     if (description === '') {
+        //         displayErrorMessage('description-error', 'Please enter a product description.');
+        //         isValid = false;
+        //     }
+
+
+        //     if (parseInt(quantity) < 0) {
+        //         displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        //         isValid = false;
+        //     }
+
+
+        //     if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+        //         displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+        //         isValid = false;
+        //     }
+        //     if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+        //         displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+        //         isValid = false;
+        //     }
+
+        //     if (color.trim() === "") {
+        //         displayErrorMessage('color-error', 'Please enter a color.');
+        //         isValid = false;
+        //     }
+        //     if (!imageDatas && images.files.length === 0) {
+        //         displayErrorMessage("images-error", 'Please select an image.');
+        //         isValid = false;
+        //     }
+        //     return isValid;
+        // }
+
+        // function displayErrorMessage(elementId, message) {
+        //     var errorElement = document.getElementById(elementId);
+        //     errorElement.innerText = message;
+        //     errorElement.style.display = "block";
+        // }
+
+
+        // function clearErrorMessages() {
+        //     const errorElements = document.getElementsByClassName('error-message');
+        //     Array.from(errorElements).forEach(element => {
+        //         element.innerText = '';
+        //     });
+        //     const errorMessage = document.getElementById('errorMessage');
+
+
+        // }
 
 
 

@@ -22,7 +22,7 @@
                             <label for="product_image" class="form-label text-info fw-bold">Brand Image</label>
                             <div class="input-upload ">
                                 <img src="" alt="" />
-                                <input class="form-control border text-info fw-bold" name="image" type="file" />
+                                <input class="form-control border text-info fw-bold" name="image" type="file" accept="image/png, image/jpeg, image/jpg" onchange="validateImage(this)" required />
                             </div>
                             <div class="d-grid">
                                 <button class="btn btn-primary w-50 mt-5 fw-bold" type="submit">Add Brand</button>
@@ -154,6 +154,38 @@
         return confirm("Are you sure you want to restore this brand to the list?");
     }
 </script>
+
+<!-- validartion -->
+<script>
+    function validateImage(input) {
+        const allowedExtensions = ['jpg', 'jpeg', 'png'];
+        const file = input.files[0];
+
+        if (file) {
+            const fileName = file.name.toLowerCase();
+            const fileExtension = fileName.split('.').pop();
+
+            if (!allowedExtensions.includes(fileExtension)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid File Type",
+                    text: "Only JPG, JPEG, and PNG formats are allowed.",
+                    confirmButtonText: "OK"
+                });
+                input.value = ""; // Clear the invalid file
+            } else if (file.size > 2 * 1024 * 1024) { // 2MB max file size
+                Swal.fire({
+                    icon: "warning",
+                    title: "File Too Large",
+                    text: "Please upload an image smaller than 2MB.",
+                    confirmButtonText: "OK"
+                });
+                input.value = "";
+            }
+        }
+    }
+</script>
+
 
 <style>
     .brands-container {

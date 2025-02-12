@@ -85,10 +85,14 @@ const loadAddProduct = async (req, res) => {
     const categories = await Category.find({ isListed: true });
     const brands = await Brand.find({ isBlocked: false });
     const product = await Product.find({});
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6;
+    const skip = (page - 1) * limit;
     res.render("admin/addProducts", {
       category: categories,
       brand: brands,
       product: product,
+      currentPage: page,
     });
   } catch (error) {
     

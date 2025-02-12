@@ -99,6 +99,203 @@
 
 
 
+<script>
+   function toggleListing(categoryId, isChecked) {
+  const action = isChecked ? "list" : "unlist";
+
+  Swal.fire({
+    title: `Are you sure?`,
+    text: `You want to ${action} this category?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: `Yes, ${action} it!`,
+    cancelButtonText: "Cancel",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`/admin/${action}Categories?id=${categoryId}`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            Swal.fire({
+              title: "Success!",
+              text: data.message,
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false,
+            }).then(() => {
+              location.reload();
+            });
+          } else {
+            Swal.fire("Error", data.message, "error");
+          }
+        })
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong!", "error");
+        });
+    } else {
+      document.getElementById(`listing_${categoryId}`).checked = !isChecked; // Reset toggle
+    }
+  });
+}
+
+</script>
+
+<script>
+    function clearErrorMessages() {
+        const errElements = document.getElementsByClassName('invalid-feedback');
+        Array.from(errElements).forEach(element => {
+            element.style.display = "none";
+            element.innerText = "";
+        });
+    }
+
+    function displayErrorMessage(elementId, message) {
+        const errElement = document.getElementById(elementId);
+        errElement.textContent = message;
+        errElement.style.display = "block";
+    }
+
+    function validateForm() {
+        clearErrorMessages();
+
+        const name = document.getElementById('categoryName').value.trim();
+        const description = document.getElementById('descriptionId').value.trim();
+        const categoryOffer = document.getElementById('categoryOffer').value.trim();
+        let isValid = true;
+
+        // Validate Name
+        if (name === "") {
+            displayErrorMessage('name-error', 'Name is required. Please enter a category name.');
+            isValid = false;
+        } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+            displayErrorMessage('name-error', 'Category name should only contain letters and spaces.');
+            isValid = false;
+        }
+
+        // Validate Description
+        if (description === "") {
+            displayErrorMessage('description-error', 'Description is required. Please enter a description.');
+            isValid = false;
+        }
+
+        // Validate Category Offer (should be between 1 and 99)
+        if (categoryOffer === "") {
+            displayErrorMessage('categoryOffer-error', 'Category Offer is required.');
+            isValid = false;
+        } else {
+            const offerValue = parseInt(categoryOffer, 10);
+            if (isNaN(offerValue) || offerValue < 1 || offerValue > 99) {
+                displayErrorMessage('categoryOffer-error', 'Category Offer must be between 1 and 99.');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    function handleFormSubmit(event) {
+    event.preventDefault();
+
+    if (!validateForm()) {
+        return;
+    }
+
+    const name = document.getElementById('categoryName').value;
+    const description = document.getElementById('descriptionId').value;
+    const categoryOffer = document.getElementById('categoryOffer').value;
+    const isListed = document.getElementById('isListed').checked;
+
+    fetch('/admin/categories', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, description, categoryOffer, isListed }),
+    })
+    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+    .then(({ status, body }) => {
+        if (status === 400) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Category Exists',
+                text: body.error || "Category Already Exists",
+            });
+        } else if (status === 500) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: "Internal Server Error",
+            });
+        } else if (status === 201) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: body.message,
+            }).then(() => {
+                location.reload();
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.message || 'An error occurred while adding the category.',
+        });
+    });
+}
+
+document.getElementById('addCategoryForm').addEventListener('submit', handleFormSubmit);
+
+
+
+// function handleFormSubmit(event) {
+//     event.preventDefault();
+
+//     if (!validateForm()) {
+//         return;
+//     }
+
+//     const name = document.getElementById('categoryName').value;
+//     const description = document.getElementById('descriptionId').value;
+//     const categoryOffer = document.getElementById('categoryOffer').value;
+//     const isListed = document.getElementById('isListed').checked;
+
+//     fetch('/admin/categories', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ name, description, categoryOffer, isListed }),
+//     })
+//     .then(response => response.json().then(data => ({ status: response.status, body: data })))
+//     .then(({ status, body }) => {
+//         if (status === 400) {
+//             throw new Error(body.error || "Bad Request");
+//         } else if (status === 500) {
+//             throw new Error("Internal Server Error");
+//         }
+
+//         location.reload(); // Reload only on success
+//     })
+//     .catch(error => {
+//         Swal.fire({
+//             icon: 'error',
+//             title: 'Oops...',
+//             text: error.message || 'An error occurred while adding the category.',
+//         });
+//     });
+// }
+
+    document.getElementById('addCategoryForm').addEventListener('submit', handleFormSubmit);
+</script>
+
+
+<%- include('../layouts/admin/footer.ejs') %>
+
+
 <style>
     .container{
         margin-left: 18rem;
@@ -115,14 +312,7 @@
     }
 </style>
 
-
-<script>
-    function toggleListing(categoryId, isChecked) {
-        const action = isChecked ? 'unListCategories' : 'listCategories';
-        window.location.href = `/admin/${action}?id=${categoryId}`;
-    }
-</script>
-
+<!-- 
 <script>
     function clearErrorMessages(){
         const errElements=document.getElementsByClassName('error-message');
@@ -207,6 +397,4 @@
             })
         }
         document.getElementById('addCategoryForm').addEventListener('submit',handleFormSubmit);
-</script>
-
-<%- include('../layouts/admin/footer.ejs') %>
+</script> -->

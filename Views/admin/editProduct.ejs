@@ -187,8 +187,8 @@
                                                 </div>
                             </div>
                             <div>
-                                <button class="btn btn-md rounded font-sm hover-up btn-primary" id="updatebtn" type="submit"
-                                    onclick="validateAndSubmit()">Update Product</button>
+                                <button class="btn btn-md rounded font-sm hover-up btn-primary" id="updatebtn"
+                                    type="submit" onclick="validateAndSubmit()">Update Product</button>
                             </div>
                         </form>
                     </div>
@@ -199,6 +199,70 @@
 
 
     <script>
+        // function validateAndSubmit() {
+        //     if (validateForm()) {
+        //         document.forms[0].submit();
+        //     }
+        // }
+
+        // function validateForm() {
+        //     let imageDatas = false;
+        //     clearErrorMessages();
+        //     const name = document.getElementsByName('productName')[0].value;
+        //     const description = document.getElementsByName('description')[0].value;
+        //     const brand = document.getElementsByName('brand')[0].value;
+        //     const price = document.getElementsByName('regularPrice')[0].value;
+        //     const saleprice = document.getElementsByName('salePrice')[0].value;
+        //     const category = document.getElementsByName('category')[0].value;
+        //     const images = document.getElementById('input1');
+        //     const quantity = document.getElementsByName('quantity')[0].value;
+        //     imageDatas = document.getElementById("imageDatas")?.value;
+
+        //     let isValid = true;
+        //     if (name.trim() === "") {
+        //         displayErrorMessage('productName-error', 'Please enter a product name.');
+        //         isValid = false;
+        //     }
+
+        //     if (description === '') {
+        //         displayErrorMessage('description-error', 'Please enter a product description.');
+        //         isValid = false;
+        //     }
+
+        //     if (parseInt(quantity) < 0) {
+        //         displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        //         isValid = false;
+        //     }
+
+        //     if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+        //         displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+        //         isValid = false;
+        //     }
+        //     // if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+        //     //     // displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+        //     //     isValid = false;
+        //     // }
+
+        //     if (!imageDatas && images.files.length === 0) {
+        //         displayErrorMessage("images-error", 'Please select an image.');
+        //         isValid = false;
+        //     }
+        //     return isValid;
+        // }
+
+        // function displayErrorMessage(elementId, message) {
+        //     var errorElement = document.getElementById(elementId);
+        //     errorElement.innerText = message;
+        //     errorElement.style.display = "block";
+        // }
+
+        // function clearErrorMessages() {
+        //     const errorElements = document.getElementsByClassName('error-message');
+        //     Array.from(errorElements).forEach(element => {
+        //         element.innerText = '';
+        //     });
+        // }
+
         function validateAndSubmit() {
             if (validateForm()) {
                 document.forms[0].submit();
@@ -208,45 +272,82 @@
         function validateForm() {
             let imageDatas = false;
             clearErrorMessages();
-            const name = document.getElementsByName('productName')[0].value;
-            const description = document.getElementsByName('description')[0].value;
+
+            const name = document.getElementsByName('productName')[0].value.trim();
+            const description = document.getElementsByName('description')[0].value.trim();
             const brand = document.getElementsByName('brand')[0].value;
-            const price = document.getElementsByName('regularPrice')[0].value;
-            const saleprice = document.getElementsByName('salePrice')[0].value;
+            const price = document.getElementsByName('regularPrice')[0].value.trim();
+            const salePrice = document.getElementsByName('salePrice')[0].value.trim();
             const category = document.getElementsByName('category')[0].value;
+            const quantity = document.getElementsByName('quantity')[0].value.trim();
+            const productOffer = document.getElementsByName('productOffer')[0]?.value.trim();
+
+            // Image validation
             const images = document.getElementById('input1');
-            const quantity = document.getElementsByName('quantity')[0].value;
-            imageDatas = document.getElementById("imageDatas")?.value;
+            imageDatas = document.getElementById("imageDatas")?.value; // Existing images
 
             let isValid = true;
-            if (name.trim() === "") {
+
+            // Product Name validation
+            if (name === "") {
                 displayErrorMessage('productName-error', 'Please enter a product name.');
                 isValid = false;
             }
 
-            if (description === '') {
+            // Description validation
+            if (description === "") {
                 displayErrorMessage('description-error', 'Please enter a product description.');
                 isValid = false;
             }
 
-            if (parseInt(quantity) < 0) {
-                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+            // Brand validation
+            if (!brand) {
+                displayErrorMessage('brand-error', 'Please select a brand.');
                 isValid = false;
             }
 
+            // Price validation
             if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
                 displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
                 isValid = false;
             }
-            // if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-            //     // displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-            //     isValid = false;
-            // }
 
-            if (!imageDatas && images.files.length === 0) {
-                displayErrorMessage("images-error", 'Please select an image.');
+            // Sale Price validation
+            if (salePrice !== "" && (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) < 0)) {
+                displayErrorMessage('salePrice-error', 'Please enter a valid non-negative sale price.');
                 isValid = false;
             }
+
+            // Ensure sale price is less than regular price
+            if (salePrice !== "" && parseFloat(salePrice) >= parseFloat(price)) {
+                displayErrorMessage('salePrice-error', 'Sale price must be lower than regular price.');
+                isValid = false;
+            }
+
+            // Quantity validation
+            if (!/^\d+$/.test(quantity) || parseInt(quantity) < 0) {
+                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+                isValid = false;
+            }
+
+            // Product Offer validation (optional)
+            if (productOffer !== "" && (!/^\d+$/.test(productOffer) || parseInt(productOffer) < 0 || parseInt(productOffer) > 100)) {
+                displayErrorMessage('productOffer-error', 'Offer should be between 0 and 100%.');
+                isValid = false;
+            }
+
+            // Category validation
+            if (!category) {
+                displayErrorMessage('category-error', 'Please select a category.');
+                isValid = false;
+            }
+
+            // Image validation: Ensure at least one image is present
+            if (!imageDatas && images.files.length === 0) {
+                displayErrorMessage("images-error", 'Please select at least one product image.');
+                isValid = false;
+            }
+
             return isValid;
         }
 
@@ -260,8 +361,10 @@
             const errorElements = document.getElementsByClassName('error-message');
             Array.from(errorElements).forEach(element => {
                 element.innerText = '';
+                element.style.display = "none";
             });
         }
+
 
         function viewImage1(event) {
             document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0]);
@@ -349,203 +452,193 @@
         }
     </script>
 
-    <script> 
-    function deleteOffer(productId) { 
-        Swal.fire({ 
-            title: 'Are you sure?', 
-            text: "This will remove the offer from the product.", 
-            icon: 'warning', 
-            showCancelButton: true, 
-            confirmButtonColor: '#3085d6', 
-            cancelButtonColor: '#d33', 
-            confirmButtonText: 'Yes, delete it!' 
-            }).then((result) => { 
-                if (result.isConfirmed) { 
-                    const form = document.createElement('form'); 
-                    form.method = 'POST'; 
-                    form.action = '/admin/products/deleteOffer/' + productId; 
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); 
-                    const tokenInput = document.createElement('input'); 
-                    tokenInput.type = 'hidden'; 
-                    tokenInput.name = '_csrf'; 
-                    tokenInput.value = csrfToken; 
-                    form.appendChild(tokenInput); 
-                    document.body.appendChild(form); 
-                    form.submit(); 
-                    } 
-                }); 
-            } 
-            
+    <script>
+        function deleteOffer(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will remove the offer from the product.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/admin/products/deleteOffer/' + productId;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '_csrf';
+                    tokenInput.value = csrfToken;
+                    form.appendChild(tokenInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
     </script>
 
+    <style>
+        /* Base styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
 
-<style>
-    /* Base styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #181818;
-    color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-}
+        .content-main {
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
 
-.content-main {
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-}
+        .row {
+            width: 100%;
+            max-width: 1200px;
+        }
 
-.row {
-    width: 100%;
-    max-width: 1200px;
-}
+        /* Card styles */
+        .card {
+            background-color: #242424;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: #f5f5f5;
+            margin-bottom: 2rem;
+        }
 
-/* Card styles */
-.card {
-    background-color: #242424;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: #f5f5f5;
-    margin-bottom: 2rem;
-}
+        .card-header {
+            background-color: #333333;
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            border-radius: 10px 10px 0 0;
+        }
 
-.card-header {
-    background-color: #333333;
-    padding: 15px;
-    border-bottom: 1px solid #444;
-    border-radius: 10px 10px 0 0;
-}
+        .card-body {
+            padding: 1.5rem;
+        }
 
-.card-body {
-    padding: 1.5rem;
-}
+        /* Form elements */
+        .form-label {
+            color: #00d1ff;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
 
-/* Form elements */
-.form-label {
-    color: #00d1ff;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
+        .form-control {
+            background-color: #333333;
+            border: 1px solid #444;
+            color: #f5f5f5;
+            padding: 0.75rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
 
-.form-control {
-    background-color: #333333;
-    border: 1px solid #444;
-    color: #f5f5f5;
-    padding: 0.75rem;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
+        .form-control:focus {
+            background-color: #3a3a3a;
+            border-color: #00d1ff;
+            box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
+            outline: none;
+        }
 
-.form-control:focus {
-    background-color: #3a3a3a;
-    border-color: #00d1ff;
-    box-shadow: 0 0 0 2px rgba(0, 209, 255, 0.25);
-    outline: none;
-}
+        .form-select {
+            background-color: #333333;
+            border: 1px solid #444;
+            color: #f5f5f5;
+            padding: 0.75rem;
+            border-radius: 5px;
+        }
 
-.form-select {
-    background-color: #333333;
-    border: 1px solid #444;
-    color: #f5f5f5;
-    padding: 0.75rem;
-    border-radius: 5px;
-}
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
 
-/* Buttons */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
+        .btn-primary {
+            background-color: #00d1ff;
+            border: none;
+            color: #181818;
+        }
 
-.btn-primary {
-    background-color: #00d1ff;
-    border: none;
-    color: #181818;
-}
+        .btn-primary:hover {
+            background-color: #00a1cc;
+        }
 
-.btn-primary:hover {
-    background-color: #00a1cc;
-}
+        .btn-secondary {
+            background-color: #444;
+            border: none;
+            color: #f5f5f5;
+        }
 
-.btn-secondary {
-    background-color: #444;
-    border: none;
-    color: #f5f5f5;
-}
+        .btn-secondary:hover {
+            background-color: #555;
+        }
 
-.btn-secondary:hover {
-    background-color: #555;
-}
+        /* Image preview */
+        .rounded {
+            border-radius: 5px;
+            border: 2px solid #444;
+        }
 
-/* Image preview */
-.rounded {
-    border-radius: 5px;
-    border: 2px solid #444;
-}
+        /* Error messages */
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
 
-/* Error messages */
-.error-message {
-    color: #ff4d4d;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
+        .content-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
 
-.content-header {
-    margin-bottom: 2rem;
-    text-align: center;
-}
+        .content-title {
+            color: #00d1ff;
+            font-size: 2rem;
+            font-weight: 600;
+        }
 
-.content-title {
-    color: #00d1ff;
-    font-size: 2rem;
-    font-weight: 600;
-}
+        .image-cropper {
+            background-color: #333333;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
 
-.image-cropper {
-    background-color: #333333;
-    border-radius: 5px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
+        #imgView1,
+        #imgView2,
+        #imgView3 {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 1rem;
+        }
 
-#imgView1, #imgView2, #imgView3 {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 1rem;
-}
+        @media (max-width: 992px) {
+            .content-main {
+                padding: 1rem;
+            }
 
-@media (max-width: 992px) {
-    .content-main {
-        padding: 1rem;
-    }
-    
-    .row {
-        flex-direction: column;
-    }
-    
-    .col-lg-6 {
-        width: 100%;
-    }
-}
-</style>
+            .row {
+                flex-direction: column;
+            }
+
+            .col-lg-6 {
+                width: 100%;
+            }
+        }
+    </style>
 
 
 
 
     <%- include('../layouts/admin/footer.ejs') %>
 
-    
-
-
-
-
-
-
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>

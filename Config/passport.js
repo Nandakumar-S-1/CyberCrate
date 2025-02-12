@@ -15,22 +15,22 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        console.log("Google Auth Started - Profile:", profile);
+        // console.log("Google Auth Started - Profile:", profile);
 
         // Get email from profile
         const email =
           profile.emails && profile.emails[0] ? profile.emails[0].value : null;
         if (!email) {
-          console.error("No email found in Google profile");
+          // console.error("No email found in Google profile");
           return done(new Error("No email found in Google profile"), null);
         }
 
         let user = await User.findOne({ googleId: profile.id });
         if (user) {
-          console.log("Existing user found:", user.email);
+          // console.log("Existing user found:", user.email);
           return done(null, user);
         } else {
-          console.log("Creating new user with email:", email);
+          // console.log("Creating new user with email:", email);
           user = new User({
             name: profile.displayName,
             email: email,
@@ -38,11 +38,11 @@ passport.use(
             isVerified: true,
           });
           await user.save();
-          console.log("New user created successfully");
+          // console.log("New user created successfully");
           return done(null, user);
         }
       } catch (error) {
-        console.error("Google Auth Error:", error);
+        // console.error("Google Auth Error:", error);
         return done(error, null);
       }
     }
@@ -62,7 +62,7 @@ passport.deserializeUser((id, done) => {
       done(null, user);
     })
     .catch((err) => {
-      console.error("Deserialize error:", err);
+      // console.error("Deserialize error:", err);
       done(err, null);
     });
 });

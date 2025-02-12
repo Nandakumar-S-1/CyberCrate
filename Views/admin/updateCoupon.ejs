@@ -8,31 +8,55 @@
                                 <h3>Update Coupon</h3>
                             </div>
                             <div class="card-body">
-                                <form id="updateCouponForm" action="/admin/coupons/edit/<%= coupon._id %>"
-                                    method="POST"> <input type="hidden" name="couponId" value="<%= coupon._id %>">
-                                    <div class="form-group"> <label for="code">Coupon Code</label> <input type="text"
-                                            class="form-control" id="code" name="code" value="<%= coupon.code %>"
-                                            required> </div>
-                                    <div class="form-group"> <label for="offerPrice">Offer Price</label> <input
-                                            type="number" class="form-control" id="offerPrice" name="offerPrice"
-                                            value="<%= coupon.offerPrice %>" required> </div>
-                                    <div class="form-group"> <label for="minimumPrice">Minimum Price</label> <input
-                                            type="number" class="form-control" id="minimumPrice" name="minimumPrice"
-                                            value="<%= coupon.minimumPrice %>" required> </div>
-                                    <div class="form-group"> <label for="maximumPrice">Maximum Price</label> <input
-                                            type="number" class="form-control" id="maximumPrice" name="maximumPrice"
-                                            value="<%= coupon.maximumPrice %>" required> </div>
-                                    <div class="form-group"> <label for="expireOn">Expiration Date</label> <input
-                                            type="date" class="form-control" id="expireOn" name="expireOn"
-                                            value="<%= coupon.expireOn.toISOString().split('T')[0] %>" required> </div>
-                                    <div class="form-group"> <label for="usageLimit">Usage Limit</label> <input
-                                            type="number" class="form-control" id="usageLimit" name="usageLimit"
-                                            value="<%= coupon.usageLimit %>"> </div>
-                                    <div class="form-group"> <label for="isActive">Active</label> <select
+                                <form id="updateCouponForm" action="/admin/coupons/edit/<%= coupon._id %>" method="POST"
+                                    onsubmit="return validateForm()">
+                                 <input type="hidden" name="couponId" value="<%= coupon._id %>">
+                                    <div class="form-group">
+                                        <label for="code">Coupon Code</label>
+                                        <input type="text" class="form-control" id="code" name="code"
+                                            value="<%= coupon.code %>" required>
+                                        <small id="codeError" class="form-text text-danger"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="offerPrice">Offer Price</label>
+                                        <input type="number" class="form-control" id="offerPrice" name="offerPrice"
+                                            value="<%= coupon.offerPrice %>" required>
+                                        <small id="offerPriceError" class="form-text text-danger"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="minimumPrice">Minimum Price</label>
+                                        <input type="number" class="form-control" id="minimumPrice" name="minimumPrice"
+                                            value="<%= coupon.minimumPrice %>" required>
+                                        <small id="minimumPriceError" class="form-text text-danger"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="maximumPrice">Maximum Price</label>
+                                        <input type="number" class="form-control" id="maximumPrice" name="maximumPrice"
+                                            value="<%= coupon.maximumPrice %>" required>
+                                        <small id="maximumPriceError" class="form-text text-danger"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="expireOn">Expiration Date</label>
+                                        <input type="date" class="form-control" id="expireOn" name="expireOn"
+                                            value="<%= coupon.expireOn.toISOString().split('T')[0] %>" required>
+                                        <small id="expireOnError" class="form-text text-danger"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="usageLimit">Usage Limit</label>
+                                        <input type="number" class="form-control" id="usageLimit" name="usageLimit"
+                                            value="<%= coupon.usageLimit %>">
+                                        <small id="usageLimitError" class="form-text text-danger"></small>
+                                    </div>
+                                    <!-- <div class="form-group"> <label for="isActive">Active</label> <select
                                             class="form-control" id="isActive" name="isActive">
                                             <option value="true" <%=coupon.isActive ? 'selected' : '' %>>Yes</option>
                                             <option value="false" <%=!coupon.isActive ? 'selected' : '' %>>No</option>
-                                        </select> </div>
+                                        </select> </div> -->
                                     <div class="form-group"> <label for="isListed">Listed</label> <select
                                             class="form-control" id="isListed" name="isListed">
                                             <option value="true" <%=coupon.isListed ? 'selected' : '' %>>Yes</option>
@@ -50,61 +74,93 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
+
         <script>
+            const codeRegex = /^[A-Za-z0-9]{6}$/;
+
+            // Real-time coupon code format checker (without error popup)
+            document.getElementById('code').addEventListener('input', function () {
+                const code = this.value.trim();
+                const errorElement = document.getElementById('codeError');
+
+                if (code.length > 6) {
+                    this.value = code.slice(0, 6); // Prevent more than 6 characters
+                }
+
+                if (code.length > 0) {
+                    if (!code.match(/^[A-Za-z0-9]*$/)) {
+                        errorElement.innerText = 'Only letters and numbers allowed';
+                    } else if (code.length < 6) {
+                        errorElement.innerText = `${6 - code.length} more characters needed`;
+                    } else if (code.length === 6) {
+                        errorElement.innerText = '';
+                    }
+                } else {
+                    errorElement.innerText = '';
+                }
+            });
+
             function validateForm() {
                 let isValid = true;
+                const currentDate = new Date();
 
-                const code = document.getElementById('code').value;
-                const codeRegex = /^[a-zA-Z0-9]{6}$/;
+                // Clear all previous error messages
+                const errorElements = document.querySelectorAll('.form-text.text-danger');
+                errorElements.forEach(element => element.innerText = '');
+
+                // Validate Coupon Code
+                const code = document.getElementById('code').value.trim();
                 if (!code) {
                     document.getElementById('codeError').innerText = 'Coupon Code is required.';
                     isValid = false;
                 } else if (!codeRegex.test(code)) {
-                    document.getElementById('codeError').innerText = 'Coupon Code must be 6 alphanumeric characters.';
+                    document.getElementById('codeError').innerText = 'Coupon Code must be exactly 6 alphanumeric characters.';
                     isValid = false;
-                } else {
-                    document.getElementById('codeError').innerText = '';
                 }
 
-                const offerPrice = document.getElementById('offerPrice').value;
+                // Validate Offer Price
+                const offerPrice = parseFloat(document.getElementById('offerPrice').value);
                 if (!offerPrice || offerPrice <= 0) {
-                    document.getElementById('offerPriceError').innerText = 'Offer Price must be a positive number.';
+                    document.getElementById('offerPriceError').innerText = 'Offer price must be greater than 0.';
                     isValid = false;
-                } else {
-                    document.getElementById('offerPriceError').innerText = '';
                 }
 
-                const minimumPrice = document.getElementById('minimumPrice').value;
+                // Validate Minimum Price
+                const minimumPrice = parseFloat(document.getElementById('minimumPrice').value);
                 if (!minimumPrice || minimumPrice <= 0) {
-                    document.getElementById('minimumPriceError').innerText = 'Minimum Price must be a positive number.';
+                    document.getElementById('minimumPriceError').innerText = 'Minimum price must be greater than 0.';
                     isValid = false;
-                } else {
-                    document.getElementById('minimumPriceError').innerText = '';
                 }
 
-                const maximumPrice = document.getElementById('maximumPrice').value;
+                // Validate Maximum Price
+                const maximumPrice = parseFloat(document.getElementById('maximumPrice').value);
                 if (!maximumPrice || maximumPrice <= 0) {
-                    document.getElementById('maximumPriceError').innerText = 'Maximum Price must be a positive number.';
+                    document.getElementById('maximumPriceError').innerText = 'Maximum price must be greater than 0.';
                     isValid = false;
-                } else {
-                    document.getElementById('maximumPriceError').innerText = '';
                 }
 
-                const expireOn = document.getElementById('expireOn').value;
-                if (!expireOn) {
-                    document.getElementById('expireOnError').innerText = 'Expiration Date is required.';
+                // Compare Minimum and Maximum Prices
+                if (minimumPrice && maximumPrice && minimumPrice >= maximumPrice) {
+                    document.getElementById('minimumPriceError').innerText = 'Minimum price must be less than maximum price.';
+                    document.getElementById('maximumPriceError').innerText = 'Maximum price must be greater than minimum price.';
                     isValid = false;
-                } else {
-                    document.getElementById('expireOnError').innerText = '';
                 }
 
-                const usageLimit = document.getElementById('usageLimit').value;
-                if (usageLimit && usageLimit <= 0) {
-                    document.getElementById('usageLimitError').innerText = 'Usage Limit must be a positive number.';
+                // Validate Expiration Date
+                const expireOn = new Date(document.getElementById('expireOn').value);
+                if (!document.getElementById('expireOn').value) {
+                    document.getElementById('expireOnError').innerText = 'Expiration date is required.';
                     isValid = false;
-                } else {
-                    document.getElementById('usageLimitError').innerText = '';
+                } else if (expireOn <= currentDate) {
+                    document.getElementById('expireOnError').innerText = 'Expiration date must be in the future.';
+                    isValid = false;
+                }
+
+                // Validate Usage Limit
+                const usageLimit = parseInt(document.getElementById('usageLimit').value);
+                if (document.getElementById('usageLimit').value && (!usageLimit || usageLimit < 1)) {
+                    document.getElementById('usageLimitError').innerText = 'Usage limit must be at least 1.';
+                    isValid = false;
                 }
 
                 if (!isValid) {

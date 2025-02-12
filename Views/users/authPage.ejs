@@ -484,6 +484,7 @@
             </form>
         </div> -->
         <!-- Sign Up Form -->
+
         <div class="sign-up">
             <form action="/signup" method="POST" id="signup-form">
                 <h1 class="mt-3" style="color: #ff4b2b; font-weight: 700;">Create Account</h1>
@@ -606,103 +607,203 @@
     </div>
 
     <script>
-        function togglePasswordVisibility(id, element) {
-            const input = document.getElementById(id);
-            if (input.type === 'password') {
-                input.type = 'text';
-                element.innerHTML = '<i class="fas fa-eye-slash"></i>';
-            } else {
-                input.type = 'password';
-                element.innerHTML = '<i class="fas fa-eye"></i>';
+
+    function togglePasswordVisibility(id, element) {
+        const input = document.getElementById(id);
+        if (input.type === 'password') {
+            input.type = 'text';
+            element.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+            input.type = 'password';
+            element.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+    }
+
+    function toggleForms() {
+        document.getElementById('main').classList.toggle('right-panel-active');
+    }
+
+    // Sign up form validation
+    document.getElementById('signup-form').addEventListener('submit', function (e) {
+        let errors = 0;
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const cPassword = document.getElementById('confirm-password').value;
+
+        // Clear previous error messages
+        document.getElementById('signup-fullname-error').innerText = '';
+        document.getElementById('signup-email-error').innerText = '';
+        document.getElementById('signup-phone-error').innerText = '';
+        document.getElementById('signup-password-error').innerText = '';
+        document.getElementById('signup-cpassword-error').innerText = '';
+
+        // Name validation (only alphabets and spaces)
+        const namePattern = /^[A-Za-z\s]+$/;
+        if (!name) {
+            document.getElementById('signup-fullname-error').innerText = 'Name is required.';
+            errors++;
+        } else if (!namePattern.test(name)) {
+            document.getElementById('signup-fullname-error').innerText = 'Name should only contain letters and spaces.';
+            errors++;
+        }
+
+        // Email validation (must contain @ and .)
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email) {
+            document.getElementById('signup-email-error').innerText = 'Email is required.';
+            errors++;
+        } else if (!emailPattern.test(email)) {
+            document.getElementById('signup-email-error').innerText = 'Enter a valid email address.';
+            errors++;
+        }
+
+        // Phone number validation (must start with 6-9 and be exactly 10 digits)
+        const phonePattern = /^[6-9]\d{9}$/;
+        if (!phone) {
+            document.getElementById('signup-phone-error').innerText = 'Phone number is required.';
+            errors++;
+        } else if (!phonePattern.test(phone)) {
+            document.getElementById('signup-phone-error').innerText = 'Phone number must start with 6-9 and be 10 digits long.';
+            errors++;
+        }
+
+        // Password validation
+        if (!password) {
+            document.getElementById('signup-password-error').innerText = 'Password is required.';
+            errors++;
+        } else {
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            const isLengthValid = password.length >= 8;
+
+            if (!(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar && isLengthValid)) {
+                let errorMsg = 'Password must contain:';
+                if (!isLengthValid) errorMsg += ' at least 8 characters,';
+                if (!hasUpperCase) errorMsg += ' an uppercase letter,';
+                if (!hasLowerCase) errorMsg += ' a lowercase letter,';
+                if (!hasNumbers) errorMsg += ' a number,';
+                if (!hasSpecialChar) errorMsg += ' a special character,';
+                document.getElementById('signup-password-error').innerText = errorMsg.slice(0, -1);
+                errors++;
             }
         }
 
-        function toggleForms() {
-            document.getElementById('main').classList.toggle('right-panel-active');
+        // Confirm password validation
+        if (!cPassword) {
+            document.getElementById('signup-cpassword-error').innerText = 'Please confirm your password.';
+            errors++;
+        } else if (password !== cPassword) {
+            document.getElementById('signup-cpassword-error').innerText = 'Passwords do not match.';
+            errors++;
         }
 
-        // Sign up form validation
-        document.getElementById('signup-form').addEventListener('submit', function (e) {
-            let errors = 0;
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value;
-            const cPassword = document.getElementById('confirm-password').value;
+        if (errors > 0) {
+            e.preventDefault();
+        }
+    });
 
-            // Clear previous error messages
-            document.getElementById('signup-fullname-error').innerText = '';
-            document.getElementById('signup-email-error').innerText = '';
-            document.getElementById('signup-phone-error').innerText = '';
-            document.getElementById('signup-password-error').innerText = '';
-            document.getElementById('signup-cpassword-error').innerText = '';
+        // function togglePasswordVisibility(id, element) {
+        //     const input = document.getElementById(id);
+        //     if (input.type === 'password') {
+        //         input.type = 'text';
+        //         element.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        //     } else {
+        //         input.type = 'password';
+        //         element.innerHTML = '<i class="fas fa-eye"></i>';
+        //     }
+        // }
 
-            const namePattern = /^[A-Za-z\s]+$/;
-            if (!name) {
-                document.getElementById('signup-fullname-error').innerText = 'Name is required.';
-                errors++;
-            } else if (!namePattern.test(name)) {
-                document.getElementById('signup-fullname-error').innerText = 'Name should only contain letters and spaces.';
-                errors++;
-            }
+        // function toggleForms() {
+        //     document.getElementById('main').classList.toggle('right-panel-active');
+        // }
 
-            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!email) {
-                document.getElementById('signup-email-error').innerText = 'Email is required.';
-                errors++;
-            } else if (!emailPattern.test(email)) {
-                document.getElementById('signup-email-error').innerText = 'Enter a valid email address.';
-                errors++;
-            }
+        // // Sign up form validation
+        // document.getElementById('signup-form').addEventListener('submit', function (e) {
+        //     let errors = 0;
+        //     const name = document.getElementById('name').value.trim();
+        //     const email = document.getElementById('email').value.trim();
+        //     const phone = document.getElementById('phone').value.trim();
+        //     const password = document.getElementById('password').value;
+        //     const cPassword = document.getElementById('confirm-password').value;
 
-            const phonePattern = /^\d{10}$/;
-            if (!phone) {
-                document.getElementById('signup-phone-error').innerText = 'Phone number is required.';
-                errors++;
-            } else if (!phonePattern.test(phone)) {
-                document.getElementById('signup-phone-error').innerText = 'Phone number must be 10 digits.';
-                errors++;
-            }
+        //     // Clear previous error messages
+        //     document.getElementById('signup-fullname-error').innerText = '';
+        //     document.getElementById('signup-email-error').innerText = '';
+        //     document.getElementById('signup-phone-error').innerText = '';
+        //     document.getElementById('signup-password-error').innerText = '';
+        //     document.getElementById('signup-cpassword-error').innerText = '';
 
-            // Validate Password
-            if (!password) {
-                document.getElementById('signup-password-error').innerText = 'Password is required.';
-                errors++;
-            } else {
-                const hasUpperCase = /[A-Z]/.test(password);
-                const hasLowerCase = /[a-z]/.test(password);
-                const hasNumbers = /\d/.test(password);
-                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-                const isLengthValid = password.length >= 8;
+        //     const namePattern = /^[A-Za-z\s]+$/;
+        //     if (!name) {
+        //         document.getElementById('signup-fullname-error').innerText = 'Name is required.';
+        //         errors++;
+        //     } else if (!namePattern.test(name)) {
+        //         document.getElementById('signup-fullname-error').innerText = 'Name should only contain letters and spaces.';
+        //         errors++;
+        //     }
 
-                if (!(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar && isLengthValid)) {
+        //     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        //     if (!email) {
+        //         document.getElementById('signup-email-error').innerText = 'Email is required.';
+        //         errors++;
+        //     } else if (!emailPattern.test(email)) {
+        //         document.getElementById('signup-email-error').innerText = 'Enter a valid email address.';
+        //         errors++;
+        //     }
 
-                    let errorMsg = 'Password must contain:';
-                    if (!isLengthValid) errorMsg += ' at least 8 characters,';
-                    if (!hasUpperCase) errorMsg += ' an uppercase letter,';
-                    if (!hasLowerCase) errorMsg += ' a lowercase letter,';
-                    if (!hasNumbers) errorMsg += ' a number,';
-                    if (!hasSpecialChar) errorMsg += ' a special character,';
-                    document.getElementById('signup-password-error').innerText = errorMsg.slice(0, -1);
-                    errors++;
-                }
-            }
+        //     const phonePattern = /^\d{10}$/;
+        //     if (!phone) {
+        //         document.getElementById('signup-phone-error').innerText = 'Phone number is required.';
+        //         errors++;
+        //     } else if (!phonePattern.test(phone)) {
+        //         document.getElementById('signup-phone-error').innerText = 'Phone number must be 10 digits.';
+        //         errors++;
+        //     }
 
-            // Validate confirm password
-            if (!cPassword) {
-                document.getElementById('signup-cpassword-error').innerText = 'Please confirm your password.';
-                errors++;
-            } else if (password !== cPassword) {
-                document.getElementById('signup-cpassword-error').innerText = 'Passwords do not match.';
-                errors++;
-            }
+        //     // Validate Password
+        //     if (!password) {
+        //         document.getElementById('signup-password-error').innerText = 'Password is required.';
+        //         errors++;
+        //     } else {
+        //         const hasUpperCase = /[A-Z]/.test(password);
+        //         const hasLowerCase = /[a-z]/.test(password);
+        //         const hasNumbers = /\d/.test(password);
+        //         const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        //         const isLengthValid = password.length >= 8;
 
-            if (errors > 0) {
-                e.preventDefault();
-            }
-        });
+        //         if (!(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar && isLengthValid)) {
+
+        //             let errorMsg = 'Password must contain:';
+        //             if (!isLengthValid) errorMsg += ' at least 8 characters,';
+        //             if (!hasUpperCase) errorMsg += ' an uppercase letter,';
+        //             if (!hasLowerCase) errorMsg += ' a lowercase letter,';
+        //             if (!hasNumbers) errorMsg += ' a number,';
+        //             if (!hasSpecialChar) errorMsg += ' a special character,';
+        //             document.getElementById('signup-password-error').innerText = errorMsg.slice(0, -1);
+        //             errors++;
+        //         }
+        //     }
+
+        //     // Validate confirm password
+        //     if (!cPassword) {
+        //         document.getElementById('signup-cpassword-error').innerText = 'Please confirm your password.';
+        //         errors++;
+        //     } else if (password !== cPassword) {
+        //         document.getElementById('signup-cpassword-error').innerText = 'Passwords do not match.';
+        //         errors++;
+        //     }
+
+        //     if (errors > 0) {
+        //         e.preventDefault();
+        //     }
+        // });
 
         // Sign in form validation
+        
         document.getElementById('signin-form').addEventListener('submit', function (e) {
             let errors = 0;
             const email = document.getElementById('signin-email').value.trim();

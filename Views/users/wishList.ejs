@@ -31,7 +31,6 @@
                         <td>₹<%= parseInt( product.productId.salePrice) %></td>
                         <td class="actions">
                             <button class="add-to-cart" onclick="addToCart('<%= product.productId._id %>')">Add to Cart</button>
-                            <button class="view" onclick="viewProduct('<%= product.productId._id %>')">View</button>
                             <button class="remove" onclick="removeFromWishlist('<%= product.productId._id %>')">Remove</button>
                         </td>
                     </tr>

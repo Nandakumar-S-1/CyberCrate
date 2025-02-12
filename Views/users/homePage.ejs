@@ -349,6 +349,7 @@
                         <h3 class="text-white fs-5">
                             <%= product.productName %>
                         </h3>
+                        
                         <!-- <p class="text-white fs-6"><span class="fw-bold text-warning">Price: </span> 
                             ₹<%= product.salePrice %>
                         </p>
@@ -388,8 +389,8 @@
                             <%= product.productName %>
                         </h3>
                         <div class="product-price">
-                            <span class="current-price">₹<%= product.salePrice %></span>
-                            <span class="original-price">₹<%= product.realPrice %></span>
+                            <span class="current-price">₹<%= parseInt(product.salePrice) %></span>
+                            <span class="original-price">₹<%=parseInt( product.realPrice)%></span>
                         </div>
                         <div class="product-actions">
                             <button class="action-button add-to-favorites"

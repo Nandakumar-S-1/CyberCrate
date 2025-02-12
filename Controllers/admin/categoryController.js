@@ -51,8 +51,8 @@ const addNewCategories = async (req, res) => {
     });
 
     await newCategory.save();
-    // return res.json({message:"Category added successfully"})
-    res.redirect("/admin/categories");
+    return res.status(201).json({ message: "Category added successfully" });
+    // res.redirect("/admin/categories");
   } catch (error) {
 
     return res.status(500).json({ error: "Internal Server Error" });
@@ -117,28 +117,63 @@ const updateCategory = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-//list categories
+
 const listCategories = async (req, res) => {
   try {
     const id = req.query.id;
-    await category.updateOne({ _id: id }, { $set: { isListed: false } });
-    res.redirect("/admin/categories");
-  } catch (error) {
+    await category.updateOne({ _id: id }, { $set: { isListed: true } });
 
-    res.redirect("/pageError");
+    res.json({
+      success: true,
+      message: "Category listed successfully!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while listing the category.",
+    });
   }
 };
-//unlist categories
+
 const unListCategories = async (req, res) => {
   try {
     const id = req.query.id;
-    await category.updateOne({ _id: id }, { $set: { isListed: true } });
-    res.redirect("/admin/categories");
-  } catch (error) {
+    await category.updateOne({ _id: id }, { $set: { isListed: false } });
 
-    res.redirect("/pageError");
+    res.json({
+      success: true,
+      message: "Category unlisted successfully!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while unlisting the category.",
+    });
   }
 };
+
+//list categories
+// const listCategories = async (req, res) => {
+//   try {
+//     const id = req.query.id;
+//     await category.updateOne({ _id: id }, { $set: { isListed: false } });
+//     res.redirect("/admin/categories");
+//   } catch (error) {
+
+//     res.redirect("/pageError");
+//   }
+// };
+// //unlist categories
+// const unListCategories = async (req, res) => {
+//   try {
+//     const id = req.query.id;
+//     await category.updateOne({ _id: id }, { $set: { isListed: true } });
+//     res.redirect("/admin/categories");
+//   } catch (error) {
+
+//     res.redirect("/pageError");
+//   }
+// };
 
 module.exports = {
   loadCategories,

@@ -90,6 +90,11 @@
 
         <!-- Product Details -->
         <div class="products-container">
+        <div class="order-actions">
+            <a style="max-width: 10rem; margin: 1rem;" href="/orders/<%= order.orderId %>/invoice" class="action-button " >
+                <i class="fas fa-download"></i> Download Invoice
+            </a>
+        </div>
             <% order.orderedItems.forEach(item=> { %>
                 <div class="product-card">
                     <div class="product-image">
@@ -113,6 +118,7 @@
                     </div>
                 </div>
                 <% }); %>
+                
         </div>
 
     </div>

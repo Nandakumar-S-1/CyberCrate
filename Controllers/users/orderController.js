@@ -365,18 +365,14 @@ const cancelOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    // Fetch the order by ID
     const order = await Order.findOne({ orderId });
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Prevent cancelling an already cancelled order
     if (order.status === "Cancelled") {
       return res.status(400).json({ message: "Order is already cancelled" });
     }
-
-    // Ensure the order can be cancelled
     if (["Delivered", "Failed", "Shipped", "Return Request", "Returned"].includes(order.status) || 
         order.paymentStatus === "Failed") {
       return res.status(400).json({ message: "You cannot cancel this order" });
@@ -394,11 +390,9 @@ const cancelOrder = async (req, res) => {
       }
     }
 
-    // Update the order status
     order.status = "Cancelled";
     await order.save();
 
-    // Restore product quantities
     for (let item of order.orderedItems) {
       await Product.findByIdAndUpdate(item.product, {
         $inc: { quantity: item.quantity },
@@ -719,6 +713,7 @@ const returnOrder = async (req, res) => {
     }
 
     return res.status(200).json({
+      success: true,
       message: "Return request submitted successfully",
     });
 

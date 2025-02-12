@@ -81,6 +81,45 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+const resendChangePasswordOtp = async (req, res) => {
+  try {
+      const email = req.session.email;
+      
+      if (!email) {
+          return res.json({
+              success: false,
+              message: "Email session expired. Please start over."
+          });
+      }
+
+      const otp = generateOtp();
+      const emailSent = await sendVerificationEmail(email, otp);
+
+      if (emailSent) {
+          // Update session with new OTP and expiry
+          req.session.userOtp = otp;
+          req.session.otpExpiry = Date.now() * 60 * 1000;
+          
+          res.json({
+              success: true,
+              message: "New OTP sent successfully"
+          });
+          console.log("New OTP sent:", otp);
+      } else {
+          res.json({
+              success: false,
+              message: "Failed to send OTP. Please try again."
+          });
+      }
+  } catch (error) {
+      console.log("Error in resending OTP:", error);
+      res.status(500).json({
+          success: false,
+          message: "Internal server error"
+      });
+  }
+};
+
 //the controller function for sending email validation
 const forgotEmailValidation = async (req, res) => {
   try {
@@ -464,18 +503,57 @@ const changePassword = async (req, res) => {
 };
 
 //the controller function for changing password
+// const changePasswordValidation = async (req, res) => {
+//   try {
+//     const { currentPassword, newPassword, confirmPassword } = req.body;
+
+//     if (newPassword !== confirmPassword) {
+//       req.session.message = {
+//         type: "error",
+//         text: "New password and confirm password do not match.",
+//       };
+//       return res.redirect("/profile/changePassword");
+//     }
+
+//     const user = await User.findById(req.session.user);
+
+//     if (!user) {
+//       req.session.message = { type: "error", text: "User not found." };
+//       return res.redirect("/profile/changePassword");
+//     }
+
+//     const isMatch = await bcrypt.compare(currentPassword, user.password);
+//     if (!isMatch) {
+//       req.session.message = { type: "error", text: "Current password is incorrect." };
+//       return res.redirect("/profile/changePassword");
+//     }
+
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+//     user.password = hashedPassword;
+//     await user.save();
+
+//     req.session.message = { type: "success", text: "Password changed successfully!" };
+//     return res.redirect("/profile/changePassword");
+//   } catch (error) {
+//     console.error("Change password error:", error);
+//     req.session.message = {
+//       type: "error",
+//       text: "Internal server error. Please try again later.",
+//     };
+//     return res.redirect("/profile/changePassword");
+//   }
+// };
+
 const changePasswordValidation = async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
-      req.session.message = {
-        type: "error",
-        text: "New password and confirm password do not match.",
-      };
+      req.session.message = { type: "error", text: "New password and confirm password do not match." };
       return res.redirect("/profile/changePassword");
     }
 
+    // console.log("Session User ID:", req.session.user);
     const user = await User.findById(req.session.user);
 
     if (!user) {
@@ -483,6 +561,7 @@ const changePasswordValidation = async (req, res) => {
       return res.redirect("/profile/changePassword");
     }
 
+    // console.log("Stored Hash:", user.password);
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       req.session.message = { type: "error", text: "Current password is incorrect." };
@@ -490,17 +569,24 @@ const changePasswordValidation = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // console.log("New Hashed Password:", hashedPassword);
+
     user.password = hashedPassword;
+
     await user.save();
 
-    req.session.message = { type: "success", text: "Password changed successfully!" };
-    return res.redirect("/profile/changePassword");
+    return res.json({ success: true, message: "Password changed successfully!" ,redirect:'/profile'});
+
+    // console.log("User Object Before Saving:", user);
+    
+    // await user.save();
+    
+    // req.session.message = { type: "success", text: "Password changed successfully!" };
+    // return res.redirect("/profile/changePassword");
+  
   } catch (error) {
     console.error("Change password error:", error);
-    req.session.message = {
-      type: "error",
-      text: "Internal server error. Please try again later.",
-    };
+    req.session.message = { type: "error", text: "Internal server error. Please try again later." };
     return res.redirect("/profile/changePassword");
   }
 };
@@ -588,6 +674,7 @@ module.exports = {
   forgotPassword,
   forgotEmailValidation,
   forgotPasswordOtp,
+  resendChangePasswordOtp,
   renderOtpPage,
   resetPassword,
   resetPasswordValidation,

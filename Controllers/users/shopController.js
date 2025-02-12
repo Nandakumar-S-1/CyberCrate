@@ -65,6 +65,11 @@ const loadShop = async (req, res) => {
       ];
     }
 
+    const listedCategories = await Category.find({ isListed: true }).select("_id").lean();
+const listedCategoryIds = listedCategories.map(cat => cat._id);
+
+query.category = { $in: listedCategoryIds }; 
+
     // Determine sort criteria
     let sortWays = {};
     switch (sortBy) {
@@ -131,7 +136,7 @@ const loadShop = async (req, res) => {
       .sort(sortWays)
       .skip(skip)
       .limit(limit)
-      .lean(); // Using lean() for better performance
+      .lean(); 
 
     // Calculate total for pagination
     const totalProducts = await Product.countDocuments(query);

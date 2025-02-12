@@ -72,6 +72,8 @@ router.post(
   "/users/forgotEmailValidation",
   profileController.forgotEmailValidation
 );
+router.post('/resend-changepassword-otp', profileController.resendChangePasswordOtp);
+
 router.get("/users/forgotPasswordOtp", profileController.renderOtpPage);
 router.post("/users/forgotPasswordOtp", profileController.forgotPasswordOtp);
 router.get("/users/resetPassword", profileController.resetPassword);
